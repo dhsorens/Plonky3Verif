@@ -1,0 +1,15 @@
+name = "p3_koala_bear"
+version = "0.1.0"
+defaultTargets = ["p3_koala_bear", "p3_koala_bear_proofs"]
+
+[[lean_lib]]
+name = "p3_koala_bear"
+
+[[lean_lib]]
+name = "p3_koala_bear_proofs"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
