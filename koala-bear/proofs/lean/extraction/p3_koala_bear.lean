@@ -2,7 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
-import p3_koala_bear.interface
+import p3_koala_bear.dependencies -- ALTERED
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -19,436 +19,456 @@ structure KoalaBearParameters where
   -- no fields
 
 --  The prime field `2^31 - 2^24 + 1`, a.k.a. the Koala Bear field.
-abbrev KoalaBear :
+abbrev KoalaBear
+  [ p3_monty_31.data_traits.MontyParameters.AssociatedTypes KoalaBearParameters ]
+  [ p3_monty_31.data_traits.MontyParameters KoalaBearParameters ] :
   Type :=
   (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
 
--- @[instance] opaque Impl_11.AssociatedTypes :
---   core_models.clone.Clone.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_11.AssociatedTypes :
+  core_models.clone.Clone.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_11 :
---   core_models.clone.Clone KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_11 :
+  core_models.clone.Clone KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_10.AssociatedTypes :
---   core_models.marker.Copy.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_10.AssociatedTypes :
+  core_models.marker.Copy.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_10 :
---   core_models.marker.Copy KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_10 :
+  core_models.marker.Copy KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_12.AssociatedTypes :
---   core_models.default.Default.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_12.AssociatedTypes :
+  core_models.default.Default.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_12 :
---   core_models.default.Default KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_12 :
+  core_models.default.Default KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_13.AssociatedTypes :
---   core_models.fmt.Debug.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_13.AssociatedTypes :
+  core_models.fmt.Debug.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_13 :
---   core_models.fmt.Debug KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_13 :
+  core_models.fmt.Debug KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_15.AssociatedTypes :
---   core_models.hash.Hash.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_15.AssociatedTypes :
+  core_models.hash.Hash.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_15 :
---   core_models.hash.Hash KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_15 :
+  core_models.hash.Hash KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_16.AssociatedTypes :
---   core_models.marker.StructuralPartialEq.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_16.AssociatedTypes :
+  core_models.marker.StructuralPartialEq.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_16 :
---   core_models.marker.StructuralPartialEq KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_16 :
+  core_models.marker.StructuralPartialEq KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_17.AssociatedTypes :
---   core_models.cmp.PartialEq.AssociatedTypes
---   KoalaBearParameters
---   KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_17.AssociatedTypes :
+  core_models.cmp.PartialEq.AssociatedTypes
+  KoalaBearParameters
+  KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_17 :
---   core_models.cmp.PartialEq KoalaBearParameters KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_17 :
+  core_models.cmp.PartialEq KoalaBearParameters KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_14.AssociatedTypes :
---   core_models.cmp.Eq.AssociatedTypes KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_14.AssociatedTypes :
+  core_models.cmp.Eq.AssociatedTypes KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[instance] opaque Impl_14 :
---   core_models.cmp.Eq KoalaBearParameters :=
---   by constructor <;> exact Inhabited.default
+@[instance] opaque Impl_14 :
+  core_models.cmp.Eq KoalaBearParameters :=
+  by constructor <;> exact Inhabited.default
 
--- @[reducible] instance Impl.AssociatedTypes :
---   p3_monty_31.data_traits.MontyParameters.AssociatedTypes KoalaBearParameters
---   where
+@[reducible] instance Impl.AssociatedTypes :
+  p3_monty_31.data_traits.MontyParameters.AssociatedTypes KoalaBearParameters
+  where
 
--- instance Impl :
---   p3_monty_31.data_traits.MontyParameters KoalaBearParameters
---   where
---   PRIME := (2130706433 : u32)
---   MONTY_BITS := (32 : u32)
---   MONTY_MU := (2164260865 : u32)
+instance Impl :
+  p3_monty_31.data_traits.MontyParameters KoalaBearParameters
+  where
+  PRIME := (2130706433 : u32)
+  MONTY_BITS := (32 : u32)
+  MONTY_MU := (2164260865 : u32)
 
--- @[reducible] instance Impl_1.AssociatedTypes :
---   p3_challenger.duplex_challenger.UniformSamplingField.AssociatedTypes
---   KoalaBearParameters
---   where
+@[reducible] instance Impl_1.AssociatedTypes :
+  p3_challenger.duplex_challenger.UniformSamplingField.AssociatedTypes
+  KoalaBearParameters
+  where
 
--- instance Impl_1 :
---   p3_challenger.duplex_challenger.UniformSamplingField KoalaBearParameters
---   where
---   MAX_SINGLE_SAMPLE_BITS := (24 : usize)
---   SAMPLING_BITS_M := RustM.of_isOk
---     (do
---     let prime : u64 ←
---       (rust_primitives.hax.cast_op
---         (p3_monty_31.data_traits.MontyParameters.PRIME KoalaBearParameters) :
---         RustM u64);
---     let a : (RustArray u64 64) ←
---       (rust_primitives.hax.repeat (0 : u64) (64 : usize));
---     let k : usize := (0 : usize);
---     let ⟨a, k⟩ ←
---       (rust_primitives.hax.while_loop
---         (fun ⟨a, k⟩ => (do (pure true) : RustM Bool))
---         (fun ⟨a, k⟩ => (do (k <? (64 : usize)) : RustM Bool))
---         (fun ⟨a, k⟩ =>
---           (do
---           (rust_primitives.hax.int.from_machine (0 : u32)) :
---           RustM hax_lib.int.Int))
---         (rust_primitives.hax.Tuple2.mk a k)
---         (fun ⟨a, k⟩ =>
---           (do
---           let a : (RustArray u64 64) ←
---             if (← (k ==? (0 : usize))) then do
---               let a : (RustArray u64 64) ←
---                 (rust_primitives.hax.monomorphized_update_at.update_at_usize
---                   a
---                   k
---                   prime);
---               (pure a)
---             else do
---               let mask : u64 ← (~? (← ((← ((1 : u64) <<<? k)) -? (1 : u64))));
---               let a : (RustArray u64 64) ←
---                 (rust_primitives.hax.monomorphized_update_at.update_at_usize
---                   a
---                   k
---                   (← (prime &&&? mask)));
---               (pure a);
---           let k : usize ← (k +? (1 : usize));
---           (pure (rust_primitives.hax.Tuple2.mk a k)) :
---           RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
---     (pure a))
---     (by rfl)
+instance Impl_1 :
+  p3_challenger.duplex_challenger.UniformSamplingField KoalaBearParameters
+  where
+  MAX_SINGLE_SAMPLE_BITS := (24 : usize)
+  SAMPLING_BITS_M := RustM.of_isOk
+    (do
+    let prime : u64 ←
+      (rust_primitives.hax.cast_op
+        (p3_monty_31.data_traits.MontyParameters.PRIME KoalaBearParameters) :
+        RustM u64);
+    let a : (RustArray u64 64) ←
+      (rust_primitives.hax.repeat (0 : u64) (64 : usize));
+    let k : usize := (0 : usize);
+    let ⟨a, k⟩ ←
+      (rust_primitives.hax.while_loop
+        (fun ⟨a, k⟩ => (do (pure true) : RustM Bool))
+        (fun ⟨a, k⟩ => (do (k <? (64 : usize)) : RustM Bool))
+        (fun ⟨a, k⟩ =>
+          (do
+          (rust_primitives.hax.int.from_machine (0 : u32)) :
+          RustM hax_lib.int.Int))
+        (rust_primitives.hax.Tuple2.mk a k)
+        (fun ⟨a, k⟩ =>
+          (do
+          let a : (RustArray u64 64) ←
+            if (← (k ==? (0 : usize))) then do
+              let a : (RustArray u64 64) ←
+                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+                  a
+                  k
+                  prime);
+              (pure a)
+            else do
+              let mask : u64 ← (~? (← ((← ((1 : u64) <<<? k)) -? (1 : u64))));
+              let a : (RustArray u64 64) ←
+                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+                  a
+                  k
+                  (← (prime &&&? mask)));
+              (pure a);
+          let k : usize ← (k +? (1 : usize));
+          (pure (rust_primitives.hax.Tuple2.mk a k)) :
+          RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
+    (pure a))
+    (by sorry) -- ALTERED
+    -- (by rfl)
 
--- @[reducible] instance Impl_3.AssociatedTypes :
---   p3_monty_31.data_traits.BarrettParameters.AssociatedTypes KoalaBearParameters
---   where
+@[reducible] instance Impl_3.AssociatedTypes :
+  p3_monty_31.data_traits.BarrettParameters.AssociatedTypes KoalaBearParameters
+  where
 
--- instance Impl_3 :
---   p3_monty_31.data_traits.BarrettParameters KoalaBearParameters
---   where
+instance Impl_3 :
+  p3_monty_31.data_traits.BarrettParameters KoalaBearParameters
+  where
 
--- @[reducible] instance Impl_5.AssociatedTypes :
---   p3_monty_31.data_traits.RelativelyPrimePower.AssociatedTypes
---   KoalaBearParameters
---   ((3 : u64))
---   where
+@[reducible] instance Impl_5.AssociatedTypes :
+  p3_monty_31.data_traits.RelativelyPrimePower.AssociatedTypes
+  KoalaBearParameters
+  ((3 : u64))
+  where
 
--- instance Impl_5 :
---   p3_monty_31.data_traits.RelativelyPrimePower KoalaBearParameters ((3 : u64))
---   where
---   exp_root_d :=
---     fun
---       (R : Type)
---       [trait_constr_exp_root_d_associated_type_i0 :
---         p3_field.field.PrimeCharacteristicRing.AssociatedTypes
---         R]
---       [trait_constr_exp_root_d_i0 : p3_field.field.PrimeCharacteristicRing R ]
---       (val : R) => do
---     (p3_field.exponentiation.exp_1420470955 R val)
+instance Impl_5 :
+  p3_monty_31.data_traits.RelativelyPrimePower KoalaBearParameters ((3 : u64))
+  where
+  exp_root_d :=
+    fun
+      (R : Type)
+      [trait_constr_exp_root_d_associated_type_i0 :
+        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
+        R]
+      [trait_constr_exp_root_d_i0 : p3_field.field.PrimeCharacteristicRing R ]
+      (val : R) => do
+    (p3_field.exponentiation.exp_1420470955 R val)
 
--- @[reducible] instance Impl_6.AssociatedTypes :
---   p3_monty_31.data_traits.TwoAdicData.AssociatedTypes KoalaBearParameters
---   where
---   ArrayLike := (RustSlice
---   (p3_monty_31.monty_31.MontyField31 KoalaBearParameters))
+@[reducible] instance Impl_6.AssociatedTypes :
+  p3_monty_31.data_traits.TwoAdicData.AssociatedTypes KoalaBearParameters
+  where
+  ArrayLike := (RustSlice
+  (p3_monty_31.monty_31.MontyField31 KoalaBearParameters))
 
--- instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
---   TWO_ADICITY := (24 : usize)
---   TWO_ADIC_GENERATORS := RustM.of_isOk
---     (do
---     (rust_primitives.unsize
---       (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((25 : usize))
---         (RustArray.ofVec #v[(1 : u32),
---                               (2130706432 : u32),
---                               (2113994754 : u32),
---                               (1748172362 : u32),
---                               (148625052 : u32),
---                               (170455089 : u32),
---                               (1548376985 : u32),
---                               (699882112 : u32),
---                               (392596362 : u32),
---                               (665670555 : u32),
---                               (860702919 : u32),
---                               (2000983452 : u32),
---                               (1989134074 : u32),
---                               (809067698 : u32),
---                               (1047035213 : u32),
---                               (1168510561 : u32),
---                               (1848593786 : u32),
---                               (373019801 : u32),
---                               (1816824389 : u32),
---                               (339671193 : u32),
---                               (1364057261 : u32),
---                               (1213133211 : u32),
---                               (542991299 : u32),
---                               (1760025929 : u32),
---                               (1791270792 : u32)])))))
---     (by rfl)
---   ROOTS_8 := RustM.of_isOk
---     (do
---     (rust_primitives.unsize
---       (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
---         (RustArray.ofVec #v[(1 : u32),
---                               (1748172362 : u32),
---                               (2113994754 : u32),
---                               (391001680 : u32)])))))
---     (by rfl)
---   INV_ROOTS_8 := RustM.of_isOk
---     (do
---     (rust_primitives.unsize
---       (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
---         (RustArray.ofVec #v[(1 : u32),
---                               (1739704753 : u32),
---                               (16711679 : u32),
---                               (382534071 : u32)])))))
---     (by rfl)
---   ROOTS_16 := RustM.of_isOk
---     (do
---     (rust_primitives.unsize
---       (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
---         (RustArray.ofVec #v[(1 : u32),
---                               (148625052 : u32),
---                               (1748172362 : u32),
---                               (665723362 : u32),
---                               (2113994754 : u32),
---                               (982097957 : u32),
---                               (391001680 : u32),
---                               (668978722 : u32)])))))
---     (by rfl)
---   INV_ROOTS_16 := RustM.of_isOk
---     (do
---     (rust_primitives.unsize
---       (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
---         (RustArray.ofVec #v[(1 : u32),
---                               (1461727711 : u32),
---                               (1739704753 : u32),
---                               (1148608476 : u32),
---                               (16711679 : u32),
---                               (1464983071 : u32),
---                               (382534071 : u32),
---                               (1982081381 : u32)])))))
---     (by rfl)
+instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
+  TWO_ADICITY := (24 : usize)
+  TWO_ADIC_GENERATORS := RustM.of_isOk
+    (do
+    (rust_primitives.unsize
+      (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((25 : usize))
+        (RustArray.ofVec #v[(1 : u32),
+                              (2130706432 : u32),
+                              (2113994754 : u32),
+                              (1748172362 : u32),
+                              (148625052 : u32),
+                              (170455089 : u32),
+                              (1548376985 : u32),
+                              (699882112 : u32),
+                              (392596362 : u32),
+                              (665670555 : u32),
+                              (860702919 : u32),
+                              (2000983452 : u32),
+                              (1989134074 : u32),
+                              (809067698 : u32),
+                              (1047035213 : u32),
+                              (1168510561 : u32),
+                              (1848593786 : u32),
+                              (373019801 : u32),
+                              (1816824389 : u32),
+                              (339671193 : u32),
+                              (1364057261 : u32),
+                              (1213133211 : u32),
+                              (542991299 : u32),
+                              (1760025929 : u32),
+                              (1791270792 : u32)])))))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  ROOTS_8 := RustM.of_isOk
+    (do
+    (rust_primitives.unsize
+      (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
+        (RustArray.ofVec #v[(1 : u32),
+                              (1748172362 : u32),
+                              (2113994754 : u32),
+                              (391001680 : u32)])))))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  INV_ROOTS_8 := RustM.of_isOk
+    (do
+    (rust_primitives.unsize
+      (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
+        (RustArray.ofVec #v[(1 : u32),
+                              (1739704753 : u32),
+                              (16711679 : u32),
+                              (382534071 : u32)])))))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  ROOTS_16 := RustM.of_isOk
+    (do
+    (rust_primitives.unsize
+      (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
+        (RustArray.ofVec #v[(1 : u32),
+                              (148625052 : u32),
+                              (1748172362 : u32),
+                              (665723362 : u32),
+                              (2113994754 : u32),
+                              (982097957 : u32),
+                              (391001680 : u32),
+                              (668978722 : u32)])))))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  INV_ROOTS_16 := RustM.of_isOk
+    (do
+    (rust_primitives.unsize
+      (← (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
+        (RustArray.ofVec #v[(1 : u32),
+                              (1461727711 : u32),
+                              (1739704753 : u32),
+                              (1148608476 : u32),
+                              (16711679 : u32),
+                              (1464983071 : u32),
+                              (382534071 : u32),
+                              (1982081381 : u32)])))))
+    (by sorry) -- ALTERED
+    -- (by rfl)
 
--- @[reducible] instance Impl_7.AssociatedTypes :
---   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
---   KoalaBearParameters
---   ((4 : usize))
---   where
---   ArrayLike := (RustArray
---   (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 4)
---   2)
+@[reducible] instance Impl_7.AssociatedTypes :
+  p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
+  KoalaBearParameters
+  ((4 : usize))
+  where
+  ArrayLike := (RustArray
+  (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 4)
+  2)
 
--- instance Impl_7 :
---   p3_monty_31.data_traits.BinomialExtensionData
---   KoalaBearParameters
---   ((4 : usize))
---   where
---   W := RustM.of_isOk
---     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
---     (by rfl)
---   mul_w :=
---     fun
---       (A : Type)
---       [trait_constr_mul_w_associated_type_i0 :
---         p3_field.field.Algebra.AssociatedTypes
---         A
---         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
---       [trait_constr_mul_w_i0 : p3_field.field.Algebra
---         A
---         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
---         ] (a : A) => do
---     (core_models.ops.arith.Add.add
---       A
---       A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a)
---   DTH_ROOT := RustM.of_isOk
---     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (2113994754 : u32)))
---     (by rfl)
---   EXT_GENERATOR := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
---       (RustArray.ofVec #v[(2 : u32), (1 : u32), (0 : u32), (0 : u32)])))
---     (by rfl)
---   EXT_TWO_ADICITY := (26 : usize)
---   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_2d_array
---       KoalaBearParameters
---       ((4 : usize))
---       ((2 : usize))
---       (RustArray.ofVec #v[(RustArray.ofVec #v[(0 : u32),
---                                                 (0 : u32),
---                                                 (1759267465 : u32),
---                                                 (0 : u32)]),
---                             (RustArray.ofVec #v[(0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (777715144 : u32)])])))
---     (by rfl)
+instance Impl_7 :
+  p3_monty_31.data_traits.BinomialExtensionData
+  KoalaBearParameters
+  ((4 : usize))
+  where
+  W := RustM.of_isOk
+    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  mul_w :=
+    fun
+      (A : Type)
+      [trait_constr_mul_w_associated_type_i0 :
+        p3_field.field.Algebra.AssociatedTypes
+        A
+        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
+      [trait_constr_mul_w_i0 : p3_field.field.Algebra
+        A
+        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+        ] (a : A) => sorry -- ALTERED
+    -- (do
+    -- (core_models.ops.arith.Add.add
+    --   A
+    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
+  DTH_ROOT := RustM.of_isOk
+    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (2113994754 : u32)))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  EXT_GENERATOR := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
+      (RustArray.ofVec #v[(2 : u32), (1 : u32), (0 : u32), (0 : u32)])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  EXT_TWO_ADICITY := (26 : usize)
+  TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_2d_array
+      KoalaBearParameters
+      ((4 : usize))
+      ((2 : usize))
+      (RustArray.ofVec #v[(RustArray.ofVec #v[(0 : u32),
+                                                (0 : u32),
+                                                (1759267465 : u32),
+                                                (0 : u32)]),
+                            (RustArray.ofVec #v[(0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (777715144 : u32)])])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
 
--- @[reducible] instance Impl_8.AssociatedTypes :
---   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
---   KoalaBearParameters
---   ((8 : usize))
---   where
---   ArrayLike := (RustArray
---   (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 8)
---   3)
+@[reducible] instance Impl_8.AssociatedTypes :
+  p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
+  KoalaBearParameters
+  ((8 : usize))
+  where
+  ArrayLike := (RustArray
+  (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 8)
+  3)
 
--- instance Impl_8 :
---   p3_monty_31.data_traits.BinomialExtensionData
---   KoalaBearParameters
---   ((8 : usize))
---   where
---   W := RustM.of_isOk
---     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
---     (by rfl)
---   DTH_ROOT := RustM.of_isOk
---     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (1748172362 : u32)))
---     (by rfl)
---   EXT_GENERATOR := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
---       (RustArray.ofVec #v[(10 : u32),
---                             (1 : u32),
---                             (0 : u32),
---                             (0 : u32),
---                             (0 : u32),
---                             (0 : u32),
---                             (0 : u32),
---                             (0 : u32)])))
---     (by rfl)
---   EXT_TWO_ADICITY := (27 : usize)
---   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_2d_array
---       KoalaBearParameters
---       ((8 : usize))
---       ((3 : usize))
---       (RustArray.ofVec #v[(RustArray.ofVec #v[(0 : u32),
---                                                 (0 : u32),
---                                                 (0 : u32),
---                                                 (0 : u32),
---                                                 (1759267465 : u32),
---                                                 (0 : u32),
---                                                 (0 : u32),
---                                                 (0 : u32)]),
---                             (RustArray.ofVec #v[(0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (777715144 : u32),
---                                                   (0 : u32)]),
---                             (RustArray.ofVec #v[(0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (0 : u32),
---                                                   (14348907 : u32)])])))
---     (by rfl)
---   mul_w :=
---     fun
---       (A : Type)
---       [trait_constr_mul_w_associated_type_i0 :
---         p3_field.field.Algebra.AssociatedTypes
---         A
---         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
---       [trait_constr_mul_w_i0 : p3_field.field.Algebra
---         A
---         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
---         ] (a : A) => do
---     (core_models.ops.arith.Add.add
---       A
---       A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a)
+instance Impl_8 :
+  p3_monty_31.data_traits.BinomialExtensionData
+  KoalaBearParameters
+  ((8 : usize))
+  where
+  W := RustM.of_isOk
+    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  DTH_ROOT := RustM.of_isOk
+    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (1748172362 : u32)))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  EXT_GENERATOR := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
+      (RustArray.ofVec #v[(10 : u32),
+                            (1 : u32),
+                            (0 : u32),
+                            (0 : u32),
+                            (0 : u32),
+                            (0 : u32),
+                            (0 : u32),
+                            (0 : u32)])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  EXT_TWO_ADICITY := (27 : usize)
+  TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_2d_array
+      KoalaBearParameters
+      ((8 : usize))
+      ((3 : usize))
+      (RustArray.ofVec #v[(RustArray.ofVec #v[(0 : u32),
+                                                (0 : u32),
+                                                (0 : u32),
+                                                (0 : u32),
+                                                (1759267465 : u32),
+                                                (0 : u32),
+                                                (0 : u32),
+                                                (0 : u32)]),
+                            (RustArray.ofVec #v[(0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (777715144 : u32),
+                                                  (0 : u32)]),
+                            (RustArray.ofVec #v[(0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (0 : u32),
+                                                  (14348907 : u32)])])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  mul_w :=
+    fun
+      (A : Type)
+      [trait_constr_mul_w_associated_type_i0 :
+        p3_field.field.Algebra.AssociatedTypes
+        A
+        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
+      [trait_constr_mul_w_i0 : p3_field.field.Algebra
+        A
+        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+        ] (a : A) => sorry -- ALTERED
+    -- (do
+    -- (core_models.ops.arith.Add.add
+    --   A
+    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
 
--- @[reducible] instance Impl_9.AssociatedTypes :
---   p3_monty_31.data_traits.TrinomialQuinticData.AssociatedTypes
---   KoalaBearParameters
---   where
---   ArrayLike := (RustArray
---   (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 5)
---   0)
+@[reducible] instance Impl_9.AssociatedTypes :
+  p3_monty_31.data_traits.TrinomialQuinticData.AssociatedTypes
+  KoalaBearParameters
+  where
+  ArrayLike := (RustArray
+  (RustArray (p3_monty_31.monty_31.MontyField31 KoalaBearParameters) 5)
+  0)
 
--- instance Impl_9 :
---   p3_monty_31.data_traits.TrinomialQuinticData KoalaBearParameters
---   where
---   EXT_GENERATOR := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((5 : usize))
---       (RustArray.ofVec #v[(2 : u32),
---                             (1 : u32),
---                             (0 : u32),
---                             (0 : u32),
---                             (0 : u32)])))
---     (by rfl)
---   EXT_TWO_ADICITY := (24 : usize)
---   FROBENIUS_COEFFS := RustM.of_isOk
---     (do
---     (p3_monty_31.monty_31.Impl.new_2d_array
---       KoalaBearParameters
---       ((5 : usize))
---       ((4 : usize))
---       (RustArray.ofVec #v[(RustArray.ofVec #v[(1576402667 : u32),
---                                                 (1173144480 : u32),
---                                                 (1567662457 : u32),
---                                                 (1206866823 : u32),
---                                                 (2428146 : u32)]),
---                             (RustArray.ofVec #v[(1680345488 : u32),
---                                                   (1381986 : u32),
---                                                   (615237464 : u32),
---                                                   (1380104858 : u32),
---                                                   (295431824 : u32)]),
---                             (RustArray.ofVec #v[(441230756 : u32),
---                                                   (323126830 : u32),
---                                                   (704986542 : u32),
---                                                   (1445620072 : u32),
---                                                   (503505220 : u32)]),
---                             (RustArray.ofVec #v[(1364444097 : u32),
---                                                   (1144738982 : u32),
---                                                   (2008416047 : u32),
---                                                   (143367062 : u32),
---                                                   (1027410849 : u32)])])))
---     (by rfl)
---   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
---     (do (pure (RustArray.ofVec #v[])))
---     (by rfl)
+instance Impl_9 :
+  p3_monty_31.data_traits.TrinomialQuinticData KoalaBearParameters
+  where
+  EXT_GENERATOR := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((5 : usize))
+      (RustArray.ofVec #v[(2 : u32),
+                            (1 : u32),
+                            (0 : u32),
+                            (0 : u32),
+                            (0 : u32)])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  EXT_TWO_ADICITY := (24 : usize)
+  FROBENIUS_COEFFS := RustM.of_isOk
+    (do
+    (p3_monty_31.monty_31.Impl.new_2d_array
+      KoalaBearParameters
+      ((5 : usize))
+      ((4 : usize))
+      (RustArray.ofVec #v[(RustArray.ofVec #v[(1576402667 : u32),
+                                                (1173144480 : u32),
+                                                (1567662457 : u32),
+                                                (1206866823 : u32),
+                                                (2428146 : u32)]),
+                            (RustArray.ofVec #v[(1680345488 : u32),
+                                                  (1381986 : u32),
+                                                  (615237464 : u32),
+                                                  (1380104858 : u32),
+                                                  (295431824 : u32)]),
+                            (RustArray.ofVec #v[(441230756 : u32),
+                                                  (323126830 : u32),
+                                                  (704986542 : u32),
+                                                  (1445620072 : u32),
+                                                  (503505220 : u32)]),
+                            (RustArray.ofVec #v[(1364444097 : u32),
+                                                  (1144738982 : u32),
+                                                  (2008416047 : u32),
+                                                  (143367062 : u32),
+                                                  (1027410849 : u32)])])))
+    (by sorry) -- ALTERED
+    -- (by rfl)
+  TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+    (do (pure (RustArray.ofVec #v[])))
+    (by rfl)
 
--- end p3_koala_bear.koala_bear
+end p3_koala_bear.koala_bear
 
 
 -- namespace p3_koala_bear.mds
