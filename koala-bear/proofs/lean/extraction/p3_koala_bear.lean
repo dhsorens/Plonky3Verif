@@ -2,7 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
-import p3_koala_bear.dependencies -- ALTERED
+import p3_koala_bear.dependencies -- PATCHED
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -151,7 +151,7 @@ instance Impl_1 :
           (pure (rust_primitives.hax.Tuple2.mk a k)) :
           RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
     (pure a))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 @[reducible] instance Impl_3.AssociatedTypes :
@@ -218,7 +218,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (542991299 : u32),
                               (1760025929 : u32),
                               (1791270792 : u32)])))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   ROOTS_8 := RustM.of_isOk
     (do
@@ -228,7 +228,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1748172362 : u32),
                               (2113994754 : u32),
                               (391001680 : u32)])))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   INV_ROOTS_8 := RustM.of_isOk
     (do
@@ -238,7 +238,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1739704753 : u32),
                               (16711679 : u32),
                               (382534071 : u32)])))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   ROOTS_16 := RustM.of_isOk
     (do
@@ -252,7 +252,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (982097957 : u32),
                               (391001680 : u32),
                               (668978722 : u32)])))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   INV_ROOTS_16 := RustM.of_isOk
     (do
@@ -266,7 +266,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1464983071 : u32),
                               (382534071 : u32),
                               (1982081381 : u32)])))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 @[reducible] instance Impl_7.AssociatedTypes :
@@ -285,7 +285,7 @@ instance Impl_7 :
   where
   W := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   mul_w :=
     fun
@@ -297,20 +297,20 @@ instance Impl_7 :
       [trait_constr_mul_w_i0 : p3_field.field.Algebra
         A
         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
-        ] (a : A) => sorry -- ALTERED
+        ] (a : A) => sorry -- PATCHED
     -- (do
     -- (core_models.ops.arith.Add.add
     --   A
     --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
   DTH_ROOT := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (2113994754 : u32)))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   EXT_GENERATOR := RustM.of_isOk
     (do
     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
       (RustArray.ofVec #v[(2 : u32), (1 : u32), (0 : u32), (0 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   EXT_TWO_ADICITY := (26 : usize)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
@@ -327,7 +327,7 @@ instance Impl_7 :
                                                   (0 : u32),
                                                   (0 : u32),
                                                   (777715144 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 @[reducible] instance Impl_8.AssociatedTypes :
@@ -346,11 +346,11 @@ instance Impl_8 :
   where
   W := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   DTH_ROOT := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (1748172362 : u32)))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   EXT_GENERATOR := RustM.of_isOk
     (do
@@ -363,7 +363,7 @@ instance Impl_8 :
                             (0 : u32),
                             (0 : u32),
                             (0 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   EXT_TWO_ADICITY := (27 : usize)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
@@ -396,7 +396,7 @@ instance Impl_8 :
                                                   (0 : u32),
                                                   (0 : u32),
                                                   (14348907 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   mul_w :=
     fun
@@ -408,7 +408,7 @@ instance Impl_8 :
       [trait_constr_mul_w_i0 : p3_field.field.Algebra
         A
         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
-        ] (a : A) => sorry -- ALTERED
+        ] (a : A) => sorry -- PATCHED
     -- (do
     -- (core_models.ops.arith.Add.add
     --   A
@@ -433,7 +433,7 @@ instance Impl_9 :
                             (0 : u32),
                             (0 : u32),
                             (0 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   EXT_TWO_ADICITY := (24 : usize)
   FROBENIUS_COEFFS := RustM.of_isOk
@@ -462,7 +462,7 @@ instance Impl_9 :
                                                   (2008416047 : u32),
                                                   (143367062 : u32),
                                                   (1027410849 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
     (do (pure (RustArray.ofVec #v[])))
@@ -508,7 +508,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (3 : i64),
                             (4 : i64),
                             (9 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   MATRIX_CIRC_MDS_12_COL := RustM.of_isOk
     (do
@@ -525,7 +525,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (9 : i64),
                             (4 : i64),
                             (10 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   MATRIX_CIRC_MDS_16_COL := RustM.of_isOk
     (do
@@ -546,7 +546,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (22 : i64),
                             (13 : i64),
                             (3 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   MATRIX_CIRC_MDS_24_COL := RustM.of_isOk
     (do
@@ -575,7 +575,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (1551339770 : i64),
                             (400627958 : i64),
                             (142123135 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   MATRIX_CIRC_MDS_32_COL := RustM.of_isOk
     (do
@@ -612,7 +612,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (1415143558 : i64),
                             (1216108043 : i64),
                             (1755622571 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   MATRIX_CIRC_MDS_64_COL := RustM.of_isOk
     (do
@@ -681,7 +681,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (488082023 : i64),
                             (1488175179 : i64),
                             (1855310673 : i64)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 abbrev MdsMatrixKoalaBear :
@@ -828,7 +828,7 @@ instance Impl :
       (RustArray
       (p3_monty_31.monty_31.MontyField31
         p3_koala_bear.koala_bear.KoalaBearParameters)
-      16)) => sorry -- ALTERED
+      16)) => sorry -- PATCHED
     -- (do
     -- let
     --   state : (RustArray
@@ -1332,7 +1332,7 @@ def KOALABEAR_POSEIDON1_RC_16 :
                                                   (616885102 : u32),
                                                   (334644983 : u32),
                                                   (132306927 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-24 Poseidon1 on KoalaBear.
@@ -2101,7 +2101,7 @@ def KOALABEAR_POSEIDON1_RC_24 :
                                                   (307342664 : u32),
                                                   (1962630877 : u32),
                                                   (570045382 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 end p3_koala_bear.poseidon1
@@ -2237,7 +2237,7 @@ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_INITIAL :
                                                   (64412292 : u32),
                                                   (1936878279 : u32),
                                                   (1980661727 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-16 Poseidon2 on KoalaBear.
@@ -2326,7 +2326,7 @@ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_FINAL :
                                                   (1585100155 : u32),
                                                   (867006515 : u32),
                                                   (879151050 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-16 Poseidon2 on KoalaBear.
@@ -2368,7 +2368,7 @@ def KOALABEAR_POSEIDON2_RC_16_INTERNAL :
                             (185193011 : u32),
                             (452207447 : u32),
                             (510054082 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
@@ -2489,7 +2489,7 @@ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_INITIAL :
                                                   (1608418116 : u32),
                                                   (1083269213 : u32),
                                                   (691256798 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
@@ -2610,7 +2610,7 @@ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_FINAL :
                                                   (1757946479 : u32),
                                                   (1551204074 : u32),
                                                   (681266718 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
@@ -2655,7 +2655,7 @@ def KOALABEAR_POSEIDON2_RC_24_INTERNAL :
                             (213359415 : u32),
                             (603124968 : u32),
                             (1038411577 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
@@ -2808,7 +2808,7 @@ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_INITIAL :
                                                   (1208969182 : u32),
                                                   (1478187151 : u32),
                                                   (440934505 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
@@ -2961,7 +2961,7 @@ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_FINAL :
                                                   (1718116838 : u32),
                                                   (1790111045 : u32),
                                                   (1501131602 : u32)])])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
@@ -3014,7 +3014,7 @@ def KOALABEAR_POSEIDON2_RC_32_INTERNAL :
                             (2121419385 : u32),
                             (667840239 : u32),
                             (1995134368 : u32)])))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 --  Contains data needed to define the internal layers of the Poseidon2 permutation.
@@ -3105,7 +3105,7 @@ instance Impl :
       [trait_constr_internal_layer_mat_mul_i0 :
         p3_field.field.PrimeCharacteristicRing
         R
-        ] (state : (RustArray R 16)) (sum : R) =>sorry -- ALTERED
+        ] (state : (RustArray R 16)) (sum : R) =>sorry -- PATCHED
     -- let state : (RustArray R 16) ←
     --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
     --     state
@@ -3289,7 +3289,7 @@ instance Impl_1 :
       [trait_constr_internal_layer_mat_mul_i0 :
         p3_field.field.PrimeCharacteristicRing
         R
-        ] (state : (RustArray R 24)) (sum : R) =>sorry -- ALTERED
+        ] (state : (RustArray R 24)) (sum : R) =>sorry -- PATCHED
     -- let state : (RustArray R 24) ←
     --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
     --     state
@@ -3553,7 +3553,7 @@ instance Impl_4 :
       [trait_constr_internal_layer_mat_mul_i0 :
         p3_field.field.PrimeCharacteristicRing
         R
-        ] (state : (RustArray R 32)) (sum : R) =>sorry -- ALTERED
+        ] (state : (RustArray R 32)) (sum : R) =>sorry -- PATCHED
     -- let state : (RustArray R 32) ←
     --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
     --     state
@@ -3897,7 +3897,7 @@ instance Impl :
       (RustArray u32 4)
       core_models.core_arch.arm_shared.neon.uint32x4_t
       (← (rust_primitives.hax.repeat (2130706433 : u32) (4 : usize)))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
   PACKED_MU := RustM.of_isOk
     (do
@@ -3905,7 +3905,7 @@ instance Impl :
       (RustArray i32 4)
       core_models.core_arch.arm_shared.neon.int32x4_t
       (← (rust_primitives.hax.repeat (-2130706431 : i32) (4 : usize)))))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 end p3_koala_bear.aarch64_neon.packing
@@ -3931,7 +3931,7 @@ instance Impl_4 :
   where
   MONTY_GEN := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- ALTERED
+    (by sorry) -- PATCHED
     -- (by rfl)
 
 end p3_koala_bear.koala_bear
