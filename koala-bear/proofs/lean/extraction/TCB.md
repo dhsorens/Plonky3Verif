@@ -156,7 +156,7 @@ types.
 
 `proofs/lean/extraction/patches/p3_koala_bear.patch` is a unified diff
 applied to the file hax produces. It is regenerable from
-`update-patch.sh` and applied automatically by `koala-bear/proofs/build-proofs.sh`.
+`update-patch.sh` and applied automatically by `koala-bear/proofs/lean/extraction/build-proofs.sh`.
 
 Current state: **2185 lines, 48 hunks**. Categories:
 

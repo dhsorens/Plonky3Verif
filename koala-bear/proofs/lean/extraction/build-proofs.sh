@@ -13,10 +13,10 @@
 
 set -eu
 
-# This script lives in proofs/; the Rust crate root is one level up.
+# This script lives in proofs/lean/extraction/; the Rust crate root is three levels up.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CRATE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-EXTRACT_DIR="$SCRIPT_DIR/lean/extraction"
+CRATE_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+EXTRACT_DIR="$SCRIPT_DIR"
 PATCH_DIR="$EXTRACT_DIR/patches"
 TARGET="$EXTRACT_DIR/p3_koala_bear.lean"
 PRISTINE="$PATCH_DIR/pristine.snapshot.lean"
