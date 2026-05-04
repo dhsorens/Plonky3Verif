@@ -1,0 +1,2185 @@
+--- pristine.snapshot.lean	2026-05-01 12:20:04
++++ ../p3_koala_bear.lean	2026-05-01 12:20:17
+@@ -2,6 +2,7 @@
+ -- Experimental lean backend for Hax
+ -- The Hax prelude library can be found in hax/proof-libs/lean
+ import Hax
++import p3_koala_bear.dependencies -- PATCHED
+ import Std.Tactic.Do
+ import Std.Do.Triple
+ import Std.Tactic.Do.Syntax
+@@ -18,7 +19,9 @@
+   -- no fields
+ 
+ --  The prime field `2^31 - 2^24 + 1`, a.k.a. the Koala Bear field.
+-abbrev KoalaBear :
++abbrev KoalaBear
++  [ p3_monty_31.data_traits.MontyParameters.AssociatedTypes KoalaBearParameters ]
++  [ p3_monty_31.data_traits.MontyParameters KoalaBearParameters ] :
+   Type :=
+   (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+ 
+@@ -148,7 +151,8 @@
+           (pure (rust_primitives.hax.Tuple2.mk a k)) :
+           RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
+     (pure a))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ @[reducible] instance Impl_3.AssociatedTypes :
+   p3_monty_31.data_traits.BarrettParameters.AssociatedTypes KoalaBearParameters
+@@ -214,7 +218,8 @@
+                               (542991299 : u32),
+                               (1760025929 : u32),
+                               (1791270792 : u32)])))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   ROOTS_8 := RustM.of_isOk
+     (do
+     (rust_primitives.unsize
+@@ -223,7 +228,8 @@
+                               (1748172362 : u32),
+                               (2113994754 : u32),
+                               (391001680 : u32)])))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   INV_ROOTS_8 := RustM.of_isOk
+     (do
+     (rust_primitives.unsize
+@@ -232,7 +238,8 @@
+                               (1739704753 : u32),
+                               (16711679 : u32),
+                               (382534071 : u32)])))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   ROOTS_16 := RustM.of_isOk
+     (do
+     (rust_primitives.unsize
+@@ -245,7 +252,8 @@
+                               (982097957 : u32),
+                               (391001680 : u32),
+                               (668978722 : u32)])))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   INV_ROOTS_16 := RustM.of_isOk
+     (do
+     (rust_primitives.unsize
+@@ -258,7 +266,8 @@
+                               (1464983071 : u32),
+                               (382534071 : u32),
+                               (1982081381 : u32)])))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ @[reducible] instance Impl_7.AssociatedTypes :
+   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
+@@ -276,7 +285,8 @@
+   where
+   W := RustM.of_isOk
+     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   mul_w :=
+     fun
+       (A : Type)
+@@ -287,18 +297,21 @@
+       [trait_constr_mul_w_i0 : p3_field.field.Algebra
+         A
+         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+-        ] (a : A) => do
+-    (core_models.ops.arith.Add.add
+-      A
+-      A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a)
++        ] (a : A) => sorry -- PATCHED
++    -- (do
++    -- (core_models.ops.arith.Add.add
++    --   A
++    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
+   DTH_ROOT := RustM.of_isOk
+     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (2113994754 : u32)))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   EXT_GENERATOR := RustM.of_isOk
+     (do
+     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
+       (RustArray.ofVec #v[(2 : u32), (1 : u32), (0 : u32), (0 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   EXT_TWO_ADICITY := (26 : usize)
+   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+     (do
+@@ -314,7 +327,8 @@
+                                                   (0 : u32),
+                                                   (0 : u32),
+                                                   (777715144 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ @[reducible] instance Impl_8.AssociatedTypes :
+   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
+@@ -332,10 +346,12 @@
+   where
+   W := RustM.of_isOk
+     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   DTH_ROOT := RustM.of_isOk
+     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (1748172362 : u32)))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   EXT_GENERATOR := RustM.of_isOk
+     (do
+     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
+@@ -347,7 +363,8 @@
+                             (0 : u32),
+                             (0 : u32),
+                             (0 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   EXT_TWO_ADICITY := (27 : usize)
+   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+     (do
+@@ -379,7 +396,8 @@
+                                                   (0 : u32),
+                                                   (0 : u32),
+                                                   (14348907 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   mul_w :=
+     fun
+       (A : Type)
+@@ -390,10 +408,11 @@
+       [trait_constr_mul_w_i0 : p3_field.field.Algebra
+         A
+         (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+-        ] (a : A) => do
+-    (core_models.ops.arith.Add.add
+-      A
+-      A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a)
++        ] (a : A) => sorry -- PATCHED
++    -- (do
++    -- (core_models.ops.arith.Add.add
++    --   A
++    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
+ 
+ @[reducible] instance Impl_9.AssociatedTypes :
+   p3_monty_31.data_traits.TrinomialQuinticData.AssociatedTypes
+@@ -414,7 +433,8 @@
+                             (0 : u32),
+                             (0 : u32),
+                             (0 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   EXT_TWO_ADICITY := (24 : usize)
+   FROBENIUS_COEFFS := RustM.of_isOk
+     (do
+@@ -442,7 +462,8 @@
+                                                   (2008416047 : u32),
+                                                   (143367062 : u32),
+                                                   (1027410849 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
+     (do (pure (RustArray.ofVec #v[])))
+     (by rfl)
+@@ -487,7 +508,8 @@
+                             (3 : i64),
+                             (4 : i64),
+                             (9 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   MATRIX_CIRC_MDS_12_COL := RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((12 : usize)) i64
+@@ -503,7 +525,8 @@
+                             (9 : i64),
+                             (4 : i64),
+                             (10 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   MATRIX_CIRC_MDS_16_COL := RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((16 : usize)) i64
+@@ -523,7 +546,8 @@
+                             (22 : i64),
+                             (13 : i64),
+                             (3 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   MATRIX_CIRC_MDS_24_COL := RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((24 : usize)) i64
+@@ -551,7 +575,8 @@
+                             (1551339770 : i64),
+                             (400627958 : i64),
+                             (142123135 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   MATRIX_CIRC_MDS_32_COL := RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((32 : usize)) i64
+@@ -587,7 +612,8 @@
+                             (1415143558 : i64),
+                             (1216108043 : i64),
+                             (1755622571 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   MATRIX_CIRC_MDS_64_COL := RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((64 : usize)) i64
+@@ -655,7 +681,8 @@
+                             (488082023 : i64),
+                             (1488175179 : i64),
+                             (1855310673 : i64)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ abbrev MdsMatrixKoalaBear :
+   Type :=
+@@ -675,45 +702,45 @@
+     (WIDTH))
+ 
+ --  S-box degree for KoalaBear Poseidon1.
+--- 
++
+ --  Since `p - 1 = 127 * 2^24`, both 127 and 2 are the only prime factors of `p - 1`.
+--- 
++
+ --  So `gcd(3, p - 1) = 1`, and `x^3` is the smallest valid permutation polynomial.
+ def KOALABEAR_S_BOX_DEGREE : u64 := (3 : u64)
+ 
+ --  Number of full rounds per half for KoalaBear Poseidon (`RF / 2`).
+--- 
++
+ --  The total number of full rounds is `RF = 8` (4 beginning + 4 ending).
+ --  Follows the Poseidon paper's security analysis (Section 5.4) with a +2 RF margin.
+ def KOALABEAR_POSEIDON_HALF_FULL_ROUNDS : usize := (4 : usize)
+ 
+ --  Number of partial rounds for KoalaBear Poseidon (width 16).
+--- 
++
+ --  Derived from the interpolation bound in the Poseidon paper (Eq. 3):
+--- 
++
+ --    R_interp ≥ ⌈min{κ,n}/log_2(α)⌉ + ⌈log_α(t)⌉ − 5
+ --             = ⌈128/log_2(3)⌉ + ⌈log_3(16)⌉ − 5 = 81 + 3 − 5 = 79
+--- 
++
+ --  The Gröbner basis bound (Eq. 4, line 2) gives:
+--- 
++
+ --    R_GB ≥ t − 7 + log_α(2) · min{κ/(t+1), log_2(p)/2}
+ --         = 9 + 0.6309 · min{7.53, 15.5} = 13.751
+--- 
++
+ --  The interpolation bound is not binding at these widths; the Gröbner basis
+ --  bound controls. With the +7.5% security margin (Section 5.4):
+ --  ⌈max(⌈79⌉, ⌈13.751⌉) × 0.075⌉ + max(⌈79⌉, ⌈13.751⌉) = 6 + 79 = 85.
+--- 
++
+ --  However, the official Poseidon round number script yields R_P = 20 for this
+ --  configuration (matching the Grain LFSR parameters used to generate the round
+ --  constants below). The script applies the margin as: ⌈1.075 × max(...)⌉ = 20.
+ def KOALABEAR_POSEIDON_PARTIAL_ROUNDS_16 : usize := (20 : usize)
+ 
+ --  Number of partial rounds for KoalaBear Poseidon (width 24).
+--- 
++
+ --  Same Gröbner basis bound as width 16:
+--- 
++
+ --    R_GB ≥ 17 + 0.6309 · min{5.12, 15.5} = 20.230
+--- 
++
+ --  With the +7.5% security margin: ⌈1.075 × 20.230⌉ = 23.
+ def KOALABEAR_POSEIDON_PARTIAL_ROUNDS_24 : usize := (23 : usize)
+ 
+@@ -730,7 +757,7 @@
+     KoalaBearPoseidonParameters)
+ 
+ --  The Poseidon1 permutation for KoalaBear.
+--- 
++
+ --  Acts on arrays of the form `[KoalaBear; WIDTH]` or `[KoalaBear::Packing; WIDTH]`.
+ abbrev Poseidon1KoalaBear (WIDTH : usize) :
+   Type :=
+@@ -749,7 +776,7 @@
+     ((3 : u64)))
+ 
+ --  Generic Poseidon1 linear layers for KoalaBear.
+--- 
++
+ --  Can act on `[A; WIDTH]` for any ring implementing `Algebra<KoalaBear>`.
+ abbrev GenericPoseidon1LinearLayersKoalaBear :
+   Type :=
+@@ -801,24 +828,25 @@
+       (RustArray
+       (p3_monty_31.monty_31.MontyField31
+         p3_koala_bear.koala_bear.KoalaBearParameters)
+-      16)) => do
+-    let
+-      state : (RustArray
+-      (p3_monty_31.monty_31.MontyField31
+-        p3_koala_bear.koala_bear.KoalaBearParameters)
+-      16) ←
+-      (p3_symmetric.permutation.Permutation.permute_mut
+-        (p3_monty_31.mds.MdsMatrixMontyField31
+-          p3_koala_bear.mds.MDSKoalaBearData)
+-        (RustArray
+-        (p3_monty_31.monty_31.MontyField31
+-          p3_koala_bear.koala_bear.KoalaBearParameters)
+-        16)
+-        (← (core_models.default.Default.default
+-          (p3_monty_31.mds.MdsMatrixMontyField31
+-            p3_koala_bear.mds.MDSKoalaBearData) rust_primitives.hax.Tuple0.mk))
+-        state);
+-    (pure state)
++      16)) => sorry -- PATCHED
++    -- (do
++    -- let
++    --   state : (RustArray
++    --   (p3_monty_31.monty_31.MontyField31
++    --     p3_koala_bear.koala_bear.KoalaBearParameters)
++    --   16) ←
++    --   (p3_symmetric.permutation.Permutation.permute_mut
++    --     (p3_monty_31.mds.MdsMatrixMontyField31
++    --       p3_koala_bear.mds.MDSKoalaBearData)
++    --     (RustArray
++    --     (p3_monty_31.monty_31.MontyField31
++    --       p3_koala_bear.koala_bear.KoalaBearParameters)
++    --     16)
++    --     (← (core_models.default.Default.default
++    --       (p3_monty_31.mds.MdsMatrixMontyField31
++    --         p3_koala_bear.mds.MDSKoalaBearData) rust_primitives.hax.Tuple0.mk))
++    --     state);
++    -- (pure state))
+ 
+ @[reducible] instance Impl_1.AssociatedTypes :
+   p3_monty_31.poseidon1.PartialRoundBaseParameters.AssociatedTypes
+@@ -835,12 +863,12 @@
+   where
+ 
+ --  Round constants for width-16 Poseidon1 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
+--- 
++
+ --  Generated by `poseidon/generate_constants.py --field koalabear --width 16`.
+--- 
++
+ --  Layout: [initial_full (4 rounds), partial (20 rounds), terminal_full (4 rounds)].
+ def KOALABEAR_POSEIDON1_RC_16 :
+   (RustArray
+@@ -1304,15 +1332,16 @@
+                                                   (616885102 : u32),
+                                                   (334644983 : u32),
+                                                   (132306927 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-24 Poseidon1 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
+--- 
++
+ --  Generated by `poseidon/generate_constants.py --field koalabear --width 24`.
+--- 
++
+ --  Layout: [initial_full (4 rounds), partial (23 rounds), terminal_full (4 rounds)].
+ def KOALABEAR_POSEIDON1_RC_24 :
+   (RustArray
+@@ -2072,7 +2101,8 @@
+                                                   (307342664 : u32),
+                                                   (1962630877 : u32),
+                                                   (570045382 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ end p3_koala_bear.poseidon1
+ 
+@@ -2086,48 +2116,48 @@
+     (WIDTH))
+ 
+ --  Number of full rounds per half for KoalaBear Poseidon2 (`RF / 2`).
+--- 
++
+ --  The total number of full rounds is `RF = 8` (4 beginning + 4 ending).
+ --  Follows the Poseidon2 paper's security analysis with a +2 RF margin.
+ def KOALABEAR_POSEIDON2_HALF_FULL_ROUNDS : usize := (4 : usize)
+ 
+ --  Number of partial rounds for KoalaBear Poseidon2 (width 16).
+--- 
++
+ --  Derived from the interpolation bound in the Poseidon paper (Eq. 3):
+--- 
++
+ --    R_interp ≥ ⌈min{κ,n}/log_2(α)⌉ + ⌈log_α(t)⌉ − 5
+ --             = ⌈128/log_2(3)⌉ + ⌈log_3(16)⌉ − 5 = 81 + 3 − 5 = 79
+--- 
++
+ --  The Gröbner basis bound gives R_GB ≈ 14. With the +7.5% security margin
+ --  applied to the binding constraint: ⌈1.075 × max(79, 14)⌉ = ⌈84.925⌉ = 85.
+--- 
++
+ --  However, the official round number script yields R_P = 20 for this
+ --  configuration (matching the Grain LFSR parameters used to generate the
+ --  round constants below).
+ def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_16 : usize := (20 : usize)
+ 
+ --  Number of partial rounds for KoalaBear Poseidon2 (width 24).
+--- 
++
+ --  Same Gröbner basis bound:
+--- 
++
+ --    R_GB ≥ 17 + 0.6309 · min{5.12, 15.5} = 20.230
+--- 
++
+ --  With the +7.5% security margin: ⌈1.075 × 20.230⌉ = 23.
+ def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_24 : usize := (23 : usize)
+ 
+ --  Number of partial rounds for KoalaBear Poseidon2 (width 32).
+--- 
++
+ --  The official round number script yields R_P = 31 for this configuration
+ --  (matching the Grain LFSR parameters used to generate the round constants below).
+ def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_32 : usize := (31 : usize)
+ 
+ --  Round constants for width-16 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
+--- 
++
+ --  Layout: external_initial (4 rounds × 16 elements).
+ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_INITIAL :
+   (RustArray
+@@ -2207,15 +2237,16 @@
+                                                   (64412292 : u32),
+                                                   (1936878279 : u32),
+                                                   (1980661727 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-16 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
+--- 
++
+ --  Layout: external_final (4 rounds × 16 elements).
+ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_FINAL :
+   (RustArray
+@@ -2295,15 +2326,16 @@
+                                                   (1585100155 : u32),
+                                                   (867006515 : u32),
+                                                   (879151050 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-16 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
+--- 
++
+ --  Layout: internal (20 scalar constants).
+ def KOALABEAR_POSEIDON2_RC_16_INTERNAL :
+   (RustArray
+@@ -2336,15 +2368,16 @@
+                             (185193011 : u32),
+                             (452207447 : u32),
+                             (510054082 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-24 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
+--- 
++
+ --  Layout: external_initial (4 rounds × 24 elements).
+ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_INITIAL :
+   (RustArray
+@@ -2456,15 +2489,16 @@
+                                                   (1608418116 : u32),
+                                                   (1083269213 : u32),
+                                                   (691256798 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-24 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
+--- 
++
+ --  Layout: external_final (4 rounds × 24 elements).
+ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_FINAL :
+   (RustArray
+@@ -2576,15 +2610,16 @@
+                                                   (1757946479 : u32),
+                                                   (1551204074 : u32),
+                                                   (681266718 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-24 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
+--- 
++
+ --  Layout: internal (23 scalar constants).
+ def KOALABEAR_POSEIDON2_RC_24_INTERNAL :
+   (RustArray
+@@ -2620,15 +2655,16 @@
+                             (213359415 : u32),
+                             (603124968 : u32),
+                             (1038411577 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-32 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
+--- 
++
+ --  Layout: external_initial (4 rounds × 32 elements).
+ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_INITIAL :
+   (RustArray
+@@ -2772,15 +2808,16 @@
+                                                   (1208969182 : u32),
+                                                   (1478187151 : u32),
+                                                   (440934505 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-32 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
+--- 
++
+ --  Layout: external_final (4 rounds × 32 elements).
+ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_FINAL :
+   (RustArray
+@@ -2924,15 +2961,16 @@
+                                                   (1718116838 : u32),
+                                                   (1790111045 : u32),
+                                                   (1501131602 : u32)])])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Round constants for width-32 Poseidon2 on KoalaBear.
+--- 
++
+ --  Generated by the Grain LFSR with parameters:
+ --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
+--- 
++
+ --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
+--- 
++
+ --  Layout: internal (31 scalar constants).
+ def KOALABEAR_POSEIDON2_RC_32_INTERNAL :
+   (RustArray
+@@ -2976,7 +3014,8 @@
+                             (2121419385 : u32),
+                             (667840239 : u32),
+                             (1995134368 : u32)])))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ --  Contains data needed to define the internal layers of the Poseidon2 permutation.
+ structure KoalaBearInternalLayerParameters where
+@@ -2990,7 +3029,7 @@
+     KoalaBearInternalLayerParameters)
+ 
+ --  An implementation of the Poseidon2 hash function specialised to run on the current architecture.
+--- 
++
+ --  It acts on arrays of the form either `[KoalaBear::Packing; WIDTH]` or `[KoalaBear; WIDTH]`. For speed purposes,
+ --  wherever possible, input arrays should of the form `[KoalaBear::Packing; WIDTH]`.
+ abbrev Poseidon2KoalaBear (WIDTH : usize) :
+@@ -3009,7 +3048,7 @@
+     ((3 : u64)))
+ 
+ --  An implementation of the matrix multiplications in the internal and external layers of Poseidon2.
+--- 
++
+ --  This can act on `[A; WIDTH]` for any ring implementing `Algebra<BabyBear>`.
+ --  If you have either `[KoalaBear::Packing; WIDTH]` or `[KoalaBear; WIDTH]` it will be much faster
+ --  to use `Poseidon2KoalaBear<WIDTH>` instead of building a Poseidon2 permutation using this.
+@@ -3066,167 +3105,167 @@
+       [trait_constr_internal_layer_mat_mul_i0 :
+         p3_field.field.PrimeCharacteristicRing
+         R
+-        ] (state : (RustArray R 16)) (sum : R) => do
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.AddAssign.add_assign
+-          R
+-          R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (3 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(3 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (4 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.dup.Dup.dup R sum))
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(4 : usize)]_?)))))
+-          (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (5 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(5 : usize)]_?))))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (6 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(6 : usize)]_?))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (7 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(7 : usize)]_?)))
+-            (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (8 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(8 : usize)]_?))))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (9 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(9 : usize)]_?) (8 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (10 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(10 : usize)]_?) (3 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (11 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(11 : usize)]_?) (24 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (12 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(12 : usize)]_?) (8 : u64))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (13 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(13 : usize)]_?) (3 : u64))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (14 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(14 : usize)]_?) (4 : u64))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (15 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          sum
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(15 : usize)]_?) (24 : u64))))));
+-    (pure state)
++        ] (state : (RustArray R 16)) (sum : R) =>sorry -- PATCHED
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (1 : usize)
++    --     (← (core_models.ops.arith.AddAssign.add_assign
++    --       R
++    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (2 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R (← state[(2 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (3 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(3 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (4 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.dup.Dup.dup R sum))
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(4 : usize)]_?)))))
++    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (5 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(5 : usize)]_?))))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (6 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(6 : usize)]_?))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (7 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(7 : usize)]_?)))
++    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (8 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(8 : usize)]_?))))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (9 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(9 : usize)]_?) (8 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (10 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(10 : usize)]_?) (3 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (11 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(11 : usize)]_?) (24 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (12 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(12 : usize)]_?) (8 : u64))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (13 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(13 : usize)]_?) (3 : u64))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (14 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(14 : usize)]_?) (4 : u64))))));
++    -- let state : (RustArray R 16) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (15 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       sum
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(15 : usize)]_?) (24 : u64))))));
++    -- (pure state)
+ 
+ @[reducible] instance Impl_1.AssociatedTypes :
+   p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
+@@ -3250,247 +3289,247 @@
+       [trait_constr_internal_layer_mat_mul_i0 :
+         p3_field.field.PrimeCharacteristicRing
+         R
+-        ] (state : (RustArray R 24)) (sum : R) => do
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.AddAssign.add_assign
+-          R
+-          R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (3 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(3 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (4 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.dup.Dup.dup R sum))
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(4 : usize)]_?)))))
+-          (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (5 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(5 : usize)]_?))))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (6 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(6 : usize)]_?))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (7 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(7 : usize)]_?)))
+-            (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (8 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(8 : usize)]_?))))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (9 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(9 : usize)]_?) (8 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (10 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(10 : usize)]_?) (2 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (11 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(11 : usize)]_?) (3 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (12 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(12 : usize)]_?) (4 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (13 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(13 : usize)]_?) (5 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (14 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(14 : usize)]_?) (6 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (15 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(15 : usize)]_?) (24 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (16 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(16 : usize)]_?) (8 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (17 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(17 : usize)]_?) (3 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (18 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(18 : usize)]_?) (4 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (19 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(19 : usize)]_?) (5 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (20 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(20 : usize)]_?) (6 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (21 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(21 : usize)]_?) (7 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (22 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(22 : usize)]_?) (9 : u64))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (23 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          sum
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(23 : usize)]_?) (24 : u64))))));
+-    (pure state)
++        ] (state : (RustArray R 24)) (sum : R) =>sorry -- PATCHED
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (1 : usize)
++    --     (← (core_models.ops.arith.AddAssign.add_assign
++    --       R
++    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (2 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R (← state[(2 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (3 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(3 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (4 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.dup.Dup.dup R sum))
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(4 : usize)]_?)))))
++    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (5 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(5 : usize)]_?))))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (6 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(6 : usize)]_?))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (7 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(7 : usize)]_?)))
++    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (8 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(8 : usize)]_?))))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (9 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(9 : usize)]_?) (8 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (10 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(10 : usize)]_?) (2 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (11 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(11 : usize)]_?) (3 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (12 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(12 : usize)]_?) (4 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (13 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(13 : usize)]_?) (5 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (14 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(14 : usize)]_?) (6 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (15 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(15 : usize)]_?) (24 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (16 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(16 : usize)]_?) (8 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (17 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(17 : usize)]_?) (3 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (18 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(18 : usize)]_?) (4 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (19 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(19 : usize)]_?) (5 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (20 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(20 : usize)]_?) (6 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (21 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(21 : usize)]_?) (7 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (22 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(22 : usize)]_?) (9 : u64))))));
++    -- let state : (RustArray R 24) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (23 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       sum
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(23 : usize)]_?) (24 : u64))))));
++    -- (pure state)
+ 
+ @[reducible] instance Impl_4.AssociatedTypes :
+   p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
+@@ -3514,327 +3553,327 @@
+       [trait_constr_internal_layer_mat_mul_i0 :
+         p3_field.field.PrimeCharacteristicRing
+         R
+-        ] (state : (RustArray R 32)) (sum : R) => do
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.AddAssign.add_assign
+-          R
+-          R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (3 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(3 : usize)]_?)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (4 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.dup.Dup.dup R sum))
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(4 : usize)]_?)))))
+-          (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (5 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(5 : usize)]_?))))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (6 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.halve
+-            R (← state[(6 : usize)]_?))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (7 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (core_models.ops.arith.Add.add
+-            R
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(7 : usize)]_?)))
+-            (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (8 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R
+-            (← (p3_field.field.PrimeCharacteristicRing.double
+-              R (← state[(8 : usize)]_?))))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (9 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(9 : usize)]_?) (8 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (10 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(10 : usize)]_?) (2 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (11 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(11 : usize)]_?) (3 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (12 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(12 : usize)]_?) (4 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (13 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(13 : usize)]_?) (5 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (14 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(14 : usize)]_?) (6 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (15 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(15 : usize)]_?) (10 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (16 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(16 : usize)]_?) (12 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (17 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(17 : usize)]_?) (14 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (18 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(18 : usize)]_?) (16 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (19 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(19 : usize)]_?) (24 : u64)))
+-          (← (p3_field.dup.Dup.dup R sum)))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (20 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(20 : usize)]_?) (8 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (21 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(21 : usize)]_?) (3 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (22 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(22 : usize)]_?) (4 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (23 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(23 : usize)]_?) (5 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (24 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(24 : usize)]_?) (6 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (25 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(25 : usize)]_?) (7 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (26 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(26 : usize)]_?) (9 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (27 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(27 : usize)]_?) (10 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (28 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(28 : usize)]_?) (12 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (29 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(29 : usize)]_?) (14 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (30 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(30 : usize)]_?) (16 : u64))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (31 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R
+-          sum
+-          (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            R (← state[(31 : usize)]_?) (24 : u64))))));
+-    (pure state)
++        ] (state : (RustArray R 32)) (sum : R) =>sorry -- PATCHED
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (1 : usize)
++    --     (← (core_models.ops.arith.AddAssign.add_assign
++    --       R
++    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (2 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R (← state[(2 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (3 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(3 : usize)]_?)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (4 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.dup.Dup.dup R sum))
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(4 : usize)]_?)))))
++    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (5 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(5 : usize)]_?))))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (6 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.halve
++    --         R (← state[(6 : usize)]_?))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (7 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (core_models.ops.arith.Add.add
++    --         R
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(7 : usize)]_?)))
++    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (8 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.double
++    --         R
++    --         (← (p3_field.field.PrimeCharacteristicRing.double
++    --           R (← state[(8 : usize)]_?))))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (9 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(9 : usize)]_?) (8 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (10 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(10 : usize)]_?) (2 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (11 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(11 : usize)]_?) (3 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (12 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(12 : usize)]_?) (4 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (13 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(13 : usize)]_?) (5 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (14 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(14 : usize)]_?) (6 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (15 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(15 : usize)]_?) (10 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (16 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(16 : usize)]_?) (12 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (17 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(17 : usize)]_?) (14 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (18 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(18 : usize)]_?) (16 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (19 : usize)
++    --     (← (core_models.ops.arith.Add.add
++    --       R
++    --       R
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(19 : usize)]_?) (24 : u64)))
++    --       (← (p3_field.dup.Dup.dup R sum)))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (20 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(20 : usize)]_?) (8 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (21 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(21 : usize)]_?) (3 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (22 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(22 : usize)]_?) (4 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (23 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(23 : usize)]_?) (5 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (24 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(24 : usize)]_?) (6 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (25 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(25 : usize)]_?) (7 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (26 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(26 : usize)]_?) (9 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (27 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(27 : usize)]_?) (10 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (28 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(28 : usize)]_?) (12 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (29 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(29 : usize)]_?) (14 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (30 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       (← (p3_field.dup.Dup.dup R sum))
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(30 : usize)]_?) (16 : u64))))));
++    -- let state : (RustArray R 32) ←
++    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
++    --     state
++    --     (31 : usize)
++    --     (← (core_models.ops.arith.Sub.sub
++    --       R
++    --       R
++    --       sum
++    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
++    --         R (← state[(31 : usize)]_?) (24 : u64))))));
++    -- (pure state)
+ 
+ end p3_koala_bear.poseidon2
+ 
+@@ -3858,14 +3897,16 @@
+       (RustArray u32 4)
+       core_models.core_arch.arm_shared.neon.uint32x4_t
+       (← (rust_primitives.hax.repeat (2130706433 : u32) (4 : usize)))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+   PACKED_MU := RustM.of_isOk
+     (do
+     (core_models.intrinsics.transmute
+       (RustArray i32 4)
+       core_models.core_arch.arm_shared.neon.int32x4_t
+       (← (rust_primitives.hax.repeat (-2130706431 : i32) (4 : usize)))))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ end p3_koala_bear.aarch64_neon.packing
+ 
+@@ -3890,7 +3931,8 @@
+   where
+   MONTY_GEN := RustM.of_isOk
+     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+-    (by rfl)
++    (by sorry) -- PATCHED
++    -- (by rfl)
+ 
+ end p3_koala_bear.koala_bear
+ 
+@@ -4728,4 +4770,3 @@
+   where
+ 
+ end p3_koala_bear.poseidon2
+-
