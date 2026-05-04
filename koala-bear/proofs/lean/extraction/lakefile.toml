@@ -13,3 +13,7 @@ name = "Hax"
 git.url = "https://github.com/cryspen/hax"
 git.subDir = "hax-lib/proof-libs/lean"
 rev = "main"
+
+[[require]]
+name = "CompPoly"
+git = "https://github.com/Verified-zkEVM/CompPoly"
