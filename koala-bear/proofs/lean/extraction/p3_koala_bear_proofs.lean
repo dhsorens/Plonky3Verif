@@ -1,1 +1,1 @@
-import p3_koala_bear_proofs.spec
+import p3_koala_bear_proofs.constants

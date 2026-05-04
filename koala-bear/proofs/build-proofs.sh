@@ -13,14 +13,16 @@
 
 set -eu
 
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EXTRACT_DIR="$HERE/proofs/lean/extraction"
+# This script lives in proofs/; the Rust crate root is one level up.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CRATE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+EXTRACT_DIR="$SCRIPT_DIR/lean/extraction"
 PATCH_DIR="$EXTRACT_DIR/patches"
 TARGET="$EXTRACT_DIR/p3_koala_bear.lean"
 PRISTINE="$PATCH_DIR/pristine.snapshot.lean"
 PATCH_FILE="$PATCH_DIR/p3_koala_bear.patch"
 
-cd "$HERE"
+cd "$CRATE_ROOT"
 
 echo "==> cargo hax into lean"
 cargo hax into lean

@@ -19,7 +19,7 @@ from hax output is documented in that one file.
 
 ## Daily workflow
 
-From the koala-bear crate root:
+From `koala-bear/proofs` (or run `./proofs/build-proofs.sh` from the crate root):
 
 ```sh
 ./build-proofs.sh
@@ -50,7 +50,7 @@ less thing in the trusted base.
 
 If this directory is fresh (no `pristine.snapshot.lean`, no `p3_koala_bear.patch`):
 
-1. From the koala-bear crate root, `./build-proofs.sh`. The patch is missing,
+1. From `koala-bear/proofs`, `./build-proofs.sh` (or `./proofs/build-proofs.sh` from the crate root). The patch is missing,
    so the script will skip the apply step but still produce the snapshot.
 2. Hand-edit `proofs/lean/extraction/p3_koala_bear.lean` until `lake build`
    succeeds.

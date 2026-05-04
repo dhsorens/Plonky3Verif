@@ -2,9 +2,8 @@ import p3_koala_bear
 import CompPoly.Fields.KoalaBear
 
 /-!
-Minimal field specification: relate Plonky3/Hax extraction constants
-(`p3_koala_bear.koala_bear`) to the mathematical Koala Bear prime and
-two-adic parameters in `CompPoly.Fields.KoalaBear`.
+Relate Plonky3/Hax extraction constants (`p3_koala_bear.koala_bear`) to the
+mathematical Koala Bear prime and two-adic parameters in `CompPoly.Fields.KoalaBear`.
 -/
 
 open p3_koala_bear.koala_bear
