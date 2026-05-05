@@ -21,7 +21,7 @@ auditable.
 
 ## 1. The Lean toolchain
 
-- **Pin**: `leanprover/lean4:v4.29.0-rc1` (`lean-toolchain`).
+- **Pin**: `leanprover/lean4:v4.29.0` (`lean-toolchain`).
 - **Build tool**: `lake`.
 
 The TCB inherits Lean's own kernel, elaboration, and tactic framework. We do

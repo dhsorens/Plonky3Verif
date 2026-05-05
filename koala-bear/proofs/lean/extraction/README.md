@@ -26,7 +26,7 @@ flowchart LR
 | **Regenerate** extraction + apply patch + build | From crate root: `proofs/lean/extraction/build-proofs.sh` (see script header) |
 | **Why** the patch exists, how to refresh it | [`patches/README.md`](patches/README.md) |
 | **What** is trusted vs proved | [`TCB.md`](TCB.md) |
-| **Syncing** upstream Plonky3 / fixing drift | [`SKILL.md`](SKILL.md) |
+| **Syncing** upstream Plonky3 / fixing drift | [`SYNC.md`](SYNC.md) |
 
 ## Layout
 
