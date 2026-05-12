@@ -21,7 +21,10 @@ auditable.
 
 ## 1. The Lean toolchain
 
-- **Pin**: `leanprover/lean4:v4.29.0` (`lean-toolchain`).
+- **Pin**: tracked in `proofs/lean/extraction/lean-toolchain`. The specific
+  tag is not part of the TCB — we trust Lean as a system, not a particular
+  release — but the file must point at an official `leanprover/lean4`
+  release. Version-management procedure lives in `SYNC.md`.
 - **Build tool**: `lake`.
 
 The TCB inherits Lean's own kernel, elaboration, and tactic framework. We do
@@ -291,7 +294,8 @@ them in PR descriptions when they move.
 
 A reviewer checking the TCB should be able to answer:
 
-- [ ] Does `lean-toolchain` match what's pinned (and trusted) here?
+- [ ] Is `lean-toolchain` set to an official `leanprover/lean4` release tag
+      (specific tag is not TCB; see §1)?
 - [ ] Does `lake-manifest.json` Hax `rev` match the trusted commit?
 - [ ] Is every `sorry`/`opaque` in `p3_koala_bear/*.lean` either listed
       in §3 above or accompanied by a comment explaining why it's safe?

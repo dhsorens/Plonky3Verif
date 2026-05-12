@@ -129,7 +129,6 @@ If `patch` rejected hunks **or** `lake build` failed:
 - patch hunk count (`grep -c '^@@' patches/p3_koala_bear.patch`),
 - per-stub line counts in §3 (`wc -l p3_koala_bear/*.lean`),
 - the Hax `rev` pinned in `lake-manifest.json`,
-- the `lean-toolchain` pin,
 - any `opaque`/`sorry` added or removed from stubs.
 
 Walk the **Audit checklist** at the bottom of TCB.md and confirm every box
@@ -154,6 +153,31 @@ git commit -m "sync: update extraction after merging upstream Plonky3"
 Do **not** push without explicit approval from the user.
 
 ---
+
+## Maintenance: Lean toolchain bumps
+
+The Lean version lives in `proofs/lean/extraction/lean-toolchain`. A bump is
+independent of the upstream Plonky3 sync — keep it on its own commit.
+
+When to bump:
+
+- The Hax proof library (`cryspen/hax`) has moved to a newer Lean and our
+  build now fails.
+- A Lean fix or feature is needed by something in `p3_koala_bear_proofs/`.
+
+How to bump:
+
+1. Edit `proofs/lean/extraction/lean-toolchain` to the new tag (must be an
+   official `leanprover/lean4` release, e.g. `leanprover/lean4:v4.29.1`).
+2. From `proofs/lean/extraction/`, run `lake update` to refresh transitive
+   dependencies. Commit the resulting `lake-manifest.json` change alongside
+   the toolchain bump.
+3. Re-run `./proofs/lean/extraction/build-proofs.sh` and confirm the build
+   is green with only `sorry` warnings.
+4. If a proof in `p3_koala_bear_proofs/` broke due to Lean churn, fix the
+   proof rather than admit it. Do not change theorem statements unless
+   forced; if forced, preserve the original semantics as closely as
+   possible.
 
 ## What "good" looks like at the end
 
