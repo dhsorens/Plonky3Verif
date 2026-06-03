@@ -13,6 +13,9 @@ keep a committed, dated record. Past reports live in
 > **Scope guardrails (read first).**
 > - Commit **only** `aeneas-obstructions/` and this `AENEAS.md`. Never `git add`
 >   extracted code, `.llbc`, Lean output, `*/proofs/`, or anything in `/tmp`.
+> - `aeneas-obstructions/issue-drafts/` is **gitignored** (see its `.gitignore`):
+>   the per-obstruction upstream issue drafts (step 7) are regenerated each run
+>   and are **never committed** — working material only.
 > - All extraction output goes to `/tmp/aeneas-extract/` via the runner script.
 >   Nothing is written inside the repo.
 > - The hax workflow (`*/proofs/`, `koala-bear/proofs/...` patches, `SYNC.md`,
@@ -174,7 +177,39 @@ in the appendix below. It **must** include:
 
 ---
 
-## 7. Update the index
+## 7. Draft a writeup for each unrepresented obstruction
+
+For **every** obstruction classified **"Not represented"** in step 5 (i.e. each
+entry in the report's *"Obstructions with no upstream issue/PR"* section),
+produce a ready-to-file GitHub issue draft. These are working material — they
+live in `aeneas-obstructions/issue-drafts/`, which is **gitignored and never
+committed**. Regenerate them fresh each run (overwrite the directory).
+
+For each one:
+
+- Write `aeneas-obstructions/issue-drafts/<NN>-<repo>-<slug>.md` (e.g.
+  `01-charon-genericsmismatch-panic.md`), numbered highest-blocker-first.
+- Start with a header noting it is an **unfiled draft**, the run date, and which
+  report Issue #N it maps to.
+- Then a ready-to-paste issue: **suggested title**, **which repo to file on**
+  (`AeneasVerif/aeneas` vs `AeneasVerif/charon`), suggested labels, and a body
+  with: Summary, Environment (the run's aeneas/charon commits + version, rustc,
+  platform), Repro, Observed (verbatim error text / backtrace / trace), Expected,
+  and Notes/triage (including whether it may be downstream of another obstruction).
+- **Capture real evidence**, don't paraphrase: for a charon panic, re-run that
+  crate's extraction with `RUST_BACKTRACE=1` and paste the trimmed backtrace; for
+  an OCaml exception, paste the full `Called from …` trace from `aeneas.log.clean`;
+  for a lookup-failure cascade, paste representative verbatim lines + counts.
+- Refresh `aeneas-obstructions/issue-drafts/README.md` — a table of the drafts
+  (file, target repo, mapped Issue #, one-line gist).
+
+(If a previously-unrepresented obstruction has since gained an upstream ticket,
+it is no longer "Not represented" and gets no draft — it moves to the
+cross-reference table instead.)
+
+---
+
+## 8. Update the index
 
 Add a row (newest first) to the table in `aeneas-obstructions/README.md`: date
 (linked to the new report), aeneas commit, charon commit + version, and a
@@ -182,19 +217,21 @@ one-line headline.
 
 ---
 
-## 8. Commit — scoped, output excluded
+## 9. Commit — scoped, output excluded
 
 Stage **only** the report artifacts and this runbook:
 
 ```sh
 git add aeneas-obstructions/ AENEAS.md
-git status   # confirm NOTHING else is staged — no proofs/, no /tmp, no *.lean
+git status   # confirm NOTHING else is staged — no proofs/, no /tmp, no *.lean,
+             # no issue-drafts/ (it is gitignored)
 git commit -m "aeneas survey <YYYY-MM-DD>: <one-line headline>"
 ```
 
 Never `git add -A` / `git add .` — that would sweep in hax `*/proofs/` output
-and any stray extraction artifacts. Commit on the current branch
-(`aeneas-experiments` unless told otherwise). Push only if asked.
+and any stray extraction artifacts. `aeneas-obstructions/issue-drafts/` is
+gitignored, so `git add aeneas-obstructions/` will not pick it up. Commit on the
+current branch (`aeneas-experiments` unless told otherwise). Push only if asked.
 
 ---
 
