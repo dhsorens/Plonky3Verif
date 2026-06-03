@@ -18,4 +18,5 @@ code (it stays in `/tmp/aeneas-extract/`). The hax-based workspaces under
 
 | Date | aeneas | charon | Headline |
 | --- | --- | --- | --- |
+| [2026-06-03](2026-06-03.md) | `ac74e1ba` | `a535e914` (v0.1.210) | Toolchain advanced ~90 commits; **no blocker moved**. charon still panics on `p3-field`; adjacent charon #1159 closed. |
 | [2026-05-28](2026-05-28.md) | `42776dac` | `103daa06` (v0.1.198) | Not usable yet. Top blocker: charon `GenericsMismatch` panic on `p3-field`. |
