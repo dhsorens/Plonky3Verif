@@ -28,6 +28,14 @@ pub enum VerifierError {
         details: String,
     },
 
+    /// STIR query count does not match the sampled challenge count.
+    #[error("STIR query count mismatch at round {round_index}: expected {expected}, got {actual}")]
+    StirQueryCountMismatch {
+        round_index: usize,
+        expected: usize,
+        actual: usize,
+    },
+
     /// The proof carries the wrong number of opening evaluation batches.
     ///
     /// Raised by the adapter before any sumcheck or Merkle work.
@@ -60,6 +68,18 @@ pub enum VerifierError {
     #[error("Proof is missing the Merkle commitment for round {round}")]
     MissingRoundCommitment { round: usize },
 
+    /// Round OOD answers do not match the verifier's expected count.
+    #[error("Round {round} OOD answer count mismatch: expected {expected}, got {actual}")]
+    RoundOodAnswerCountMismatch {
+        round: usize,
+        expected: usize,
+        actual: usize,
+    },
+
+    /// Folding randomness is unexpectedly absent before a STIR check.
+    #[error("Missing folding randomness before STIR verification at round {round}")]
+    MissingFoldingRandomness { round: usize },
+
     /// Proof contains an unexpected number of rounds.
     #[error("Proof has {actual} rounds, expected {expected}")]
     RoundCountMismatch { expected: usize, actual: usize },
@@ -67,4 +87,8 @@ pub enum VerifierError {
     /// Proof is missing the final polynomial evaluations.
     #[error("Proof is missing the final polynomial evaluations")]
     MissingFinalPoly,
+
+    /// Final polynomial has the wrong number of evaluations.
+    #[error("Final polynomial length mismatch: expected {expected}, got {actual}")]
+    FinalPolyLengthMismatch { expected: usize, actual: usize },
 }

@@ -148,12 +148,15 @@ where
             )?;
 
             // Verify STIR in-domain challenges against the previous commitment.
+            let current_folding_randomness = round_folding_randomness
+                .last()
+                .ok_or(VerifierError::MissingFoldingRandomness { round: round_index })?;
             let stir_statement = self.verify_stir_challenges(
                 proof,
                 challenger,
                 round_params,
                 &prev_commitment,
-                round_folding_randomness.last().unwrap(),
+                current_folding_randomness,
                 round_index,
             )?;
 
@@ -178,22 +181,36 @@ where
         // Final round: receive the polynomial in the clear.
         let final_evaluations = proof
             .final_poly
-            .clone()
+            .as_ref()
             .ok_or(VerifierError::MissingFinalPoly)?;
+        let final_round_config = self.final_round_config();
+        let expected_final_poly_len = 1usize << final_round_config.num_variables;
+        let actual_final_poly_len = final_evaluations.num_evals();
+        if actual_final_poly_len != expected_final_poly_len {
+            return Err(VerifierError::FinalPolyLengthMismatch {
+                expected: expected_final_poly_len,
+                actual: actual_final_poly_len,
+            });
+        }
         challenger.observe_algebra_slice(final_evaluations.as_slice());
 
         // Verify final STIR challenges.
+        let final_round_folding_randomness = round_folding_randomness.last().ok_or_else(|| {
+            VerifierError::MissingFoldingRandomness {
+                round: self.n_rounds(),
+            }
+        })?;
         let stir_statement = self.verify_stir_challenges(
             proof,
             challenger,
-            &self.final_round_config(),
+            &final_round_config,
             &prev_commitment,
-            round_folding_randomness.last().unwrap(),
+            final_round_folding_randomness,
             self.n_rounds(),
         )?;
 
         stir_statement
-            .verify(&final_evaluations)
+            .verify(final_evaluations)
             .then_some(())
             .ok_or_else(|| VerifierError::StirChallengeFailed {
                 challenge_id: 0,
@@ -321,7 +338,7 @@ where
         dimensions: &[Dimensions],
         round_index: usize,
     ) -> Result<Vec<Vec<EF>>, VerifierError> {
-        let extension_mmcs = ExtensionMmcs::new((*self.mmcs).clone());
+        let extension_mmcs = ExtensionMmcs::new(self.mmcs);
 
         let queries = if round_index == self.n_rounds() {
             &proof.final_queries
@@ -335,6 +352,14 @@ where
                 })?
                 .queries
         };
+
+        if queries.len() != indices.len() {
+            return Err(VerifierError::StirQueryCountMismatch {
+                round_index,
+                expected: indices.len(),
+                actual: queries.len(),
+            });
+        }
 
         let mut results = Vec::with_capacity(indices.len());
 

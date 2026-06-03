@@ -121,6 +121,10 @@ where
         CircleDomain::standard(log2_strict_usize(degree))
     }
 
+    fn log_max_lde_height(&self) -> usize {
+        Val::CIRCLE_TWO_ADICITY
+    }
+
     fn commit(
         &self,
         evaluations: impl IntoIterator<Item = (Self::Domain, RowMajorMatrix<Val>)>,
@@ -488,6 +492,11 @@ where
                         let alpha_pow_width_2 = alpha.exp_u64(ps_at_x.len() as u64).square();
 
                         for (zeta_uni, ps_at_zeta) in mat_points_and_values {
+                            // The claimed opening must have exactly as many
+                            // values as the committed row has columns.
+                            if ps_at_zeta.len() != ps_at_x.len() {
+                                return Err(InputError::InputShapeError);
+                            }
                             let zeta = Point::from_projective_line(*zeta_uni);
 
                             *ro += *alpha_offset
@@ -735,6 +744,24 @@ mod tests {
     }
 
     #[test]
+    fn reject_commit_pow_witness_count_mismatch() {
+        let (pcs, byte_hash, comm, d, zeta, values, mut proof) = setup_valid_proof();
+        let num_rounds = proof.fri_proof.commit_phase_commits.len();
+
+        // Drop one witness so the per-round count falls short.
+        proof.fri_proof.commit_pow_witnesses.pop();
+
+        let err = try_verify(&pcs, byte_hash, &comm, d, zeta, &values, &proof)
+            .expect_err("expected CommitPowWitnessCountMismatch");
+
+        let FriError::CommitPowWitnessCountMismatch { expected, got } = err else {
+            panic!("expected CommitPowWitnessCountMismatch, got {err:?}");
+        };
+        assert_eq!(expected, num_rounds);
+        assert_eq!(got, num_rounds - 1);
+    }
+
+    #[test]
     fn reject_query_commit_phase_openings_count_mismatch() {
         // Invariant: each query proof must carry exactly one opening per
         // commit-phase round. If a query has fewer (or more) openings than
@@ -832,7 +859,10 @@ mod tests {
         // Invariant: all query proofs must use the same per-round folding
         // arity schedule. The verifier takes the first query proof's
         // schedule as a reference and rejects any that differ.
-        let (pcs, byte_hash, comm, d, zeta, values, mut proof) = setup_valid_proof();
+        let (mut pcs, byte_hash, comm, d, zeta, values, mut proof) = setup_valid_proof();
+        // Allow arity 2 so this mutation remains a schedule mismatch rather
+        // than being rejected as an out-of-range arity.
+        pcs.fri_params.max_log_arity = 2;
 
         // This check compares query 1 against query 0, so we need at least
         // two query proofs. With testing parameters this is always true, but
@@ -877,5 +907,29 @@ mod tests {
         assert_eq!(expected, reference_arities);
         // The got schedule is query 1's corrupted version.
         assert_eq!(got, corrupted_arities);
+    }
+
+    #[test]
+    fn reject_invalid_log_arity() {
+        // Invariant: each log_arity must be in 1..=max_log_arity.
+        let (pcs, byte_hash, comm, d, zeta, values, mut proof) = setup_valid_proof();
+
+        // Mutation: force an invalid zero arity in query 0, round 0.
+        proof.fri_proof.query_proofs[0].commit_phase_openings[0].log_arity = 0;
+
+        let err = try_verify(&pcs, byte_hash, &comm, d, zeta, &values, &proof)
+            .expect_err("expected InvalidLogArity");
+
+        let FriError::InvalidLogArity {
+            round,
+            log_arity,
+            max,
+        } = err
+        else {
+            panic!("expected InvalidLogArity, got {err:?}");
+        };
+        assert_eq!(round, 0);
+        assert_eq!(log_arity, 0);
+        assert_eq!(max, pcs.fri_params.max_log_arity);
     }
 }

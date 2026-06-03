@@ -27,22 +27,35 @@ where
     Challenger: FieldChallenger<Val> + GrindingChallenger + CanObserve<M::Commitment>,
     Folding: FriFoldingStrategy<Val, Challenge>,
 {
+    // There must be exactly one commit-phase proof-of-work witness per round.
+    if proof.commit_pow_witnesses.len() != proof.commit_phase_commits.len() {
+        return Err(FriError::CommitPowWitnessCountMismatch {
+            expected: proof.commit_phase_commits.len(),
+            got: proof.commit_pow_witnesses.len(),
+        });
+    }
+
     // Phase 1: Derive folding challenges
     //
     // In Circle-FRI, the verifier must produce one random challenge (beta)
     // per commit-phase round. Each commitment is observed into the Fiat-Shamir
-    // transcript, then a challenge is sampled.
+    // transcript, the round's PoW witness is checked, then a challenge is sampled.
     // This yields exactly as many betas as there are commit-phase rounds.
     let betas: Vec<Challenge> = proof
         .commit_phase_commits
         .iter()
-        .map(|comm| {
+        .zip(&proof.commit_pow_witnesses)
+        .map(|(comm, witness)| {
             // Absorb this round's commitment into the transcript.
             challenger.observe(comm.clone());
+            // Check the per-round grinding witness before sampling the challenge.
+            if !challenger.check_witness(params.commit_proof_of_work_bits, *witness) {
+                return Err(FriError::InvalidPowWitness);
+            }
             // Squeeze a field-extension element to use as the folding challenge.
-            challenger.sample_algebra_element()
+            Ok(challenger.sample_algebra_element())
         })
-        .collect();
+        .collect::<Result<Vec<_>, _>>()?;
 
     // Absorb the prover's claimed constant polynomial into the transcript.
     // After all folding rounds, the result should reduce to this constant.
@@ -93,24 +106,40 @@ where
     // different queries would fold through incompatible domain decompositions.
     //
     // We take the first query proof's schedule as the reference:
-    let log_arities: Vec<usize> = proof
-        .query_proofs
-        .first()
-        .map(|qp| {
-            qp.commit_phase_openings
-                .iter()
-                .map(|o| o.log_arity as usize)
-                .collect()
-        })
-        .unwrap_or_default();
+    let log_arities: Vec<usize> = if let Some(qp) = proof.query_proofs.first() {
+        qp.commit_phase_openings
+            .iter()
+            .enumerate()
+            .map(|(round, opening)| {
+                opening
+                    .checked_log_arity(params.max_log_arity)
+                    .ok_or(FriError::InvalidLogArity {
+                        round,
+                        log_arity: opening.log_arity as usize,
+                        max: params.max_log_arity,
+                    })
+            })
+            .collect::<Result<Vec<_>, _>>()?
+    } else {
+        Vec::new()
+    };
 
     // Compare every subsequent query proof against the reference schedule.
     for (query, qp) in proof.query_proofs.iter().enumerate().skip(1) {
         let got_log_arities: Vec<usize> = qp
             .commit_phase_openings
             .iter()
-            .map(|o| o.log_arity as usize)
-            .collect();
+            .enumerate()
+            .map(|(round, opening)| {
+                opening
+                    .checked_log_arity(params.max_log_arity)
+                    .ok_or(FriError::InvalidLogArity {
+                        round,
+                        log_arity: opening.log_arity as usize,
+                        max: params.max_log_arity,
+                    })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
         if got_log_arities != log_arities {
             return Err(FriError::QueryLogAritiesMismatch {
                 query,
@@ -240,7 +269,14 @@ where
 
     for (round, ((&beta, comm), opening)) in steps.enumerate() {
         // This round folds 2^{log_arity} siblings into one parent.
-        let log_arity = opening.log_arity as usize;
+        let max_log_arity = core::cmp::min(params.max_log_arity, log_current_height);
+        let Some(log_arity) = opening.checked_log_arity(max_log_arity) else {
+            return Err(FriError::InvalidLogArity {
+                round,
+                log_arity: opening.log_arity as usize,
+                max: max_log_arity,
+            });
+        };
         let arity = 1 << log_arity;
 
         // Shape check: the prover must supply exactly (arity - 1) siblings.
