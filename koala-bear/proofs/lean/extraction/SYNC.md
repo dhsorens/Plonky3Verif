@@ -171,7 +171,7 @@ How to bump:
    official `leanprover/lean4` release, e.g. `leanprover/lean4:v4.29.1`).
 2. From `proofs/lean/extraction/`, run `lake update` to refresh transitive
    dependencies. Commit the resulting `lake-manifest.json` change alongside
-   the toolchain bump.
+   the toolchain bump. Run `lake exe cache get` to get the new mathlib executables.
 3. Re-run `./proofs/lean/extraction/build-proofs.sh` and confirm the build
    is green with only `sorry` warnings.
 4. If a proof in `p3_koala_bear_proofs/` broke due to Lean churn, fix the
