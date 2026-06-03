@@ -8,6 +8,10 @@ repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
 
+[features]
+default = []
+parallel = ["p3-maybe-rayon/parallel"]
+
 [dependencies]
 hashbrown = { workspace = true }
 p3-air = { workspace = true }
@@ -16,10 +20,10 @@ p3-matrix = { workspace = true }
 p3-maybe-rayon = { workspace = true }
 p3-uni-stark = { workspace = true }
 serde = { workspace = true, features = ["derive", "alloc"] }
+thiserror.workspace = true
 tracing = { workspace = true }
 
 [dev-dependencies]
-criterion.workspace = true
 p3-baby-bear = { path = "../baby-bear" }
 p3-challenger = { path = "../challenger" }
 p3-commit = { path = "../commit" }
@@ -28,11 +32,9 @@ p3-fri = { path = "../fri" }
 p3-goldilocks = { path = "../goldilocks" }
 p3-merkle-tree = { path = "../merkle-tree" }
 p3-symmetric = { path = "../symmetric" }
-rand = { workspace = true }
 
-[features]
-default = []
-parallel = ["p3-maybe-rayon/parallel"]
+criterion.workspace = true
+rand.workspace = true
 
 [[bench]]
 name = "logup"

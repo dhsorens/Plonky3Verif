@@ -214,7 +214,7 @@ impl<F: TwoAdicField, InputProof: Sync, InputError: Debug + Sync, EF: ExtensionF
     }
 }
 
-/// Lagrange interpolation: given points (xs[i], ys[i]), evaluate at z.
+/// Lagrange interpolation: given points `(xs[i], ys[i])`, evaluate at z.
 ///
 /// Uses the barycentric formula for efficiency when xs are roots of unity.
 fn lagrange_interpolate_at<F: TwoAdicField, EF: ExtensionField<F>>(
@@ -284,6 +284,10 @@ where
     /// This function will panic if `degree` is not a power of 2 or `degree > (1 << Val::TWO_ADICITY)`.
     fn natural_domain_for_degree(&self, degree: usize) -> Self::Domain {
         TwoAdicMultiplicativeCoset::new(Val::ONE, log2_strict_usize(degree)).unwrap()
+    }
+
+    fn log_max_lde_height(&self) -> usize {
+        Val::TWO_ADICITY
     }
 
     /// Commit to a collection of evaluation matrices.
