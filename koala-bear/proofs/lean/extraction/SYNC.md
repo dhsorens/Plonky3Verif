@@ -169,7 +169,7 @@ How to bump:
 
 1. Edit `proofs/lean/extraction/lean-toolchain` to the new tag (must be an
    official `leanprover/lean4` release, e.g. `leanprover/lean4:v4.29.1`).
-2. From `proofs/lean/extraction/`, run `lake update` to refresh transitive
+2. From `proofs/lean/extraction/`, run `lake update && lake exe cache get` to refresh transitive
    dependencies. Commit the resulting `lake-manifest.json` change alongside
    the toolchain bump.
 3. Re-run `./proofs/lean/extraction/build-proofs.sh` and confirm the build
