@@ -25,7 +25,19 @@ PATCH_FILE="$PATCH_DIR/p3_koala_bear.patch"
 cd "$CRATE_ROOT"
 
 echo "==> cargo hax into lean"
-cargo hax into lean
+# p3-util (and possibly other deps) call the stdlib `maybe_uninit_slice` method
+# `<[MaybeUninit<T>]>::assume_init_ref`, which is stable on current stable Rust
+# but still feature-gated on hax's pinned nightly (nightly-2025-11-08). The hax
+# driver compiles with that nightly, so we enable the feature crate-wide for the
+# extraction build ONLY, via `-Zcrate-attr`. We also force the whole invocation
+# (including cargo's metadata probe, which otherwise runs on the stable default)
+# onto the nightly so `-Z` is accepted. Neither setting touches any source file
+# nor affects a normal `cargo build`. If hax bumps its rust-toolchain.toml pin,
+# update HAX_TOOLCHAIN to match (override via env without editing this script).
+HAX_TOOLCHAIN="${HAX_TOOLCHAIN:-nightly-2025-11-08}"
+RUSTUP_TOOLCHAIN="$HAX_TOOLCHAIN" \
+  RUSTFLAGS="${RUSTFLAGS:-} -Zcrate-attr=feature(maybe_uninit_slice)" \
+  cargo hax into lean
 
 echo "==> snapshotting pristine output"
 cp "$TARGET" "$PRISTINE"
@@ -38,7 +50,7 @@ else
 fi
 
 echo "==> lake build"
-if (cd "$EXTRACT_DIR" && lake build); then
+if (cd "$EXTRACT_DIR" && lake update && lake exe cache get && lake build); then
     echo "==> done; build succeeded."
 else
     echo "WARNING: lake build failed. The (patched) file is in place; inspect for drift." >&2

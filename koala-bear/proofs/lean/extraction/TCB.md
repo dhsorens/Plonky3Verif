@@ -34,7 +34,7 @@ not re-audit Lean.
 
 - **Source**: `https://github.com/cryspen/hax`, subdir
   `hax-lib/proof-libs/lean`.
-- **Pin**: commit `492a34e33c8744b9672eb3cf1c982ac40469f7d4`
+- **Pin**: commit `c1a93f0f1d770d37d282737ff485937171d6a0ef`
   (`lake-manifest.json`; `inputRev: main`).
 
 Hax provides the Lean shadows of Rust primitives this extraction relies on:
@@ -258,6 +258,14 @@ these as cleanup.
 
 Hax is a research tool; this assumption deserves the most scrutiny. Any
 discrepancy here is invisible to Lean's kernel.
+
+`build-proofs.sh` runs the hax invocation with
+`-Zcrate-attr=feature(maybe_uninit_slice)` (and pins `RUSTUP_TOOLCHAIN` to
+hax's nightly). This only enables a stdlib feature — `maybe_uninit_slice`,
+used by `p3-util` and already stable on current stable Rust — for the older
+nightly the hax driver is built against. It does not alter what is extracted
+or its faithfulness; it merely lets the dependency crates compile under that
+nightly. Not load-bearing for soundness.
 
 ## What is **not** in the TCB
 
