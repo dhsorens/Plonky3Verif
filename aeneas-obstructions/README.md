@@ -10,6 +10,10 @@ upstream commits fixed (or regressed) which blockers over time.
 lives in [`../AENEAS.md`](../AENEAS.md); the per-crate extractor it drives is
 [`run-extract.sh`](run-extract.sh).
 
+Live obstructions (with minimal repros) are drafted in
+[`issue-drafts/`](issue-drafts/); obstructions fixed upstream are logged in
+[`RESOLVED.md`](RESOLVED.md).
+
 Only these reports and the runner script are committed — never extracted Lean
 code (it stays in `/tmp/aeneas-extract/`). The hax-based workspaces under
 `*/proofs/` are a separate, unrelated workflow.
