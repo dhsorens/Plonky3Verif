@@ -9,6 +9,7 @@ filed are drafted in `issue-drafts/`.
 | Obstruction | Issue opened | Status |
 | --- | --- | --- |
 | charon cannot lift a GAT produced by a return-position-`impl Trait`-in-trait (RPITIT) method under `--lift-associated-types='*'`; it writes an `Error` placeholder into the LLBC. Root cause of the aeneas `trait_parent_clause_id`/`trait_const_id`/`trait_type_id` lookup-failure cascade on the `p3-field` trait cluster (480+ on `p3-koala-bear`). Repro: `issue-drafts/02-trait-parent-clause-repro/`. | [charon#1266](https://github.com/AeneasVerif/charon/issues/1266) — *"Could not compute GAT from RPITIT in trait under `--lift-associated-types='*'`"* | open (filed 2026-06-04) |
+| aeneas uncaught `Not_found` in `trait_impl_is_builtin` (`Translate.ml:1017`) when a trait impl references a declaration dropped from `trans_trait_decls` (common with serde's mutually recursive `Serialize`/`Serializer` cluster). Repro: `issue-drafts/03-not-found-trait-impl-repro/`. | [aeneas#1102](https://github.com/AeneasVerif/aeneas/issues/1102) — *"Uncaught Not_found in trait_impl_is_builtin (Translate.ml:1017)"* | open (filed 2026-06-04) |
 
 ## Fixed upstream
 
