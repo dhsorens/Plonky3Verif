@@ -23,6 +23,7 @@ code (it stays in `/tmp/aeneas-extract/`). The hax-based workspaces under
 
 | Date | aeneas | charon | Headline |
 | --- | --- | --- | --- |
+| [2026-06-08](2026-06-08.md) | `39c6a720` | `9dd7f23c` (v0.1.212) | **Toolchain moved, no obstruction moved.** aeneas bumped `charon-pin` past #1263 → last run's charon override **retired** (by-the-book build). Verdicts identical; charon #1266 closed NOT_PLANNED (Issue #2 → known limitation). |
 | [2026-06-04](2026-06-04.md) | `5c70d9b0` | `985e04c6` (v0.1.210) | **#1 blocker moved.** charon #1263 fixes the `GenericsMismatch` panic → 7→10 crates produce a `.llbc`; but a new charon stack overflow (#9) + new aeneas `Not_found` (#10) appear. |
 | [2026-06-03](2026-06-03.md) | `ac74e1ba` | `a535e914` (v0.1.210) | Toolchain advanced ~90 commits; **no blocker moved**. charon still panics on `p3-field`; adjacent charon #1159 closed. |
 | [2026-05-28](2026-05-28.md) | `42776dac` | `103daa06` (v0.1.198) | Not usable yet. Top blocker: charon `GenericsMismatch` panic on `p3-field`. |
