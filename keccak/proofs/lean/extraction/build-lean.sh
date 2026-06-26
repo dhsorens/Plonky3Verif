@@ -19,10 +19,9 @@
 #           field does not exist in this proof-lib (engine/proof-lib skew).
 #   3. `lake build`.
 #
-# This flow does NOT apply the Rust-source hash_iter patch in ../../rust-patch/
-# (that is a separate sorry-reduction experiment; composing it here would also
-# need the `Iterator.fold` shim generalised — see p3_keccak/core_shims.lean).
-# So `hash_iter` here is hax's `sorry` placeholder, which is fine — it compiles.
+# `hash_iter` here is hax's `sorry` placeholder (it can't translate the
+# mutable-capture closure `apply_to_chunks(input, |buf| hasher.update(buf))`),
+# which is fine — `sorry` compiles.
 
 set -eu
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # …/proofs/lean/extraction

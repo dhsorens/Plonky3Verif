@@ -36,7 +36,7 @@ therefore not represented in Lean at all.
 | Definition | Why it is `sorry` |
 |------------|-------------------|
 | `KeccakF : Permutation [[u64;1];25]` — `permute_mut` (fallback packed, width-1) | hax can't translate the body's `unsafe { transmute::<&mut …>() }` reinterpret of `&mut [[u64;1];25]` as `&mut [u64;25]`. |
-| `Keccak256Hash : CryptographicHasher … ` — `hash_iter` | hax can't translate `p3_util::apply_to_chunks(input, \|buf\| hasher.update(buf))` — a closure with a **mutable capture** of `hasher`. (The `../../rust-patch/` experiment rewrites this in Rust; it is not applied in this build.) |
+| `Keccak256Hash : CryptographicHasher … ` — `hash_iter` | hax can't translate `p3_util::apply_to_chunks(input, \|buf\| hasher.update(buf))` — a closure with a **mutable capture** of `hasher`. |
 
 Note `hash_iter_slices` is **not** `sorry` here, but its body calls the trusted
 stubs in §C, so it is only as trustworthy as those.
@@ -81,5 +81,5 @@ use, so these defaults are **unused** by the extraction.
   most of §C and makes the hashers meaningful.
 - Add the missing `core_models` items upstream (or a faithful local model) →
   removes `core_shims` `sorry`s and the §A.2 patch.
-- Generalise the `Iterator.fold` shim + apply the `rust-patch/` hash_iter rewrite
-  → removes one §B `sorry`.
+- Model the `hash_iter` mutable-capture closure (e.g. rewrite it to an explicit
+  loop) → removes one §B `sorry`.

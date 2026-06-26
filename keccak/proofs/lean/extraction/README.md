@@ -49,9 +49,7 @@ This is a **type-checks**, not a **verified**, artifact. Outstanding `sorry`s:
 
 - `p3_keccak.lean`: `KeccakF::permute` on `[[u64;1];25]` (fallback packed, uses an
   unsafe `&mut` transmute) and `Keccak256Hash::hash_iter` (hax can't translate
-  its mutable-capture closure — the [`rust-patch/`](../../rust-patch/) experiment
-  rewrites this in Rust, but composing it here also needs the `Iterator.fold`
-  shim generalised, so it is not applied in this build).
+  its mutable-capture closure `apply_to_chunks(input, |buf| hasher.update(buf))`).
 - `p3_keccak/*`: the stub bodies (`tiny_keccak` sponge, `from/to_le_bytes`,
   range-slice indexing) are placeholders. The Keccak permutation itself is **not
   modelled** yet.
