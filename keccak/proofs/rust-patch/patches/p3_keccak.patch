@@ -1,0 +1,23 @@
+diff --git a/keccak/src/lib.rs b/keccak/src/lib.rs
+index cc605c12..37bd9121 100644
+--- a/keccak/src/lib.rs
++++ b/keccak/src/lib.rs
+@@ -99,9 +99,16 @@ impl CryptographicHasher<u8, [u8; 32]> for Keccak256Hash {
+     where
+         I: IntoIterator<Item = u8>,
+     {
+-        const BUFLEN: usize = 512; // Tweakable parameter; determined by experiment
++        // PATCHED (hax): closure→explicit loop so hax extracts it without `sorry`
++        // (cf. `hash_iter_slices` below, which already uses this form). Behaviour
++        // is identical — Keccak's `update` is incremental, so feeding bytes in
++        // any grouping yields the same digest; only the BUFLEN buffering
++        // optimisation is dropped (irrelevant: patched source only compiles
++        // during extraction, then is reverted).
+         let mut hasher = Keccak::v256();
+-        p3_util::apply_to_chunks::<BUFLEN, _, _>(input, |buf| hasher.update(buf));
++        for byte in input {
++            hasher.update(&[byte]);
++        }
+ 
+         let mut output = [0u8; 32];
+         hasher.finalize(&mut output);
