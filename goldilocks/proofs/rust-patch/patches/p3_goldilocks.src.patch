@@ -1,0 +1,258 @@
+diff --git a/goldilocks/src/goldilocks.rs b/goldilocks/src/goldilocks.rs
+index f603ce0b..a03bcbad 100644
+--- a/goldilocks/src/goldilocks.rs
++++ b/goldilocks/src/goldilocks.rs
+@@ -393,20 +393,21 @@ impl Field for Goldilocks {
+     #[cfg(all(
+         target_arch = "x86_64",
+         target_feature = "avx2",
+-        not(target_feature = "avx512f")
++        not(target_feature = "avx512f"),
++        not(hax)
+     ))]
+     type Packing = crate::PackedGoldilocksAVX2;
+ 
+-    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+     type Packing = crate::PackedGoldilocksAVX512;
+ 
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     type Packing = crate::PackedGoldilocksNeon;
+ 
+-    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
++    #[cfg(all(target_arch = "wasm32", target_feature = "simd128", not(hax)))]
+     type Packing = crate::PackedGoldilocksWasmSimd128;
+ 
+-    #[cfg(not(any(
++    #[cfg(any(hax, not(any(
+         all(
+             target_arch = "x86_64",
+             target_feature = "avx2",
+@@ -415,7 +416,7 @@ impl Field for Goldilocks {
+         all(target_arch = "x86_64", target_feature = "avx512f"),
+         target_arch = "aarch64",
+         all(target_arch = "wasm32", target_feature = "simd128"),
+-    )))]
++    ))))]
+     type Packing = Self;
+ 
+     // Sage: GF(2^64 - 2^32 + 1).multiplicative_generator()
+diff --git a/goldilocks/src/lib.rs b/goldilocks/src/lib.rs
+index 65535954..ef36e585 100644
+--- a/goldilocks/src/lib.rs
++++ b/goldilocks/src/lib.rs
+@@ -15,34 +15,36 @@ pub use poseidon2::*;
+ 
+ pub mod poseidon1;
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ mod aarch64_neon;
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub use aarch64_neon::*;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ mod x86_64_avx2;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub use x86_64_avx2::*;
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ mod x86_64_avx512;
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub use x86_64_avx512::*;
+ 
+-#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
++#[cfg(all(target_arch = "wasm32", target_feature = "simd128", not(hax)))]
+ mod wasm32_simd128;
+ 
+-#[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
++#[cfg(all(target_arch = "wasm32", target_feature = "simd128", not(hax)))]
+ pub use wasm32_simd128::*;
+diff --git a/goldilocks/src/poseidon1.rs b/goldilocks/src/poseidon1.rs
+index f738a38f..1a7a821a 100644
+--- a/goldilocks/src/poseidon1.rs
++++ b/goldilocks/src/poseidon1.rs
+@@ -91,7 +91,7 @@ pub type Poseidon1GoldilocksGeneric<const WIDTH: usize> = Poseidon1<
+ /// Karatsuba MDS convolution.
+ ///
+ /// Supports both scalar and packed state representations transparently.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub type Poseidon1Goldilocks<const WIDTH: usize> = crate::Poseidon1GoldilocksDispatch<WIDTH>;
+ 
+ /// Unified Poseidon1 permutation for Goldilocks.
+@@ -103,7 +103,7 @@ pub type Poseidon1Goldilocks<const WIDTH: usize> = crate::Poseidon1GoldilocksDis
+ /// Karatsuba MDS convolution.
+ ///
+ /// Supports both scalar and packed state representations transparently.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub type Poseidon1Goldilocks<const WIDTH: usize> = Poseidon1GoldilocksGeneric<WIDTH>;
+ 
+ /// Round constants for width-8 Poseidon1 on Goldilocks.
+@@ -859,7 +859,7 @@ pub const GOLDILOCKS_POSEIDON1_RC_12: [[Goldilocks; 12]; 30] = Goldilocks::new_2
+ /// Returns the platform-optimal implementation: dual-dispatch on aarch64
+ /// (generic for scalar, fused ASM for packed), generic Karatsuba on all
+ /// other platforms.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub fn default_goldilocks_poseidon1_8() -> Poseidon1Goldilocks<8> {
+     let constants = Poseidon1Constants {
+         rounds_f: 2 * GOLDILOCKS_POSEIDON_HALF_FULL_ROUNDS,
+@@ -876,7 +876,7 @@ pub fn default_goldilocks_poseidon1_8() -> Poseidon1Goldilocks<8> {
+ ///
+ /// Returns the platform-optimal implementation: fused ASM on aarch64,
+ /// generic Karatsuba on all other platforms.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub fn default_goldilocks_poseidon1_8() -> Poseidon1Goldilocks<8> {
+     Poseidon1::new(&Poseidon1Constants {
+         rounds_f: 2 * GOLDILOCKS_POSEIDON_HALF_FULL_ROUNDS,
+@@ -891,7 +891,7 @@ pub fn default_goldilocks_poseidon1_8() -> Poseidon1Goldilocks<8> {
+ /// Returns the platform-optimal implementation: dual-dispatch on aarch64
+ /// (generic for scalar, fused ASM for packed), generic Karatsuba on all
+ /// other platforms.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub fn default_goldilocks_poseidon1_12() -> Poseidon1Goldilocks<12> {
+     let constants = Poseidon1Constants {
+         rounds_f: 2 * GOLDILOCKS_POSEIDON_HALF_FULL_ROUNDS,
+@@ -908,7 +908,7 @@ pub fn default_goldilocks_poseidon1_12() -> Poseidon1Goldilocks<12> {
+ ///
+ /// Returns the platform-optimal implementation: fused ASM on aarch64,
+ /// generic Karatsuba on all other platforms.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub fn default_goldilocks_poseidon1_12() -> Poseidon1Goldilocks<12> {
+     Poseidon1::new(&Poseidon1Constants {
+         rounds_f: 2 * GOLDILOCKS_POSEIDON_HALF_FULL_ROUNDS,
+@@ -1060,7 +1060,7 @@ mod tests {
+         assert_ne!(output, input);
+     }
+ 
+-    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+     mod avx512 {
+         use super::*;
+         use crate::PackedGoldilocksAVX512;
+@@ -1111,7 +1111,8 @@ mod tests {
+     #[cfg(all(
+         target_arch = "x86_64",
+         target_feature = "avx2",
+-        not(target_feature = "avx512f")
++        not(target_feature = "avx512f"),
++        not(hax)
+     ))]
+     mod avx2 {
+         use super::*;
+@@ -1160,7 +1161,7 @@ mod tests {
+         }
+     }
+ 
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     mod neon {
+         use super::*;
+         use crate::PackedGoldilocksNeon;
+diff --git a/goldilocks/src/poseidon2.rs b/goldilocks/src/poseidon2.rs
+index 28a3ccd7..87eca309 100644
+--- a/goldilocks/src/poseidon2.rs
++++ b/goldilocks/src/poseidon2.rs
+@@ -3,7 +3,7 @@
+ use alloc::vec::Vec;
+ 
+ use p3_field::{Algebra, InjectiveMonomial, PrimeCharacteristicRing};
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ use p3_poseidon2::Poseidon2;
+ use p3_poseidon2::{
+     ExternalLayer, ExternalLayerConstants, ExternalLayerConstructor, GenericPoseidon2LinearLayers,
+@@ -49,13 +49,13 @@ pub const GOLDILOCKS_POSEIDON2_PARTIAL_ROUNDS_16: usize = 22;
+ /// An implementation of the Poseidon2 hash function for the Goldilocks field.
+ ///
+ /// It acts on arrays of the form `[Goldilocks; WIDTH]`.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub type Poseidon2Goldilocks<const WIDTH: usize> = crate::Poseidon2GoldilocksFused<WIDTH>;
+ 
+ /// An implementation of the Poseidon2 hash function for the Goldilocks field.
+ ///
+ /// It acts on arrays of the form `[Goldilocks; WIDTH]`.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub type Poseidon2Goldilocks<const WIDTH: usize> = Poseidon2<
+     Goldilocks,
+     Poseidon2ExternalLayerGoldilocks<WIDTH>,
+@@ -566,7 +566,7 @@ pub const GOLDILOCKS_POSEIDON2_RC_16_INTERNAL: [Goldilocks; 22] = Goldilocks::ne
+ ]);
+ 
+ /// Create a default width-8 Poseidon2 permutation for Goldilocks.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub fn default_goldilocks_poseidon2_8() -> Poseidon2Goldilocks<8> {
+     Poseidon2::new(
+         ExternalLayerConstants::new(
+@@ -578,7 +578,7 @@ pub fn default_goldilocks_poseidon2_8() -> Poseidon2Goldilocks<8> {
+ }
+ 
+ /// Create a default width-8 Poseidon2 permutation for Goldilocks.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub fn default_goldilocks_poseidon2_8() -> Poseidon2Goldilocks<8> {
+     crate::Poseidon2GoldilocksFused::new(
+         &ExternalLayerConstants::new(
+@@ -590,7 +590,7 @@ pub fn default_goldilocks_poseidon2_8() -> Poseidon2Goldilocks<8> {
+ }
+ 
+ /// Create a default width-12 Poseidon2 permutation for Goldilocks.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub fn default_goldilocks_poseidon2_12() -> Poseidon2Goldilocks<12> {
+     Poseidon2::new(
+         ExternalLayerConstants::new(
+@@ -602,7 +602,7 @@ pub fn default_goldilocks_poseidon2_12() -> Poseidon2Goldilocks<12> {
+ }
+ 
+ /// Create a default width-12 Poseidon2 permutation for Goldilocks.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub fn default_goldilocks_poseidon2_12() -> Poseidon2Goldilocks<12> {
+     crate::Poseidon2GoldilocksFused::new(
+         &ExternalLayerConstants::new(
+@@ -614,7 +614,7 @@ pub fn default_goldilocks_poseidon2_12() -> Poseidon2Goldilocks<12> {
+ }
+ 
+ /// Create a default width-16 Poseidon2 permutation for Goldilocks.
+-#[cfg(not(target_arch = "aarch64"))]
++#[cfg(any(hax, not(target_arch = "aarch64")))]
+ pub fn default_goldilocks_poseidon2_16() -> Poseidon2Goldilocks<16> {
+     Poseidon2::new(
+         ExternalLayerConstants::new(
+@@ -626,7 +626,7 @@ pub fn default_goldilocks_poseidon2_16() -> Poseidon2Goldilocks<16> {
+ }
+ 
+ /// Create a default width-16 Poseidon2 permutation for Goldilocks.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub fn default_goldilocks_poseidon2_16() -> Poseidon2Goldilocks<16> {
+     crate::Poseidon2GoldilocksFused::new(
+         &ExternalLayerConstants::new(

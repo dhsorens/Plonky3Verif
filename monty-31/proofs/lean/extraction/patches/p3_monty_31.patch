@@ -1,0 +1,2261 @@
+--- pristine.snapshot.lean	2026-06-29 12:39:02
++++ ../p3_monty_31.lean	2026-06-29 13:16:53
+@@ -2,6 +2,7 @@
+ -- Experimental lean backend for Hax
+ -- The Hax prelude library can be found in hax/proof-libs/lean
+ import Hax
++import p3_monty_31.dependencies
+ import Std.Tactic.Do
+ import Std.Do.Triple
+ import Std.Tactic.Do.Syntax
+@@ -271,14 +272,7 @@
+   PRIME (Self) : u32
+   MONTY_BITS (Self) : u32
+   MONTY_MU (Self) : u32
+-  MONTY_MASK (Self) :u32 :=
+-    RustM.of_isOk
+-      (do
+-      (rust_primitives.hax.cast_op
+-        (← ((← ((1 : u64) <<<? (MontyParameters.MONTY_BITS Self)))
+-          -? (1 : u64))) :
+-        RustM u32))
+-      (by rfl)
++  MONTY_MASK (Self) :u32 := sorry
+ 
+ attribute [instance_reducible, instance]
+   MontyParameters.trait_constr_MontyParameters_i0
+@@ -400,8 +394,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((8 : usize))
+-  where
++  ((8 : usize)) := sorry
+ 
+ @[reducible] instance Impl_4.AssociatedTypes
+   (FP : Type)
+@@ -463,8 +456,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((12 : usize))
+-  where
++  ((12 : usize)) := sorry
+ 
+ @[reducible] instance Impl_6.AssociatedTypes
+   (FP : Type)
+@@ -526,8 +518,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((16 : usize))
+-  where
++  ((16 : usize)) := sorry
+ 
+ end p3_monty_31.mds
+ 
+@@ -753,32 +744,7 @@
+   SmallConvolveMontyField31
+   (p3_monty_31.monty_31.MontyField31 FP)
+   i64
+-  i64
+-  where
+-  T_ZERO := (0 : i64)
+-  U_ZERO := (0 : i64)
+-  halve := fun (val : i64) => do (val >>>? (1 : i32))
+-  read := fun (input : (p3_monty_31.monty_31.MontyField31 FP)) => do
+-    (rust_primitives.hax.cast_op
+-      (p3_monty_31.monty_31.MontyField31.value input) :
+-      RustM i64)
+-  parity_dot :=
+-    fun (N : usize) (u : (RustArray i64 N)) (v : (RustArray i64 N)) => do
+-    (p3_mds.util.dot_product i64 (N) u v)
+-  reduce := fun (z : i64) => do
+-    let _ ←
+-      if true then do
+-        let _ ← (hax_lib.assert (← (z >=? (0 : i64))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    (p3_monty_31.monty_31.Impl.new_monty FP
+-      (← (rust_primitives.hax.cast_op
+-        (← ((← (rust_primitives.hax.cast_op z : RustM u64))
+-          %? (← (rust_primitives.hax.cast_op
+-            (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-            RustM u64)))) :
+-        RustM u32)))
++  i64 := sorry
+ 
+ end p3_monty_31.mds
+ 
+@@ -804,26 +770,7 @@
+   [trait_constr_Impl_6_i0 : p3_monty_31.data_traits.MontyParameters FP ] :
+   rand.distr.distribution.Distribution
+   rand.distr.StandardUniform
+-  (MontyField31 FP)
+-  where
+-  sample :=
+-    fun
+-      (R : Type)
+-      [trait_constr_sample_associated_type_i1 : rand_core.Rng.AssociatedTypes R]
+-      [trait_constr_sample_i1 : rand_core.Rng R ]
+-      (self : rand.distr.StandardUniform)
+-      (rng : R) => do
+-    let ⟨rng, hoist3⟩ :=
+-      (rust_primitives.hax.Tuple2.mk
+-        (← match sorry with
+-          | (core_models.ops.control_flow.ControlFlow.Break  ret) => do
+-            (pure sorry)
+-          | (core_models.ops.control_flow.ControlFlow.Continue  loop_res) => do
+-            (pure loop_res))
+-        rust_primitives.hax.Tuple0.mk);
+-    let hax_temp_output : (MontyField31 FP) ←
+-      (rust_primitives.hax.never_to_any hoist3);
+-    (pure (rust_primitives.hax.Tuple2.mk rng hax_temp_output))
++  (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_9.AssociatedTypes
+   (MP : Type)
+@@ -840,8 +787,7 @@
+     p3_monty_31.data_traits.MontyParameters.AssociatedTypes
+     MP]
+   [trait_constr_Impl_9_i0 : p3_monty_31.data_traits.MontyParameters MP ] :
+-  p3_field.packed.packed_traits.Packable (MontyField31 MP)
+-  where
++  p3_field.packed.packed_traits.Packable (MontyField31 MP) := sorry
+ 
+ @[reducible] instance Impl_30.AssociatedTypes
+   (FP : Type)
+@@ -860,38 +806,7 @@
+     p3_monty_31.data_traits.MontyParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_30_i0 : p3_monty_31.data_traits.MontyParameters FP ] :
+-  core_models.iter.traits.accum.Sum (MontyField31 FP) (MontyField31 FP)
+-  where
+-  sum :=
+-    fun
+-      (I : Type)
+-      [trait_constr_sum_associated_type_i1 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_sum_i1 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := (MontyField31 FP)})] (iter : I) => do
+-    let sum : u64 ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map I ((MontyField31 FP) -> RustM u64))
+-        u64
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          I u64 ((MontyField31 FP) -> RustM u64)
+-          iter
+-          (fun x =>
+-            (do
+-            (rust_primitives.hax.cast_op (MontyField31.value x) : RustM u64) :
+-            RustM u64)))));
+-    (Impl.new_monty FP
+-      (← (rust_primitives.hax.cast_op
+-        (← (sum
+-          %? (← (rust_primitives.hax.cast_op
+-            (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-            RustM u64)))) :
+-        RustM u32)))
++  core_models.iter.traits.accum.Sum (MontyField31 FP) (MontyField31 FP) := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -999,7 +914,6 @@
+     [trait_constr_new_i0 : p3_monty_31.data_traits.MontyParameters MP ]
+     (value : u32) :
+     RustM (MontyField31 MP) := do
+-  let _ := sorry;
+   (pure (MontyField31.mk
+     (value := (← (p3_monty_31.utils.to_monty MP value)))
+     (_phantom := core_models.marker.PhantomData.mk)))
+@@ -1021,22 +935,22 @@
+   where
+   [trait_constr_FieldParameters_i0 : PackedMontyParameters Self]
+   MONTY_ZERO (Self) :(p3_monty_31.monty_31.MontyField31 Self) :=
+-    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (0 : u32))) (by rfl)
++    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (0 : u32))) (by sorry)
+   MONTY_ONE (Self) :(p3_monty_31.monty_31.MontyField31 Self) :=
+-    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (1 : u32))) (by rfl)
++    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (1 : u32))) (by sorry)
+   MONTY_TWO (Self) :(p3_monty_31.monty_31.MontyField31 Self) :=
+-    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (2 : u32))) (by rfl)
++    RustM.of_isOk (do (p3_monty_31.monty_31.Impl.new Self (2 : u32))) (by sorry)
+   MONTY_NEG_ONE (Self) :(p3_monty_31.monty_31.MontyField31 Self) :=
+     RustM.of_isOk
+       (do
+       (p3_monty_31.monty_31.Impl.new Self
+         (← ((MontyParameters.PRIME Self) -? (1 : u32)))))
+-      (by rfl)
++      (by sorry)
+   MONTY_GEN (Self) : (p3_monty_31.monty_31.MontyField31 Self)
+   HALF_P_PLUS_1 (Self) :u32 :=
+     RustM.of_isOk
+       (do ((← ((MontyParameters.PRIME Self) +? (1 : u32))) >>>? (1 : i32)))
+-      (by rfl)
++      (by sorry)
+ 
+ attribute [instance_reducible, instance]
+   FieldParameters.trait_constr_FieldParameters_i0
+@@ -1137,7 +1051,7 @@
+   RustM.of_isOk
+     (do
+     (Impl.new FP (p3_monty_31.data_traits.FieldParameters.HALF_P_PLUS_1 FP)))
+-    (by rfl)
++    (by sorry)
+ 
+ @[reducible] instance Impl_7.AssociatedTypes
+   (FP : Type)
+@@ -1154,19 +1068,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_7_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  serde_core.ser.Serialize (MontyField31 FP)
+-  where
+-  serialize :=
+-    fun
+-      (S : Type)
+-      [trait_constr_serialize_associated_type_i1 :
+-        serde_core.ser.Serializer.AssociatedTypes
+-        S]
+-      [trait_constr_serialize_i1 : serde_core.ser.Serializer S ]
+-      (self : (MontyField31 FP))
+-      (serializer : S) => do
+-    (serde_core.ser.Serializer.serialize_u32
+-      S serializer (MontyField31.value self))
++  serde_core.ser.Serialize (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_8.AssociatedTypes
+   (FP : Type)
+@@ -1183,28 +1085,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_8_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  serde_core.de.Deserialize (MontyField31 FP)
+-  where
+-  deserialize :=
+-    fun
+-      (D : Type)
+-      [trait_constr_deserialize_associated_type_i1 :
+-        serde_core.de.Deserializer.AssociatedTypes
+-        D]
+-      [trait_constr_deserialize_i1 : serde_core.de.Deserializer D ] (d : D) =>
+-      do
+-    match (← (serde_core.de.Deserialize.deserialize u32 D d)) with
+-      | (core_models.result.Result.Ok  val) => do
+-        if
+-        (← (val <? (p3_monty_31.data_traits.MontyParameters.PRIME FP))) then do
+-          (pure (core_models.result.Result.Ok (← (Impl.new_monty FP val))))
+-        else do
+-          (pure (core_models.result.Result.Err
+-            (← (serde_core.de.Error.custom
+-              (serde_core.de.Deserializer.Error D) String
+-              "Value is out of range"))))
+-      | (core_models.result.Result.Err  err) => do
+-        (pure (core_models.result.Result.Err err))
++  serde_core.de.Deserialize (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_16.AssociatedTypes
+   (FP : Type)
+@@ -1221,16 +1102,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_16_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) u32
+-  where
+-  from_int := fun (int : u32) => do (Impl.new FP int)
+-  from_canonical_checked := fun (int : u32) => do
+-    (core_models.bool.Impl.then
+-      (MontyField31 FP)
+-      (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-      (← (int <? (p3_monty_31.data_traits.MontyParameters.PRIME FP)))
+-      (fun _ => (do (Impl.new FP int) : RustM (MontyField31 FP))))
+-  from_canonical_unchecked := fun (int : u32) => do (Impl.new FP int)
++  p3_field.integers.QuotientMap (MontyField31 FP) u32 := sorry
+ 
+ @[reducible] instance Impl_38.AssociatedTypes
+   (FP : Type)
+@@ -1247,24 +1119,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_38_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) u8
+-  where
+-  from_int := fun (int : u8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
+-  from_canonical_checked := fun (int : u8) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        (MontyField31 FP)
+-        u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-  from_canonical_unchecked := fun (int : u8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++  p3_field.integers.QuotientMap (MontyField31 FP) u8 := sorry
+ 
+ @[reducible] instance Impl_39.AssociatedTypes
+   (FP : Type)
+@@ -1281,24 +1136,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_39_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) u16
+-  where
+-  from_int := fun (int : u16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
+-  from_canonical_checked := fun (int : u16) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        (MontyField31 FP)
+-        u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-  from_canonical_unchecked := fun (int : u16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++  p3_field.integers.QuotientMap (MontyField31 FP) u16 := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -1389,8 +1227,7 @@
+   p3_poseidon1.generic.GenericPoseidon1LinearLayers
+   (GenericPoseidon1LinearLayersMonty31 FP PRBP)
+   F
+-  (WIDTH)
+-  where
++  (WIDTH) := sorry
+ 
+ end p3_monty_31.poseidon1
+ 
+@@ -1446,29 +1283,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_17_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) i32
+-  where
+-  from_int := fun (int : i32) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_signed FP int)))
+-  from_canonical_checked := fun (int : i32) => do
+-    let bound : i32 ←
+-      (rust_primitives.hax.cast_op
+-        (← ((p3_monty_31.data_traits.MontyParameters.PRIME FP) >>>? (1 : i32)))
+-        :
+-        RustM i32);
+-    if (← (int <=? bound)) then do
+-      (core_models.bool.Impl.then
+-        (MontyField31 FP)
+-        (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-        (← (int >=? (← (-? bound))))
+-        (fun _ =>
+-          (do
+-          (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_signed FP int))) :
+-          RustM (MontyField31 FP))))
+-    else do
+-      (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : i32) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_signed FP int)))
++  p3_field.integers.QuotientMap (MontyField31 FP) i32 := sorry
+ 
+ @[reducible] instance Impl_40.AssociatedTypes
+   (FP : Type)
+@@ -1485,24 +1300,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_40_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) i8
+-  where
+-  from_int := fun (int : i8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
+-  from_canonical_checked := fun (int : i8) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        (MontyField31 FP)
+-        i32 (← (rust_primitives.hax.cast_op int : RustM i32))))))
+-  from_canonical_unchecked := fun (int : i8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++  p3_field.integers.QuotientMap (MontyField31 FP) i8 := sorry
+ 
+ @[reducible] instance Impl_41.AssociatedTypes
+   (FP : Type)
+@@ -1519,24 +1317,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_41_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) i16
+-  where
+-  from_int := fun (int : i16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
+-  from_canonical_checked := fun (int : i16) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        (MontyField31 FP)
+-        i32 (← (rust_primitives.hax.cast_op int : RustM i32))))))
+-  from_canonical_unchecked := fun (int : i16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      (MontyField31 FP)
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++  p3_field.integers.QuotientMap (MontyField31 FP) i16 := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -1610,7 +1391,7 @@
+             usize
+             (RustArray (MontyField31 FP) 64)))));
+     (pure powers_of_two))
+-    (by rfl)
++    (by sorry)
+ 
+ @[reducible] instance Impl_18.AssociatedTypes
+   (FP : Type)
+@@ -1627,24 +1408,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_18_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) u64
+-  where
+-  from_int := fun (int : u64) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_64 FP int)))
+-  from_canonical_checked := fun (int : u64) => do
+-    (core_models.bool.Impl.then
+-      (MontyField31 FP)
+-      (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-      (← (int
+-        <? (← (rust_primitives.hax.cast_op
+-          (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-          RustM u64))))
+-      (fun _ =>
+-        (do
+-        (Impl.new FP (← (rust_primitives.hax.cast_op int : RustM u32))) :
+-        RustM (MontyField31 FP))))
+-  from_canonical_unchecked := fun (int : u64) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_64 FP int)))
++  p3_field.integers.QuotientMap (MontyField31 FP) u64 := sorry
+ 
+ @[reducible] instance Impl_20.AssociatedTypes
+   (FP : Type)
+@@ -1661,33 +1425,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_20_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) u128
+-  where
+-  from_int := fun (int : u128) => do
+-    (Impl.new_monty FP
+-      (← (p3_monty_31.utils.to_monty FP
+-        (← (rust_primitives.hax.cast_op
+-          (← (int
+-            %? (← (rust_primitives.hax.cast_op
+-              (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-              RustM u128)))) :
+-          RustM u32)))))
+-  from_canonical_checked := fun (int : u128) => do
+-    (core_models.bool.Impl.then
+-      (MontyField31 FP)
+-      (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-      (← (int
+-        <? (← (rust_primitives.hax.cast_op
+-          (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-          RustM u128))))
+-      (fun _ =>
+-        (do
+-        (Impl.new FP (← (rust_primitives.hax.cast_op int : RustM u32))) :
+-        RustM (MontyField31 FP))))
+-  from_canonical_unchecked := fun (int : u128) => do
+-    (Impl.new_monty FP
+-      (← (p3_monty_31.utils.to_monty_64 FP
+-        (← (rust_primitives.hax.cast_op int : RustM u64)))))
++  p3_field.integers.QuotientMap (MontyField31 FP) u128 := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -1744,31 +1482,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_19_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) i64
+-  where
+-  from_int := fun (int : i64) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_64_signed FP int)))
+-  from_canonical_checked := fun (int : i64) => do
+-    let bound : i64 ←
+-      (rust_primitives.hax.cast_op
+-        (← ((p3_monty_31.data_traits.MontyParameters.PRIME FP) >>>? (1 : i32)))
+-        :
+-        RustM i64);
+-    if (← (int <=? bound)) then do
+-      (core_models.bool.Impl.then
+-        (MontyField31 FP)
+-        (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-        (← (int >=? (← (-? bound))))
+-        (fun _ =>
+-          (do
+-          (Impl.new_monty FP
+-            (← (p3_monty_31.utils.to_monty_signed FP
+-              (← (rust_primitives.hax.cast_op int : RustM i32))))) :
+-          RustM (MontyField31 FP))))
+-    else do
+-      (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : i64) => do
+-    (Impl.new_monty FP (← (p3_monty_31.utils.to_monty_64_signed FP int)))
++  p3_field.integers.QuotientMap (MontyField31 FP) i64 := sorry
+ 
+ @[reducible] instance Impl_21.AssociatedTypes
+   (FP : Type)
+@@ -1785,40 +1499,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_21_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.integers.QuotientMap (MontyField31 FP) i128
+-  where
+-  from_int := fun (int : i128) => do
+-    (Impl.new_monty FP
+-      (← (p3_monty_31.utils.to_monty_signed FP
+-        (← (rust_primitives.hax.cast_op
+-          (← (int
+-            %? (← (rust_primitives.hax.cast_op
+-              (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-              RustM i128)))) :
+-          RustM i32)))))
+-  from_canonical_checked := fun (int : i128) => do
+-    let bound : i128 ←
+-      (rust_primitives.hax.cast_op
+-        (← ((p3_monty_31.data_traits.MontyParameters.PRIME FP) >>>? (1 : i32)))
+-        :
+-        RustM i128);
+-    if (← (int <=? bound)) then do
+-      (core_models.bool.Impl.then
+-        (MontyField31 FP)
+-        (rust_primitives.hax.Tuple0 -> RustM (MontyField31 FP))
+-        (← (int >=? (← (-? bound))))
+-        (fun _ =>
+-          (do
+-          (Impl.new_monty FP
+-            (← (p3_monty_31.utils.to_monty_signed FP
+-              (← (rust_primitives.hax.cast_op int : RustM i32))))) :
+-          RustM (MontyField31 FP))))
+-    else do
+-      (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : i128) => do
+-    (Impl.new_monty FP
+-      (← (p3_monty_31.utils.to_monty_64_signed FP
+-        (← (rust_primitives.hax.cast_op int : RustM i64)))))
++  p3_field.integers.QuotientMap (MontyField31 FP) i128 := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -2233,9 +1914,9 @@
+   [trait_constr_Impl_5_i0 : p3_monty_31.data_traits.MontyParameters FP ] :
+   core_models.fmt.Debug (MontyField31 FP)
+   where
+-  fmt := fun (self : (MontyField31 FP)) (f : core_models.fmt.Formatter) => do
++  dbg_fmt := fun (self : (MontyField31 FP)) (f : core_models.fmt.Formatter) => do
+     let ⟨tmp0, out⟩ ←
+-      (core_models.fmt.Debug.fmt u32 (← (Impl.to_u32 FP self)) f);
++      (core_models.fmt.Debug.dbg_fmt u32 (← (Impl.to_u32 FP self)) f);
+     let f : core_models.fmt.Formatter := tmp0;
+     let
+       hax_temp_output : (core_models.result.Result
+@@ -2320,7 +2001,6 @@
+       ]
+     (x : u128) :
+     RustM u32 := do
+-  let _ := sorry;
+   let _ ←
+     if true then do
+       let _ ← (hax_lib.assert (← (x <? (← ((1 : u128) <<<? (96 : i32))))));
+@@ -2655,17 +2335,7 @@
+   p3_poseidon1.internal.PartialRoundLayerConstructor
+   (Poseidon1InternalLayerMonty31 FP (WIDTH) ILP)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  (WIDTH)
+-  where
+-  new_from_constants :=
+-    fun
+-      (internal_constants :
+-      (p3_poseidon1.internal.PartialRoundConstants
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (WIDTH))) => do
+-    (pure (Poseidon1InternalLayerMonty31.mk
+-      (internal_constants := internal_constants)
+-      (_phantom := core_models.marker.PhantomData.mk)))
++  (WIDTH) := sorry
+ 
+ @[reducible] instance Impl_1.AssociatedTypes
+   (FP : Type)
+@@ -2700,17 +2370,7 @@
+   p3_poseidon1.external.FullRoundLayerConstructor
+   (Poseidon1ExternalLayerMonty31 FP MU (WIDTH))
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  (WIDTH)
+-  where
+-  new_from_constants :=
+-    fun
+-      (external_constants :
+-      (p3_poseidon1.external.FullRoundConstants
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (WIDTH))) => do
+-    (pure (Poseidon1ExternalLayerMonty31.mk
+-      (external_constants := external_constants)
+-      (_mds := core_models.marker.PhantomData.mk)))
++  (WIDTH) := sorry
+ 
+ end p3_monty_31.no_packing.poseidon1
+ 
+@@ -2839,26 +2499,7 @@
+   (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31 FP (WIDTH))
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (WIDTH)
+-  (D)
+-  where
+-  permute_state_initial :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
+-        FP
+-        (WIDTH)))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let _ := sorry;
+-    (pure state)
+-  permute_state_terminal :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
+-        FP
+-        (WIDTH)))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let _ := sorry;
+-    (pure state)
++  (D) := sorry
+ 
+ end p3_monty_31.poseidon2
+ 
+@@ -2888,16 +2529,7 @@
+   p3_poseidon2.external.ExternalLayerConstructor
+   (Poseidon2ExternalLayerMonty31 FP (WIDTH))
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  (WIDTH)
+-  where
+-  new_from_constants :=
+-    fun
+-      (external_constants :
+-      (p3_poseidon2.external.ExternalLayerConstants
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (WIDTH))) => do
+-    (pure (Poseidon2ExternalLayerMonty31.mk
+-      (external_constants := external_constants)))
++  (WIDTH) := sorry
+ 
+ end p3_monty_31.no_packing.poseidon2
+ 
+@@ -2919,7 +2551,6 @@
+     (b : (p3_monty_31.monty_31.MontyField31 FP))
+     (res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) :
+     RustM (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) := do
+-  let _ := sorry;
+   (pure res)
+ 
+ end p3_monty_31.no_packing
+@@ -2943,20 +2574,9 @@
+     RustM.of_isOk
+       (do
+       (rust_primitives.hax.cast_op (MontyParameters.PRIME Self) : RustM i128))
+-      (by rfl)
+-  PSEUDO_INV (Self) :i64 :=
+-    RustM.of_isOk
+-      (do
+-      (rust_primitives.hax.cast_op
+-        (← ((← ((1 : i128)
+-            <<<? (← ((2 : usize) *? (BarrettParameters.N Self)))))
+-          /? (BarrettParameters.PRIME_I128 Self))) :
+-        RustM i64))
+-      (by rfl)
+-  MASK (Self) :i64 :=
+-    RustM.of_isOk
+-      (do (~? (← ((← ((1 : i64) <<<? (10 : i32))) -? (1 : i64)))))
+-      (by rfl)
++      (by sorry)
++  PSEUDO_INV (Self) :i64 := sorry
++  MASK (Self) :i64 := sorry
+ 
+ attribute [instance_reducible, instance]
+   BarrettParameters.trait_constr_BarrettParameters_i0
+@@ -2987,13 +2607,7 @@
+     (RustSlice (p3_monty_31.monty_31.MontyField31 Self))
+     ]
+   TWO_ADICITY (Self) : usize
+-  ODD_FACTOR (Self) :i32 :=
+-    RustM.of_isOk
+-      (do
+-      (rust_primitives.hax.cast_op
+-        (← ((MontyParameters.PRIME Self) >>>? (TwoAdicData.TWO_ADICITY Self))) :
+-        RustM i32))
+-      (by rfl)
++  ODD_FACTOR (Self) :i32 := sorry
+   TWO_ADIC_GENERATORS (Self) : associatedTypes.ArrayLike
+   ROOTS_8 (Self) : associatedTypes.ArrayLike
+   INV_ROOTS_8 (Self) : associatedTypes.ArrayLike
+@@ -3039,12 +2653,7 @@
+     [trait_constr_mul_w_i1 : p3_field.field.Algebra
+       A
+       (p3_monty_31.monty_31.MontyField31 Self)
+-      ] (a : A) :RustM A := do
+-    (core_models.ops.arith.Mul.mul
+-      A
+-      (p3_monty_31.monty_31.MontyField31 Self)
+-      a
+-      (BinomialExtensionData.W Self (DEG)))
++      ] (a : A) :RustM A := sorry
+   DTH_ROOT (Self) (DEG) : (p3_monty_31.monty_31.MontyField31 Self)
+   EXT_GENERATOR (Self) (DEG) :
+     (RustArray (p3_monty_31.monty_31.MontyField31 Self) DEG)
+@@ -3114,10 +2723,7 @@
+   [trait_constr_Impl_3_i0 : p3_monty_31.data_traits.MontyParameters FP ] :
+   core_models.cmp.PartialOrd (MontyField31 FP) (MontyField31 FP)
+   where
+-  partial_cmp :=
+-    fun (self : (MontyField31 FP)) (other : (MontyField31 FP)) => do
+-    (pure (core_models.option.Option.Some
+-      (← (core_models.cmp.Ord.cmp (MontyField31 FP) self other))))
++  partial_cmp := sorry
+ 
+ @[reducible] instance Impl_2.AssociatedTypes
+   (FP : Type)
+@@ -3200,38 +2806,7 @@
+     [trait_constr_generic_internal_linear_layer_i1 :
+       p3_field.field.PrimeCharacteristicRing
+       R
+-      ] (state : (RustArray R WIDTH)) :RustM (RustArray R WIDTH) := do
+-    let part_sum : R ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map
+-          (core_models.slice.iter.Iter R)
+-          (R -> RustM R)) R
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.slice.iter.Iter R) R (R -> RustM R)
+-          (← (core_models.slice.Impl.iter R
+-            (← state[
+-              (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-              ]_?)))
+-          (fun r => (do (p3_field.dup.Dup.dup R r) : RustM R)))));
+-    let full_sum : R ←
+-      (core_models.ops.arith.Add.add
+-        R
+-        R
+-        (← (p3_field.dup.Dup.dup R part_sum))
+-        (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))));
+-    let state : (RustArray R WIDTH) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (0 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R part_sum (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))))));
+-    let state : (RustArray R WIDTH) ←
+-      (InternalLayerBaseParameters.internal_layer_mat_mul
+-        Self
+-        MP
+-        (WIDTH) R state full_sum);
+-    (pure state)
++      ] (state : (RustArray R WIDTH)) :RustM (RustArray R WIDTH) := sorry
+ 
+ attribute [instance_reducible, instance]
+   InternalLayerBaseParameters.trait_constr_InternalLayerBaseParameters_i0
+@@ -3306,58 +2881,7 @@
+   LargeConvolveMontyField31
+   (p3_monty_31.monty_31.MontyField31 FP)
+   i64
+-  i64
+-  where
+-  T_ZERO := (0 : i64)
+-  U_ZERO := (0 : i64)
+-  halve := fun (val : i64) => do (val >>>? (1 : i32))
+-  read := fun (input : (p3_monty_31.monty_31.MontyField31 FP)) => do
+-    (rust_primitives.hax.cast_op
+-      (p3_monty_31.monty_31.MontyField31.value input) :
+-      RustM i64)
+-  parity_dot :=
+-    fun (N : usize) (u : (RustArray i64 N)) (v : (RustArray i64 N)) => do
+-    let dp : i128 := (0 : i128);
+-    let dp : i128 ←
+-      (rust_primitives.hax.folds.fold_range
+-        (0 : usize)
+-        N
+-        (fun dp _ => (do (pure true) : RustM Bool))
+-        dp
+-        (fun dp i =>
+-          (do
+-          (dp
+-            +? (← ((← (rust_primitives.hax.cast_op (← u[i]_?) : RustM i128))
+-              *? (← (rust_primitives.hax.cast_op (← v[i]_?) : RustM i128))))) :
+-          RustM i128)));
+-    (barrett_red_monty31 FP dp)
+-  reduce := fun (z : i64) => do
+-    let _ ←
+-      if true then do
+-        let _ ←
+-          (hax_lib.assert (← (z >? (← (-? (← ((1 : i64) <<<? (55 : i32))))))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    let _ ←
+-      if true then do
+-        let _ ← (hax_lib.assert (← (z <? (← ((1 : i64) <<<? (55 : i32))))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    let red : u32 ←
+-      (rust_primitives.hax.cast_op
+-        (← (z
+-          %? (← (rust_primitives.hax.cast_op
+-            (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-            RustM i64)))) :
+-        RustM u32);
+-    let ⟨corr, over⟩ ←
+-      (core_models.num.Impl_8.overflowing_add
+-        red
+-        (p3_monty_31.data_traits.MontyParameters.PRIME FP));
+-    let value : u32 ← if over then do (pure corr) else do (pure red);
+-    (p3_monty_31.monty_31.Impl.new_monty FP value)
++  i64 := sorry
+ 
+ @[reducible] instance Impl_8.AssociatedTypes
+   (FP : Type)
+@@ -3419,8 +2943,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((24 : usize))
+-  where
++  ((24 : usize)) := sorry
+ 
+ @[reducible] instance Impl_10.AssociatedTypes
+   (FP : Type)
+@@ -3482,8 +3005,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((32 : usize))
+-  where
++  ((32 : usize)) := sorry
+ 
+ @[reducible] instance Impl_12.AssociatedTypes
+   (FP : Type)
+@@ -3545,8 +3067,7 @@
+   p3_mds.MdsPermutation
+   (MdsMatrixMontyField31 MU)
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  ((64 : usize))
+-  where
++  ((64 : usize)) := sorry
+ 
+ end p3_monty_31.mds
+ 
+@@ -3627,24 +3148,7 @@
+   [trait_constr_Impl_2_i1 : InternalLayerBaseParameters ILBP FP (WIDTH) ] :
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers
+   (GenericPoseidon2LinearLayersMonty31 FP ILBP)
+-  (WIDTH)
+-  where
+-  internal_linear_layer :=
+-    fun
+-      (R : Type)
+-      [trait_constr_internal_linear_layer_associated_type_i2 :
+-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
+-        R]
+-      [trait_constr_internal_linear_layer_i2 :
+-        p3_field.field.PrimeCharacteristicRing
+-        R
+-        ] (state : (RustArray R WIDTH)) => do
+-    let state : (RustArray R WIDTH) ←
+-      (InternalLayerBaseParameters.generic_internal_linear_layer
+-        ILBP
+-        FP
+-        (WIDTH) R state);
+-    (pure state)
++  (WIDTH) := sorry
+ 
+ end p3_monty_31.poseidon2
+ 
+@@ -3860,17 +3364,7 @@
+     P2P)
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (WIDTH)
+-  (D)
+-  where
+-  permute_state :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
+-        FP
+-        (WIDTH)
+-        P2P))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    (pure sorry)
++  (D) := sorry
+ 
+ end p3_monty_31.poseidon2
+ 
+@@ -3920,16 +3414,7 @@
+     ] :
+   p3_poseidon2.internal.InternalLayerConstructor
+   (Poseidon2InternalLayerMonty31 FP (WIDTH) ILP)
+-  (p3_monty_31.monty_31.MontyField31 FP)
+-  where
+-  new_from_constants :=
+-    fun
+-      (internal_constants :
+-      (alloc.vec.Vec (p3_monty_31.monty_31.MontyField31 FP) alloc.alloc.Global))
+-      => do
+-    (pure (Poseidon2InternalLayerMonty31.mk
+-      (internal_constants := internal_constants)
+-      (_phantom := core_models.marker.PhantomData.mk)))
++  (p3_monty_31.monty_31.MontyField31 FP) := sorry
+ 
+ end p3_monty_31.no_packing.poseidon2
+ 
+@@ -3969,8 +3454,7 @@
+     FP
+     (D)
+     ] :
+-  p3_field.field.InjectiveMonomial (MontyField31 FP) (D)
+-  where
++  p3_field.field.InjectiveMonomial (MontyField31 FP) (D) := sorry
+ 
+ @[reducible] instance Impl_12.AssociatedTypes
+   (FP : Type)
+@@ -4005,12 +3489,7 @@
+     FP
+     (D)
+     ] :
+-  p3_field.field.PermutationMonomial (MontyField31 FP) (D)
+-  where
+-  injective_exp_root_n := fun (self : (MontyField31 FP)) => do
+-    (p3_monty_31.data_traits.RelativelyPrimePower.exp_root_d
+-      FP
+-      (D) (MontyField31 FP) self)
++  p3_field.field.PermutationMonomial (MontyField31 FP) (D) := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -4073,62 +3552,7 @@
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (p3_monty_31.monty_31.MontyField31 FP)
+   ((5 : usize))
+-  p3_field.extension.QuinticTrinomial
+-  where
+-  ext_mul :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (p3_monty_31.no_packing.quintic_mul_packed_trinomial FP a b res);
+-    (pure res)
+-  ext_square :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (p3_field.extension.quintic_extension.quintic_square
+-        (p3_monty_31.monty_31.MontyField31 FP) a res);
+-    (pure res)
+-  ext_add :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        (5 : usize));
+-    let a : (RustArray u32 5) := sorry;
+-    let b : (RustArray u32 5) := sorry;
+-    let _ := sorry;
+-    (pure res)
+-  ext_sub :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        (5 : usize));
+-    let a : (RustArray u32 5) := sorry;
+-    let b : (RustArray u32 5) := sorry;
+-    let _ := sorry;
+-    (pure res)
+-  ext_base_mul :=
+-    fun
+-      (lhs : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-      (rhs : (p3_monty_31.monty_31.MontyField31 FP)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        (5 : usize));
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5) ←
+-      (p3_monty_31.no_packing.base_mul_packed FP ((5 : usize)) lhs rhs res);
+-    (pure res)
++  p3_field.extension.QuinticTrinomial := sorry
+ 
+ end p3_monty_31.extension
+ 
+@@ -4154,14 +3578,7 @@
+   [trait_constr_Impl_47_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+   core_models.ops.arith.DivAssign (MontyField31 FP) (MontyField31 FP)
+   where
+-  div_assign := fun (self : (MontyField31 FP)) (rhs : (MontyField31 FP)) => do
+-    let self : (MontyField31 FP) ←
+-      (core_models.ops.arith.MulAssign.mul_assign
+-        (MontyField31 FP)
+-        (MontyField31 FP)
+-        self
+-        (← (p3_field.field.Field.inverse (MontyField31 FP) rhs)));
+-    (pure self)
++  div_assign := sorry
+ 
+ @[reducible] instance Impl_46.AssociatedTypes
+   (FP : Type)
+@@ -4181,12 +3598,7 @@
+   [trait_constr_Impl_46_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+   core_models.ops.arith.Div (MontyField31 FP) (MontyField31 FP)
+   where
+-  div := fun (self : (MontyField31 FP)) (rhs : (MontyField31 FP)) => do
+-    (core_models.ops.arith.Mul.mul
+-      (MontyField31 FP)
+-      (MontyField31 FP)
+-      self
+-      (← (p3_field.field.Field.inverse (MontyField31 FP) rhs)))
++  div := sorry
+ 
+ @[reducible] instance Impl_45.AssociatedTypes
+   (FP : Type)
+@@ -4205,31 +3617,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_45_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  core_models.iter.traits.accum.Product (MontyField31 FP) (MontyField31 FP)
+-  where
+-  product :=
+-    fun
+-      (I : Type)
+-      [trait_constr_product_associated_type_i1 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_product_i1 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := (MontyField31 FP)})] (iter : I) => do
+-    (core_models.option.Impl.unwrap_or (MontyField31 FP)
+-      (← (core_models.iter.traits.iterator.Iterator.reduce
+-        I ((MontyField31 FP) -> (MontyField31 FP) -> RustM (MontyField31 FP))
+-        iter
+-        (fun x y =>
+-          (do
+-          (core_models.ops.arith.Mul.mul
+-            (MontyField31 FP)
+-            (MontyField31 FP) x y) :
+-          RustM (MontyField31 FP)))))
+-      (p3_field.field.PrimeCharacteristicRing.ONE (MontyField31 FP)))
++  core_models.iter.traits.accum.Product (MontyField31 FP) (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_28.AssociatedTypes
+   (FP : Type)
+@@ -4249,12 +3637,7 @@
+   [trait_constr_Impl_28_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+   core_models.ops.arith.Neg (MontyField31 FP)
+   where
+-  neg := fun (self : (MontyField31 FP)) => do
+-    (core_models.ops.arith.Sub.sub
+-      (MontyField31 FP)
+-      (MontyField31 FP)
+-      (p3_field.field.PrimeCharacteristicRing.ZERO (MontyField31 FP))
+-      self)
++  neg := sorry
+ 
+ @[reducible] instance Impl_24.AssociatedTypes
+   (FP : Type)
+@@ -4271,14 +3654,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_24_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.PrimeField32 (MontyField31 FP)
+-  where
+-  ORDER_U32 := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.MontyParameters.PRIME FP)))
+-    (by rfl)
+-  as_canonical_u32 := fun (self : (MontyField31 FP)) => do (Impl.to_u32 FP self)
+-  to_unique_u32 := fun (self : (MontyField31 FP)) => do
+-    (pure (MontyField31.value self))
++  p3_field.field.PrimeField32 (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_23.AssociatedTypes
+   (FP : Type)
+@@ -4295,21 +3671,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_23_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.PrimeField64 (MontyField31 FP)
+-  where
+-  ORDER_U64 := RustM.of_isOk
+-    (do
+-    (rust_primitives.hax.cast_op
+-      (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-      RustM u64))
+-    (by rfl)
+-  as_canonical_u64 := fun (self : (MontyField31 FP)) => do
+-    (core_models.convert.Into.into
+-      u32
+-      u64
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 (MontyField31 FP) self)))
+-  to_unique_u64 := fun (self : (MontyField31 FP)) => do
+-    (rust_primitives.hax.cast_op (MontyField31.value self) : RustM u64)
++  p3_field.field.PrimeField64 (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_22.AssociatedTypes
+   (FP : Type)
+@@ -4326,13 +3688,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_22_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.PrimeField (MontyField31 FP)
+-  where
+-  as_canonical_biguint := fun (self : (MontyField31 FP)) => do
+-    (core_models.convert.Into.into
+-      u32
+-      num_bigint.biguint.BigUint
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 (MontyField31 FP) self)))
++  p3_field.field.PrimeField (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_14.AssociatedTypes
+   (FP : Type)
+@@ -4350,44 +3706,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_14_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.Field (MontyField31 FP)
+-  where
+-  GENERATOR := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.FieldParameters.MONTY_GEN FP)))
+-    (by rfl)
+-  try_inverse := fun (self : (MontyField31 FP)) => do
+-    if (← (p3_field.field.Field.is_zero (MontyField31 FP) self)) then do
+-      (pure core_models.option.Option.None)
+-    else do
+-      let gcd_inverse : i64 ←
+-        (p3_util.gcd_inversion_prime_field_32 ((31 : u32))
+-          (MontyField31.value self)
+-          (p3_monty_31.data_traits.MontyParameters.PRIME FP));
+-      let pos_inverse : u64 ←
+-        (rust_primitives.hax.cast_op
+-          (← ((← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM i64))
+-              <<<? (30 : i32)))
+-            +? gcd_inverse)) :
+-          RustM u64);
+-      let uncorrected_value : (MontyField31 FP) ←
+-        (Impl.new_monty FP (← (p3_monty_31.utils.monty_reduce FP pos_inverse)));
+-      (pure (core_models.option.Option.Some
+-        (← (p3_field.field.PrimeCharacteristicRing.mul_2exp_u64
+-          (MontyField31 FP)
+-          uncorrected_value
+-          (← (rust_primitives.hax.cast_op
+-            (← ((← ((3 : u32)
+-                *? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP)))
+-              -? (← ((← ((2 : u32) *? Impl_14.try_inverse.NUM_PRIME_BITS))
+-                -? (2 : u32))))) :
+-            RustM u64))))))
+-  order := fun (_ : rust_primitives.hax.Tuple0) => do
+-    (core_models.convert.Into.into
+-      u32
+-      num_bigint.biguint.BigUint
+-      (p3_monty_31.data_traits.MontyParameters.PRIME FP))
++  p3_field.field.Field (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_13.AssociatedTypes
+   (FP : Type)
+@@ -4404,169 +3723,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_13_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.RawDataSerializable (MontyField31 FP)
+-  where
+-  NUM_BYTES := (4 : usize)
+-  into_bytes := fun (self : (MontyField31 FP)) => do
+-    (core_models.num.Impl_8.to_le_bytes
+-      (← (p3_field.field.PrimeField32.to_unique_u32 (MontyField31 FP) self)))
+-  into_u32_stream :=
+-    fun
+-      (impl_IntoIterator_Item_=_Self_ : Type)
+-      [trait_constr_into_u32_stream_associated_type_i1 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_Self_]
+-      [trait_constr_into_u32_stream_i1 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_Self_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_Self_
+-          by infer_instance
+-          with Item := (MontyField31 FP)})]
+-      (input : impl_IntoIterator_Item_=_Self_) => do
+-    (core_models.iter.traits.iterator.Iterator.map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_Self_) u32 ((MontyField31 FP) -> RustM u32)
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_Self_ input))
+-      (fun x =>
+-        (do
+-        (p3_field.field.PrimeField32.to_unique_u32 (MontyField31 FP) x) :
+-        RustM u32)))
+-  into_u64_stream :=
+-    fun
+-      (impl_IntoIterator_Item_=_Self_ : Type)
+-      [trait_constr_into_u64_stream_associated_type_i1 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_Self_]
+-      [trait_constr_into_u64_stream_i1 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_Self_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_Self_
+-          by infer_instance
+-          with Item := (MontyField31 FP)})]
+-      (input : impl_IntoIterator_Item_=_Self_) => do
+-    (pure sorry)
+-  into_parallel_byte_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_byte_streams_associated_type_i1 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_byte_streams_i1 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray (MontyField31 FP) N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (core_models.iter.traits.iterator.Iterator.flat_map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_[Self;_N]_)
+-      (core_models.iter.adapters.map.Map
+-        (core_models.ops.range.Range usize)
+-        (usize -> RustM (RustArray u8 N)))
+-      ((RustArray (MontyField31 FP) N) ->
+-      RustM (core_models.iter.adapters.map.Map
+-        (core_models.ops.range.Range usize)
+-        (usize -> RustM (RustArray u8 N))))
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_[Self;_N]_ input))
+-      (fun vector =>
+-        (do
+-        let bytes : (RustArray (RustArray u8 4) N) ←
+-          (core_models.array.Impl_23.map
+-            (MontyField31 FP)
+-            (N)
+-            ((MontyField31 FP) -> RustM (RustArray u8 4))
+-            (RustArray u8 4)
+-            vector
+-            (fun elem =>
+-              (do
+-              (p3_field.field.RawDataSerializable.into_bytes
+-                (MontyField31 FP) elem) :
+-              RustM (RustArray u8 4))));
+-        (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.ops.range.Range usize)
+-          (RustArray u8 N)
+-          (usize -> RustM (RustArray u8 N))
+-          (core_models.ops.range.Range.mk
+-            (start := (0 : usize))
+-            (_end := (p3_field.field.RawDataSerializable.NUM_BYTES
+-              (MontyField31 FP))))
+-          (fun i =>
+-            (do
+-            (core_models.array.from_fn u8 (N) (usize -> RustM u8)
+-              (fun j => (do (← bytes[j]_?)[i]_? : RustM u8))) :
+-            RustM (RustArray u8 N)))) :
+-        RustM
+-        (core_models.iter.adapters.map.Map
+-          (core_models.ops.range.Range usize)
+-          (usize -> RustM (RustArray u8 N))))))
+-  into_parallel_u32_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_u32_streams_associated_type_i1 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_u32_streams_i1 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray (MontyField31 FP) N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (core_models.iter.traits.iterator.Iterator.map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_[Self;_N]_)
+-      (RustArray u32 N)
+-      ((RustArray (MontyField31 FP) N) -> RustM (RustArray u32 N))
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_[Self;_N]_ input))
+-      (fun vec =>
+-        (do
+-        (core_models.array.Impl_23.map
+-          (MontyField31 FP)
+-          (N)
+-          ((MontyField31 FP) -> RustM u32)
+-          u32
+-          vec
+-          (fun x =>
+-            (do
+-            (p3_field.field.PrimeField32.to_unique_u32 (MontyField31 FP) x) :
+-            RustM u32))) :
+-        RustM (RustArray u32 N))))
+-  into_parallel_u64_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_u64_streams_associated_type_i1 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_u64_streams_i1 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray (MontyField31 FP) N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (pure sorry)
++  p3_field.field.RawDataSerializable (MontyField31 FP) := sorry
+ 
+ @[reducible] instance Impl_10.AssociatedTypes
+   (FP : Type)
+@@ -4584,526 +3741,7 @@
+     p3_monty_31.data_traits.FieldParameters.AssociatedTypes
+     FP]
+   [trait_constr_Impl_10_i0 : p3_monty_31.data_traits.FieldParameters FP ] :
+-  p3_field.field.PrimeCharacteristicRing (MontyField31 FP)
+-  where
+-  ZERO := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.FieldParameters.MONTY_ZERO FP)))
+-    (by rfl)
+-  ONE := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.FieldParameters.MONTY_ONE FP)))
+-    (by rfl)
+-  TWO := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.FieldParameters.MONTY_TWO FP)))
+-    (by rfl)
+-  NEG_ONE := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.FieldParameters.MONTY_NEG_ONE FP)))
+-    (by rfl)
+-  from_prime_subfield := fun (f : (MontyField31 FP)) => do (pure f)
+-  halve := fun (self : (MontyField31 FP)) => do
+-    (Impl.new_monty FP
+-      (← (p3_monty_31.utils.halve_u32 FP (MontyField31.value self))))
+-  mul_2exp_u64 := fun (self : (MontyField31 FP)) (exp : u64) => do
+-    match exp with
+-      | 0 => do (pure self)
+-      | 1 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP) self self)
+-      | _ => do
+-        if (← (exp <? (64 : u64))) then do
+-          (core_models.ops.arith.Mul.mul
+-            (MontyField31 FP)
+-            (MontyField31 FP)
+-            self
+-            (← Impl_1.MONTY_POWERS_OF_TWO[
+-              (← (rust_primitives.hax.cast_op exp : RustM usize))
+-              ]_?))
+-        else do
+-          (core_models.ops.arith.Mul.mul
+-            (MontyField31 FP)
+-            (MontyField31 FP)
+-            self
+-            (← (p3_field.field.PrimeCharacteristicRing.exp_u64
+-              (MontyField31 FP)
+-              (p3_field.field.PrimeCharacteristicRing.TWO (MontyField31 FP))
+-              exp)))
+-  div_2exp_u64 := fun (self : (MontyField31 FP)) (exp : u64) => do
+-    if (← (exp <=? (32 : u64))) then do
+-      let long_prod : u64 ←
+-        ((← (rust_primitives.hax.cast_op (MontyField31.value self) : RustM u64))
+-          <<<? (← ((32 : u64) -? exp)));
+-      (Impl.new_monty FP (← (p3_monty_31.utils.monty_reduce FP long_prod)))
+-    else do
+-      (core_models.ops.arith.Mul.mul
+-        (MontyField31 FP)
+-        (MontyField31 FP)
+-        self
+-        (← (p3_field.field.PrimeCharacteristicRing.exp_u64
+-          (MontyField31 FP) Impl_1.HALF exp)))
+-  zero_vec := fun (len : usize) => do
+-    (p3_util.flatten_to_base (MontyField31 FP) u32
+-      (← (alloc.vec.from_elem u32 (0 : u32) len)))
+-  sum_array := fun (N : usize) (input : (RustSlice (MontyField31 FP))) => do
+-    let _ ←
+-      match
+-        (rust_primitives.hax.Tuple2.mk
+-          N
+-          (← (core_models.slice.Impl.len (MontyField31 FP) input)))
+-      with
+-        | ⟨left_val, right_val⟩ => do
+-          (hax_lib.assert (← (left_val ==? right_val)));
+-    match N with
+-      | 0 => do
+-        (pure (p3_field.field.PrimeCharacteristicRing.ZERO (MontyField31 FP)))
+-      | 1 => do input[(0 : usize)]_?
+-      | 2 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP) (← input[(0 : usize)]_?) (← input[(1 : usize)]_?))
+-      | 3 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP)
+-          (← (core_models.ops.arith.Add.add
+-            (MontyField31 FP)
+-            (MontyField31 FP)
+-            (← input[(0 : usize)]_?)
+-            (← input[(1 : usize)]_?)))
+-          (← input[(2 : usize)]_?))
+-      | 4 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP)
+-          (← (core_models.ops.arith.Add.add
+-            (MontyField31 FP)
+-            (MontyField31 FP)
+-            (← input[(0 : usize)]_?)
+-            (← input[(1 : usize)]_?)))
+-          (← (core_models.ops.arith.Add.add
+-            (MontyField31 FP)
+-            (MontyField31 FP)
+-            (← input[(2 : usize)]_?)
+-            (← input[(3 : usize)]_?))))
+-      | 5 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP)
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((4 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeTo.mk (_end := (4 : usize)))
+-              ]_?)))
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((1 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeFrom.mk (start := (4 : usize)))
+-              ]_?))))
+-      | 6 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP)
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((4 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeTo.mk (_end := (4 : usize)))
+-              ]_?)))
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((2 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeFrom.mk (start := (4 : usize)))
+-              ]_?))))
+-      | 7 => do
+-        (core_models.ops.arith.Add.add
+-          (MontyField31 FP)
+-          (MontyField31 FP)
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((4 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeTo.mk (_end := (4 : usize)))
+-              ]_?)))
+-          (← (p3_field.field.PrimeCharacteristicRing.sum_array
+-            (MontyField31 FP) ((3 : usize))
+-            (← input[
+-              (core_models.ops.range.RangeFrom.mk (start := (4 : usize)))
+-              ]_?))))
+-      | _ => do
+-        (core_models.iter.traits.iterator.Iterator.sum
+-          (core_models.iter.adapters.copied.Copied
+-            (core_models.slice.iter.Iter (MontyField31 FP))) (MontyField31 FP)
+-          (← (core_models.iter.traits.iterator.Iterator.copied
+-            (core_models.slice.iter.Iter (MontyField31 FP)) (MontyField31 FP)
+-            (← (core_models.slice.Impl.iter (MontyField31 FP) input)))))
+-  dot_product :=
+-    fun (N : usize)
+-      (lhs : (RustArray (MontyField31 FP) N))
+-      (rhs : (RustArray (MontyField31 FP) N)) => do
+-    let _ := sorry;
+-    match N with
+-      | 0 => do
+-        (pure (p3_field.field.PrimeCharacteristicRing.ZERO (MontyField31 FP)))
+-      | 1 => do
+-        (core_models.ops.arith.Mul.mul
+-          (MontyField31 FP)
+-          (MontyField31 FP) (← lhs[(0 : usize)]_?) (← rhs[(0 : usize)]_?))
+-      | 2 => do
+-        let u64_prod_sum : u64 ←
+-          ((← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                RustM u64))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_monty FP (← (p3_monty_31.utils.monty_reduce FP u64_prod_sum)))
+-      | 3 => do
+-        let u64_prod_sum : u64 ←
+-          ((← ((← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                  RustM u64))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_monty FP
+-          (← (p3_monty_31.utils.large_monty_reduce FP u64_prod_sum)))
+-      | 4 => do
+-        let u64_prod_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_monty FP
+-          (← (p3_monty_31.utils.large_monty_reduce FP u64_prod_sum)))
+-      | 5 => do
+-        let head_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        let tail_sum : u64 ←
+-          ((← (rust_primitives.hax.cast_op
+-              (MontyField31.value (← lhs[(4 : usize)]_?)) :
+-              RustM u64))
+-            *? (← (rust_primitives.hax.cast_op
+-              (MontyField31.value (← rhs[(4 : usize)]_?)) :
+-              RustM u64)));
+-        let head_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            head_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let sum : u64 ←
+-          ((← (core_models.cmp.Ord.min u64 head_sum head_sum_corr))
+-            +? tail_sum);
+-        (Impl.new_monty FP (← (p3_monty_31.utils.large_monty_reduce FP sum)))
+-      | 6 => do
+-        let head_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        let tail_sum : u64 ←
+-          ((← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(4 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(4 : usize)]_?)) :
+-                RustM u64))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(5 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(5 : usize)]_?)) :
+-                RustM u64)))));
+-        let head_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            head_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let sum : u64 ←
+-          ((← (core_models.cmp.Ord.min u64 head_sum head_sum_corr))
+-            +? tail_sum);
+-        (Impl.new_monty FP (← (p3_monty_31.utils.large_monty_reduce FP sum)))
+-      | 7 => do
+-        let head_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        let tail_sum : u64 ←
+-          ((← ((← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(4 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(4 : usize)]_?)) :
+-                  RustM u64))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(5 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(5 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(6 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(6 : usize)]_?)) :
+-                RustM u64)))));
+-        let head_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            head_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let tail_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            tail_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let sum : u64 ←
+-          ((← (core_models.cmp.Ord.min u64 head_sum head_sum_corr))
+-            +? (← (core_models.cmp.Ord.min u64 tail_sum tail_sum_corr)));
+-        (Impl.new_monty FP (← (p3_monty_31.utils.large_monty_reduce FP sum)))
+-      | 8 => do
+-        let head_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        let tail_sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(4 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(4 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← lhs[(5 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (MontyField31.value (← rhs[(5 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← lhs[(6 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (MontyField31.value (← rhs[(6 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← lhs[(7 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (MontyField31.value (← rhs[(7 : usize)]_?)) :
+-                RustM u64)))));
+-        let head_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            head_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let tail_sum_corr : u64 ←
+-          (core_models.num.Impl_9.wrapping_sub
+-            tail_sum
+-            (← ((← (rust_primitives.hax.cast_op
+-                (p3_monty_31.data_traits.MontyParameters.PRIME FP) :
+-                RustM u64))
+-              <<<? (p3_monty_31.data_traits.MontyParameters.MONTY_BITS FP))));
+-        let sum : u64 ←
+-          ((← (core_models.cmp.Ord.min u64 head_sum head_sum_corr))
+-            +? (← (core_models.cmp.Ord.min u64 tail_sum tail_sum_corr)));
+-        (Impl.new_monty FP (← (p3_monty_31.utils.large_monty_reduce FP sum)))
+-      | _ => do
+-        let acc_u128 : u128 ←
+-          (core_models.iter.traits.iterator.Iterator.sum
+-            (core_models.iter.adapters.map.Map
+-              (core_models.iter.adapters.zip.Zip
+-                (core_models.slice.iter.Chunks (MontyField31 FP))
+-                (core_models.slice.iter.Chunks (MontyField31 FP)))
+-              ((rust_primitives.hax.Tuple2
+-                (RustSlice (MontyField31 FP))
+-                (RustSlice (MontyField31 FP))) ->
+-              RustM u128)) u128
+-            (← (core_models.iter.traits.iterator.Iterator.map
+-              (core_models.iter.adapters.zip.Zip
+-                (core_models.slice.iter.Chunks (MontyField31 FP))
+-                (core_models.slice.iter.Chunks (MontyField31 FP)))
+-              u128
+-              ((rust_primitives.hax.Tuple2
+-                (RustSlice (MontyField31 FP))
+-                (RustSlice (MontyField31 FP))) ->
+-              RustM u128)
+-              (← (core_models.iter.traits.iterator.Iterator.zip
+-                (core_models.slice.iter.Chunks (MontyField31 FP))
+-                (core_models.slice.iter.Chunks (MontyField31 FP))
+-                (← (core_models.slice.Impl.chunks (MontyField31 FP)
+-                  (← (rust_primitives.unsize lhs))
+-                  (4 : usize)))
+-                (← (core_models.slice.Impl.chunks (MontyField31 FP)
+-                  (← (rust_primitives.unsize rhs))
+-                  (4 : usize)))))
+-              (fun ⟨l, r⟩ =>
+-                (do
+-                let u64_prod_sum : u64 ←
+-                  (core_models.iter.traits.iterator.Iterator.sum
+-                    (core_models.iter.adapters.map.Map
+-                      (core_models.iter.adapters.zip.Zip
+-                        (core_models.slice.iter.Iter (MontyField31 FP))
+-                        (core_models.slice.iter.Iter (MontyField31 FP)))
+-                      ((rust_primitives.hax.Tuple2
+-                        (MontyField31 FP)
+-                        (MontyField31 FP)) ->
+-                      RustM u64)) u64
+-                    (← (core_models.iter.traits.iterator.Iterator.map
+-                      (core_models.iter.adapters.zip.Zip
+-                        (core_models.slice.iter.Iter (MontyField31 FP))
+-                        (core_models.slice.iter.Iter (MontyField31 FP)))
+-                      u64
+-                      ((rust_primitives.hax.Tuple2
+-                        (MontyField31 FP)
+-                        (MontyField31 FP)) ->
+-                      RustM u64)
+-                      (← (core_models.iter.traits.iterator.Iterator.zip
+-                        (core_models.slice.iter.Iter (MontyField31 FP))
+-                        (RustSlice (MontyField31 FP))
+-                        (← (core_models.slice.Impl.iter (MontyField31 FP) l))
+-                        r))
+-                      (fun ⟨l, r⟩ =>
+-                        (do
+-                        ((← (rust_primitives.hax.cast_op
+-                            (MontyField31.value l) :
+-                            RustM u64))
+-                          *? (← (rust_primitives.hax.cast_op
+-                            (MontyField31.value r) :
+-                            RustM u64))) :
+-                        RustM u64)))));
+-                (rust_primitives.hax.cast_op u64_prod_sum : RustM u128) :
+-                RustM u128)))));
+-        (Impl.new_monty FP
+-          (← (p3_monty_31.utils.monty_reduce_u128 FP acc_u128)))
++  p3_field.field.PrimeCharacteristicRing (MontyField31 FP) := sorry
+ 
+ end p3_monty_31.monty_31
+ 
+@@ -5135,15 +3773,7 @@
+     FP]
+   [trait_constr_Impl_4_i1 : p3_monty_31.data_traits.FieldParameters FP ] :
+   p3_field.extension.QuinticTrinomialExtendable
+-  (p3_monty_31.monty_31.MontyField31 FP)
+-  where
+-  FROBENIUS_COEFFS := RustM.of_isOk
+-    (do
+-    (pure (p3_monty_31.data_traits.TrinomialQuinticData.FROBENIUS_COEFFS FP)))
+-    (by rfl)
+-  EXT_GENERATOR := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.TrinomialQuinticData.EXT_GENERATOR FP)))
+-    (by rfl)
++  (p3_monty_31.monty_31.MontyField31 FP) := sorry
+ 
+ end p3_monty_31.extension
+ 
+@@ -5205,72 +3835,7 @@
+     P1P)
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (WIDTH)
+-  (D)
+-  where
+-  permute_state :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31
+-        FP
+-        (WIDTH)
+-        P1P))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      if (PartialRoundBaseParameters.USE_TEXTBOOK P1P FP (WIDTH)) then do
+-        let state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-          (core_models.iter.traits.iterator.Iterator.fold
+-            (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-              (alloc.vec.Vec
+-                (p3_monty_31.monty_31.MontyField31 FP)
+-                alloc.alloc.Global)
+-              (p3_poseidon1.internal.PartialRoundConstants.textbook_scalar_constants
+-                (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31.internal_constants
+-                  self))))
+-            state
+-            (fun state c =>
+-              (do
+-              let
+-                state : (RustArray
+-                (p3_monty_31.monty_31.MontyField31 FP)
+-                WIDTH) ←
+-                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-                  state
+-                  (0 : usize)
+-                  (← (core_models.ops.arith.AddAssign.add_assign
+-                    (p3_monty_31.monty_31.MontyField31 FP)
+-                    (p3_monty_31.monty_31.MontyField31 FP)
+-                    (← state[(0 : usize)]_?)
+-                    c)));
+-              let
+-                state : (RustArray
+-                (p3_monty_31.monty_31.MontyField31 FP)
+-                WIDTH) ←
+-                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-                  state
+-                  (0 : usize)
+-                  (← (p3_field.field.InjectiveMonomial.injective_exp_n
+-                    (p3_monty_31.monty_31.MontyField31 FP)
+-                    (D) (← state[(0 : usize)]_?))));
+-              let
+-                state : (RustArray
+-                (p3_monty_31.monty_31.MontyField31 FP)
+-                WIDTH) ←
+-                (PartialRoundBaseParameters.mds_permute P1P FP (WIDTH) state);
+-              (pure state) :
+-              RustM (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))));
+-        (pure state)
+-      else do
+-        let state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-          (p3_poseidon1.internal.partial_permute_state
+-            (p3_monty_31.monty_31.MontyField31 FP)
+-            (p3_monty_31.monty_31.MontyField31 FP)
+-            (WIDTH)
+-            (D)
+-            state
+-            (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31.internal_constants
+-              self));
+-        (pure state);
+-    (pure state)
++  (D) := sorry
+ 
+ @[reducible] instance Impl_1.AssociatedTypes
+   (FP : Type)
+@@ -5349,56 +3914,7 @@
+   (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31 FP MU (WIDTH))
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (WIDTH)
+-  (D)
+-  where
+-  permute_state_initial :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+-        FP
+-        MU
+-        (WIDTH)))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let mds : (p3_monty_31.mds.MdsMatrixMontyField31 MU) ←
+-      (core_models.default.Default.default
+-        (p3_monty_31.mds.MdsMatrixMontyField31 MU)
+-        rust_primitives.hax.Tuple0.mk);
+-    let state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (p3_poseidon1.external.full_round_initial_permute_state
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (p3_monty_31.mds.MdsMatrixMontyField31 MU)
+-        (WIDTH)
+-        (D)
+-        state
+-        (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31.external_constants
+-          self)
+-        mds);
+-    (pure state)
+-  permute_state_terminal :=
+-    fun
+-      (self :
+-      (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+-        FP
+-        MU
+-        (WIDTH)))
+-      (state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let mds : (p3_monty_31.mds.MdsMatrixMontyField31 MU) ←
+-      (core_models.default.Default.default
+-        (p3_monty_31.mds.MdsMatrixMontyField31 MU)
+-        rust_primitives.hax.Tuple0.mk);
+-    let state : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (p3_poseidon1.external.full_round_terminal_permute_state
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (p3_monty_31.mds.MdsMatrixMontyField31 MU)
+-        (WIDTH)
+-        (D)
+-        state
+-        (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31.external_constants
+-          self)
+-        mds);
+-    (pure state)
++  (D) := sorry
+ 
+ end p3_monty_31.poseidon1
+ 
+@@ -5557,21 +4073,7 @@
+   [trait_constr_Impl_1_i1 : p3_monty_31.data_traits.FieldParameters FP ] :
+   p3_field.extension.BinomiallyExtendable
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  (WIDTH)
+-  where
+-  W := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.BinomialExtensionData.W FP (WIDTH))))
+-    (by rfl)
+-  DTH_ROOT := RustM.of_isOk
+-    (do
+-    (pure (p3_monty_31.data_traits.BinomialExtensionData.DTH_ROOT FP (WIDTH))))
+-    (by rfl)
+-  EXT_GENERATOR := RustM.of_isOk
+-    (do
+-    (pure (p3_monty_31.data_traits.BinomialExtensionData.EXT_GENERATOR
+-      FP
+-      (WIDTH))))
+-    (by rfl)
++  (WIDTH) := sorry
+ 
+ @[reducible] instance Impl.AssociatedTypes
+   (WIDTH : usize)
+@@ -5614,79 +4116,7 @@
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (p3_monty_31.monty_31.MontyField31 FP)
+   (WIDTH)
+-  (p3_field.extension.Binomial (p3_monty_31.monty_31.MontyField31 FP))
+-  where
+-  ext_mul :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      match WIDTH with
+-        | 4 => do (p3_monty_31.no_packing.quartic_mul_packed FP (WIDTH) a b res)
+-        | 5 => do (p3_monty_31.no_packing.quintic_mul_packed FP (WIDTH) a b res)
+-        | 8 => do (p3_monty_31.no_packing.octic_mul_packed FP (WIDTH) a b res)
+-        | _ => do
+-          let args : (rust_primitives.hax.Tuple1 usize) :=
+-            (rust_primitives.hax.Tuple1.mk WIDTH);
+-          let args : (RustArray core_models.fmt.rt.Argument 1) :=
+-            (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display usize
+-                                    (rust_primitives.hax.Tuple1._0 args)))]);
+-          (pure res);
+-    (pure res)
+-  ext_add :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        WIDTH);
+-    let a : (RustArray u32 WIDTH) := sorry;
+-    let b : (RustArray u32 WIDTH) := sorry;
+-    let _ := sorry;
+-    (pure res)
+-  ext_sub :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (b : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        WIDTH);
+-    let a : (RustArray u32 WIDTH) := sorry;
+-    let b : (RustArray u32 WIDTH) := sorry;
+-    let _ := sorry;
+-    (pure res)
+-  ext_base_mul :=
+-    fun
+-      (lhs : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (rhs : (p3_monty_31.monty_31.MontyField31 FP)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_monty_31.monty_31.MontyField31 FP))
+-        WIDTH);
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (p3_monty_31.no_packing.base_mul_packed FP (WIDTH) lhs rhs res);
+-    (pure res)
+-  ext_square :=
+-    fun
+-      (a : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-      (res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH)) => do
+-    let res : (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH) ←
+-      (p3_field.extension.binomial_extension.binomial_square
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (WIDTH)
+-        a
+-        res
+-        (p3_field.extension.BinomiallyExtendable.W
+-          (p3_monty_31.monty_31.MontyField31 FP)
+-          (WIDTH)));
+-    (pure res)
++  (p3_field.extension.Binomial (p3_monty_31.monty_31.MontyField31 FP)) := sorry
+ 
+ end p3_monty_31.extension
+ 
+@@ -5716,23 +4146,7 @@
+     p3_monty_31.data_traits.TwoAdicData.AssociatedTypes
+     FP]
+   [trait_constr_Impl_25_i1 : p3_monty_31.data_traits.TwoAdicData FP ] :
+-  p3_field.field.TwoAdicField (MontyField31 FP)
+-  where
+-  TWO_ADICITY := RustM.of_isOk
+-    (do (pure (p3_monty_31.data_traits.TwoAdicData.TWO_ADICITY FP)))
+-    (by rfl)
+-  two_adic_generator := fun (bits : usize) => do
+-    let _ := sorry;
+-    let _ ←
+-      (hax_lib.assert
+-        (← (bits
+-          <=? (p3_field.field.TwoAdicField.TWO_ADICITY (MontyField31 FP)))));
+-    (← (core_models.convert.AsRef.as_ref
+-        (p3_monty_31.data_traits.TwoAdicData.ArrayLike FP)
+-        (RustSlice (MontyField31 FP))
+-        (p3_monty_31.data_traits.TwoAdicData.TWO_ADIC_GENERATORS FP)))[
+-      bits
+-      ]_?
++  p3_field.field.TwoAdicField (MontyField31 FP) := sorry
+ 
+ --  A square root of this field element, if one exists.
+ -- 
+@@ -5809,39 +4223,7 @@
+   [trait_constr_Impl_2_i2 : p3_monty_31.data_traits.FieldParameters FP ] :
+   p3_field.extension.HasTwoAdicBinomialExtension
+   (p3_monty_31.monty_31.MontyField31 FP)
+-  (WIDTH)
+-  where
+-  EXT_TWO_ADICITY := RustM.of_isOk
+-    (do
+-    (pure (p3_monty_31.data_traits.BinomialExtensionData.EXT_TWO_ADICITY
+-      FP
+-      (WIDTH))))
+-    (by rfl)
+-  ext_two_adic_generator := fun (bits : usize) => do
+-    let _ := sorry;
+-    let _ ←
+-      (hax_lib.assert
+-        (← (bits
+-          <=? (p3_field.extension.HasTwoAdicBinomialExtension.EXT_TWO_ADICITY
+-            (p3_monty_31.monty_31.MontyField31 FP)
+-            (WIDTH)))));
+-    if
+-    (← (bits <=? (p3_monty_31.data_traits.TwoAdicData.TWO_ADICITY FP))) then do
+-      (p3_field.helpers.field_to_array
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        (WIDTH)
+-        (← (p3_field.field.TwoAdicField.two_adic_generator
+-          (p3_monty_31.monty_31.MontyField31 FP) bits)))
+-    else do
+-      (← (core_models.convert.AsRef.as_ref
+-          (p3_monty_31.data_traits.BinomialExtensionData.ArrayLike FP (WIDTH))
+-          (RustSlice (RustArray (p3_monty_31.monty_31.MontyField31 FP) WIDTH))
+-          (p3_monty_31.data_traits.BinomialExtensionData.TWO_ADIC_EXTENSION_GENERATORS
+-            FP
+-            (WIDTH))))[
+-        (← ((← (bits -? (p3_monty_31.data_traits.TwoAdicData.TWO_ADICITY FP)))
+-          -? (1 : usize)))
+-        ]_?
++  (WIDTH) := sorry
+ 
+ @[reducible] instance Impl_5.AssociatedTypes
+   (FP : Type)
+@@ -5876,34 +4258,7 @@
+     FP]
+   [trait_constr_Impl_5_i2 : p3_monty_31.data_traits.FieldParameters FP ] :
+   p3_field.extension.HasTwoAdicQuinticExtension
+-  (p3_monty_31.monty_31.MontyField31 FP)
+-  where
+-  EXT_TWO_ADICITY := RustM.of_isOk
+-    (do
+-    (pure (p3_monty_31.data_traits.TrinomialQuinticData.EXT_TWO_ADICITY FP)))
+-    (by rfl)
+-  ext_two_adic_generator := fun (bits : usize) => do
+-    let _ ←
+-      (hax_lib.assert
+-        (← (bits
+-          <=? (p3_field.extension.HasTwoAdicQuinticExtension.EXT_TWO_ADICITY
+-            (p3_monty_31.monty_31.MontyField31 FP)))));
+-    if
+-    (← (bits <=? (p3_monty_31.data_traits.TwoAdicData.TWO_ADICITY FP))) then do
+-      (p3_field.helpers.field_to_array
+-        (p3_monty_31.monty_31.MontyField31 FP)
+-        ((5 : usize))
+-        (← (p3_field.field.TwoAdicField.two_adic_generator
+-          (p3_monty_31.monty_31.MontyField31 FP) bits)))
+-    else do
+-      (← (core_models.convert.AsRef.as_ref
+-          (p3_monty_31.data_traits.TrinomialQuinticData.ArrayLike FP)
+-          (RustSlice (RustArray (p3_monty_31.monty_31.MontyField31 FP) 5))
+-          (p3_monty_31.data_traits.TrinomialQuinticData.TWO_ADIC_EXTENSION_GENERATORS
+-            FP)))[
+-        (← ((← (bits -? (p3_monty_31.data_traits.TwoAdicData.TWO_ADICITY FP)))
+-          -? (1 : usize)))
+-        ]_?
++  (p3_monty_31.monty_31.MontyField31 FP) := sorry
+ 
+ end p3_monty_31.extension
+ 

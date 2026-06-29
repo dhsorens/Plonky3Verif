@@ -1,0 +1,243 @@
+diff --git a/monty-31/src/data_traits.rs b/monty-31/src/data_traits.rs
+index dd1976ea..a4e92b2b 100644
+--- a/monty-31/src/data_traits.rs
++++ b/monty-31/src/data_traits.rs
+@@ -24,19 +24,20 @@ pub trait MontyParameters:
+ }
+ 
+ /// PackedMontyParameters contains constants needed for MONTY operations for packings of Monty31 fields.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub trait PackedMontyParameters: crate::MontyParametersNeon + MontyParameters {}
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ /// PackedMontyParameters contains constants needed for MONTY operations for packings of Monty31 fields.
+ pub trait PackedMontyParameters: crate::MontyParametersAVX2 + MontyParameters {}
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ /// PackedMontyParameters contains constants needed for MONTY operations for packings of Monty31 fields.
+ pub trait PackedMontyParameters: crate::MontyParametersAVX512 + MontyParameters {}
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(
+         target_arch = "x86_64",
+@@ -44,7 +45,7 @@ pub trait PackedMontyParameters: crate::MontyParametersAVX512 + MontyParameters
+         not(target_feature = "avx512f")
+     ),
+     all(target_arch = "x86_64", target_feature = "avx512f"),
+-)))]
++))))]
+ /// PackedMontyParameters contains constants needed for MONTY operations for packings of Monty31 fields.
+ pub trait PackedMontyParameters: MontyParameters {}
+ 
+diff --git a/monty-31/src/dft/forward.rs b/monty-31/src/dft/forward.rs
+index ad5fcce7..b487f8aa 100644
+--- a/monty-31/src/dft/forward.rs
++++ b/monty-31/src/dft/forward.rs
+@@ -87,11 +87,11 @@ fn monty_forward_butterfly<MP: FieldParameters + TwoAdicData>(
+     <MontyField31<MP> as Field>::Packing,
+     <MontyField31<MP> as Field>::Packing,
+ ) {
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     {
+         x.forward_butterfly(y, roots)
+     }
+-    #[cfg(not(all(target_arch = "aarch64", target_feature = "neon")))]
++    #[cfg(any(hax, not(all(target_arch = "aarch64", target_feature = "neon"))))]
+     {
+         forward_butterfly(x, y, roots)
+     }
+diff --git a/monty-31/src/lib.rs b/monty-31/src/lib.rs
+index 1b679bb4..22f05d13 100644
+--- a/monty-31/src/lib.rs
++++ b/monty-31/src/lib.rs
+@@ -3,6 +3,7 @@
+ extern crate alloc;
+ 
+ mod data_traits;
++#[cfg(not(hax))]
+ pub mod dft;
+ mod extension;
+ mod mds;
+@@ -16,36 +17,38 @@ pub use monty_31::*;
+ pub use poseidon1::*;
+ pub use poseidon2::*;
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ mod aarch64_neon;
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub use aarch64_neon::*;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ mod x86_64_avx2;
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub use x86_64_avx2::*;
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ mod x86_64_avx512;
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub use x86_64_avx512::*;
+ 
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(target_arch = "x86_64", target_feature = "avx2",),
+-)))]
++))))]
+ mod no_packing;
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(target_arch = "x86_64", target_feature = "avx2",),
+-)))]
++))))]
+ pub use no_packing::*;
+diff --git a/monty-31/src/monty_31.rs b/monty-31/src/monty_31.rs
+index 942add98..76940804 100644
+--- a/monty-31/src/monty_31.rs
++++ b/monty-31/src/monty_31.rs
+@@ -407,17 +407,18 @@ impl<FP: FieldParameters> RawDataSerializable for MontyField31<FP> {
+ }
+ 
+ impl<FP: FieldParameters> Field for MontyField31<FP> {
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     type Packing = crate::PackedMontyField31Neon<FP>;
+     #[cfg(all(
+         target_arch = "x86_64",
+         target_feature = "avx2",
+-        not(target_feature = "avx512f")
++        not(target_feature = "avx512f"),
++        not(hax)
+     ))]
+     type Packing = crate::PackedMontyField31AVX2<FP>;
+-    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+     type Packing = crate::PackedMontyField31AVX512<FP>;
+-    #[cfg(not(any(
++    #[cfg(any(hax, not(any(
+         all(target_arch = "aarch64", target_feature = "neon"),
+         all(
+             target_arch = "x86_64",
+@@ -425,7 +426,7 @@ impl<FP: FieldParameters> Field for MontyField31<FP> {
+             not(target_feature = "avx512f")
+         ),
+         all(target_arch = "x86_64", target_feature = "avx512f"),
+-    )))]
++    ))))]
+     type Packing = Self;
+ 
+     const GENERATOR: Self = FP::MONTY_GEN;
+diff --git a/monty-31/src/poseidon1.rs b/monty-31/src/poseidon1.rs
+index db05a930..8eca5387 100644
+--- a/monty-31/src/poseidon1.rs
++++ b/monty-31/src/poseidon1.rs
+@@ -37,7 +37,7 @@ pub trait PartialRoundBaseParameters<MP: MontyParameters, const WIDTH: usize>:
+     fn mds_permute(_state: &mut [MontyField31<MP>; WIDTH]) {}
+ }
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+     PartialRoundBaseParameters<FP, WIDTH> + crate::PartialRoundParametersNeon<FP, WIDTH>
+ {
+@@ -45,18 +45,19 @@ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+     PartialRoundBaseParameters<FP, WIDTH> + crate::PartialRoundParametersAVX2<FP, WIDTH>
+ {
+ }
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+     PartialRoundBaseParameters<FP, WIDTH> + crate::PartialRoundParametersAVX512<FP, WIDTH>
+ {
+ }
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(
+         target_arch = "x86_64",
+@@ -64,7 +65,7 @@ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+         not(target_feature = "avx512f")
+     ),
+     all(target_arch = "x86_64", target_feature = "avx512f"),
+-)))]
++))))]
+ pub trait PartialRoundParameters<FP: FieldParameters, const WIDTH: usize>:
+     PartialRoundBaseParameters<FP, WIDTH>
+ {
+diff --git a/monty-31/src/poseidon2.rs b/monty-31/src/poseidon2.rs
+index 6fd399d8..a7011672 100644
+--- a/monty-31/src/poseidon2.rs
++++ b/monty-31/src/poseidon2.rs
+@@ -33,7 +33,7 @@ pub trait InternalLayerBaseParameters<MP: MontyParameters, const WIDTH: usize>:
+     }
+ }
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+     InternalLayerBaseParameters<FP, WIDTH> + crate::InternalLayerParametersNeon<FP, WIDTH>
+ {
+@@ -41,18 +41,19 @@ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+     InternalLayerBaseParameters<FP, WIDTH> + crate::InternalLayerParametersAVX2<FP, WIDTH>
+ {
+ }
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+     InternalLayerBaseParameters<FP, WIDTH> + crate::InternalLayerParametersAVX512<FP, WIDTH>
+ {
+ }
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(
+         target_arch = "x86_64",
+@@ -60,7 +61,7 @@ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+         not(target_feature = "avx512f")
+     ),
+     all(target_arch = "x86_64", target_feature = "avx512f"),
+-)))]
++))))]
+ pub trait InternalLayerParameters<FP: FieldParameters, const WIDTH: usize>:
+     InternalLayerBaseParameters<FP, WIDTH>
+ {

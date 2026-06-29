@@ -1,0 +1,4 @@
+.lake/
+patches/pristine.snapshot.lean
+wasm_bench.lean
+wasm_smoke.lean

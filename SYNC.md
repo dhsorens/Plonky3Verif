@@ -27,6 +27,9 @@ WIP** from the extraction survey — never re-extract, reconcile, or commit thos
 | `symmetric` | `symmetric/proofs/lean/extraction/` | `build-lean.sh` | `symmetric/proofs/lean/extraction/SYNC.md` | post-processed extraction (sliced to trait classes) | — |
 | `keccak` | `keccak/proofs/lean/extraction/` | `build-lean.sh` | `keccak/proofs/lean/extraction/SYNC.md` | post-processed extraction + stubs | `symmetric` |
 | `blake3` | `blake3/proofs/lean/extraction/` | `build-lean.sh` | `blake3/proofs/lean/extraction/SYNC.md` | post-processed extraction + stubs | `symmetric` |
+| `monty-31` | `monty-31/proofs/lean/extraction/` | `build-proofs.sh` | `monty-31/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD/dft gated under `--cfg hax`); field deps stubbed | — |
+| `mersenne-31` | `mersenne-31/proofs/lean/extraction/` | `build-proofs.sh` | `mersenne-31/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD/DFT gated under `--cfg hax`); field deps stubbed | — |
+| `goldilocks` | `goldilocks/proofs/lean/extraction/` | `build-proofs.sh` | `goldilocks/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD gated under `--cfg hax`, incl. wasm32); field deps stubbed | — |
 
 **Dependency order for re-extraction:** `symmetric` → `keccak`, `blake3`
 (`keccak`/`blake3` consume the real extracted `p3_symmetric` via a Lake path
@@ -78,8 +81,9 @@ A registry crate is **affected** if the merge changed any file under its
 - **Close under the reverse-dependency edge:** if `symmetric` is affected, add
   `keccak` and `blake3` (their extractions are type-checked against the real
   `p3_symmetric`).
-- **Order topologically:** `symmetric` first, then `keccak`/`blake3`; `koala-bear`
-  anywhere (independent).
+- **Order topologically:** `symmetric` first, then `keccak`/`blake3`; the field
+  crates `koala-bear`, `monty-31`, `mersenne-31`, `goldilocks` anywhere (all
+  independent — no reverse-dep edges; their deps are stubbed, not extracted).
 
 If **no** registry crate's `src/`/`Cargo.toml` changed, there is no hax drift —
 skip to Step 6 (the merge itself is the only change to commit).
