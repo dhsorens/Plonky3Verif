@@ -35,7 +35,11 @@ echo "==> cargo hax into lean"
 # nor affects a normal `cargo build`. If hax bumps its rust-toolchain.toml pin,
 # update HAX_TOOLCHAIN to match (override via env without editing this script).
 HAX_TOOLCHAIN="${HAX_TOOLCHAIN:-nightly-2025-11-08}"
+# The new hax splits into a Rust driver that spawns the OCaml `hax-engine`; if it
+# isn't on PATH (no active opam env) the driver panics with a NotFound at
+# ocaml_engine.rs. Point at the opam-installed engine by default (override via env).
 RUSTUP_TOOLCHAIN="$HAX_TOOLCHAIN" \
+  HAX_ENGINE_BINARY="${HAX_ENGINE_BINARY:-$HOME/.opam/default/bin/hax-engine}" \
   RUSTFLAGS="${RUSTFLAGS:-} -Zcrate-attr=feature(maybe_uninit_slice)" \
   cargo hax into lean
 
@@ -50,7 +54,12 @@ else
 fi
 
 echo "==> lake build"
-if (cd "$EXTRACT_DIR" && lake update && lake exe cache get && lake build); then
+# Build against the COMMITTED lake-manifest.json pins (reproducible). Do NOT run
+# `lake update` here — koala's lakefile floats Hax/CompPoly at `rev = "main"`, and
+# updating would re-resolve them on every sync, incidentally bumping the manifest
+# and lean-toolchain. Bumping deps/toolchain is a deliberate, cross-crate action
+# (see the repo-root SYNC.md "Maintenance" section: run `lake update` there).
+if (cd "$EXTRACT_DIR" && lake exe cache get && lake build); then
     echo "==> done; build succeeded."
 else
     echo "WARNING: lake build failed. The (patched) file is in place; inspect for drift." >&2
