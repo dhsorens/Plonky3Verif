@@ -8,7 +8,7 @@ use alloc::slice;
 use alloc::string::String;
 use alloc::vec::Vec;
 use core::any::type_name;
-use core::hint::unreachable_unchecked;
+use core::hint::assert_unchecked;
 use core::mem::{ManuallyDrop, MaybeUninit};
 use core::{iter, mem};
 
@@ -81,7 +81,7 @@ pub const fn log2_strict_usize(n: usize) -> usize {
     // Tell the optimizer about the semantics of `log2_strict`. i.e. it can replace `n` with
     // `1 << res` and vice versa.
     unsafe {
-        assume(n == 1 << res);
+        assert_unchecked(n == 1 << res);
     }
     res as usize
 }
@@ -201,6 +201,9 @@ pub const fn reverse_bits(x: usize, n: usize) -> usize {
 
 #[inline]
 pub const fn reverse_bits_len(x: usize, bit_len: usize) -> usize {
+    // A `bit_len` wider than the word would underflow the shift below.
+    // That yields a wrong, non-panicking permutation in release, so reject it up front.
+    debug_assert!(bit_len <= usize::BITS as usize);
     // NB: The only reason we need overflowing_shr() here as opposed
     // to plain '>>' is to accommodate the case n == num_bits == 0,
     // which would become `0 >> 64`. Rust thinks that any shift of 64
@@ -366,21 +369,6 @@ unsafe fn reverse_slice_index_bits_chunks<F>(
                     1 << lb_chunk_size,
                 );
             }
-        }
-    }
-}
-
-/// Allow the compiler to assume that the given predicate `p` is always `true`.
-///
-/// # Safety
-///
-/// Callers must ensure that `p` is true. If this is not the case, the behavior is undefined.
-#[inline(always)]
-pub const unsafe fn assume(p: bool) {
-    debug_assert!(p);
-    if !p {
-        unsafe {
-            unreachable_unchecked();
         }
     }
 }
@@ -928,6 +916,23 @@ mod tests {
         assert_eq!(reverse_bits_len(0b1000000000, 10), 0b0000000001);
         assert_eq!(reverse_bits_len(0b00000, 5), 0b00000);
         assert_eq!(reverse_bits_len(0b01011, 5), 0b11010);
+    }
+
+    #[test]
+    fn test_reverse_bits_len_full_width() {
+        // A full-width reversal is the largest valid bit length and must reverse every bit.
+        let bits = usize::BITS as usize;
+        assert_eq!(reverse_bits_len(1, bits), 1 << (bits - 1));
+        assert_eq!(reverse_bits_len(1 << (bits - 1), bits), 1);
+    }
+
+    #[test]
+    #[cfg(debug_assertions)]
+    #[should_panic(expected = "bit_len <= usize::BITS")]
+    fn test_reverse_bits_len_rejects_oversized_bit_len() {
+        // One bit past the word width: the shift would underflow into a wrong permutation.
+        // The expected message pins the guard, not the incidental subtraction-overflow panic.
+        let _ = reverse_bits_len(0, usize::BITS as usize + 1);
     }
 
     #[test]

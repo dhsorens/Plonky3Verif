@@ -18,6 +18,7 @@ use rand::{RngExt, SeedableRng};
 
 use crate::layout::{PrefixProver, SuffixProver, Table, TableShape};
 use crate::strategy::VariableOrder;
+use crate::table::OpeningBatch;
 use crate::zk::{ZkLayout, ZkProver, ZkSumcheckData, ZkVerifier};
 
 /// Base field used across the test suite.
@@ -150,8 +151,8 @@ pub struct ProverRun {
     pub verifier_challenger: MyChallenger,
     /// Per-round zero-knowledge transcript artefacts.
     pub zk_data: ZkSumcheckData<F, EF>,
-    /// Mask commitments forwarded to the verifier.
-    pub mask_commits: Vec<<MyMmcs as p3_commit::Mmcs<EF>>::Commitment>,
+    /// Batch mask commitment forwarded to the verifier.
+    pub mask_commitment: <MyMmcs as p3_commit::Mmcs<EF>>::Commitment,
     /// Per-round folding randomness emitted by the prover.
     pub prover_randomness: p3_multilinear_util::point::Point<EF>,
     /// Virtual evaluations sampled during the claim phase.
@@ -251,8 +252,11 @@ where
 
     // Concrete opening claims.
     for _ in 0..num_concrete {
-        let openings = prover.eval(0, &[0], &mut prover_challenger);
-        verifier.add_claim(0, &[0], &openings, &mut verifier_challenger);
+        let batch = OpeningBatch::new(vec![0], Vec::new());
+        let evals = prover.eval(0, &batch, &mut prover_challenger);
+        verifier
+            .add_claim(0, &batch, &evals, &mut verifier_challenger)
+            .unwrap();
     }
 
     // Virtual evaluation claims.
@@ -264,20 +268,20 @@ where
     }
 
     // Prover-side sumcheck; consumes `prover`.
-    let (_residual_prover, prover_randomness, mask_oracles) = prover.into_sumcheck(
+    let prover_handoff = prover.into_sumcheck(
         &mut zk_data,
         pow_bits,
         &mut prover_challenger,
         &mut prover_rng,
     );
-    let mask_commits: Vec<_> = mask_oracles.iter().map(|(c, _)| c.clone()).collect();
+    let mask_commitment = prover_handoff.mask_oracle.0.clone();
 
     ProverRun {
         verifier,
         verifier_challenger,
         zk_data,
-        mask_commits,
-        prover_randomness,
+        mask_commitment,
+        prover_randomness: prover_handoff.randomness,
         virtual_evals,
     }
 }
@@ -289,18 +293,18 @@ pub fn replay_verifier(
     folding_factor: usize,
     pow_bits: usize,
 ) -> Result<p3_multilinear_util::point::Point<EF>, &'static str> {
-    let (verifier_point, _final_target) = run
+    let verifier_handoff = run
         .verifier
         .into_sumcheck::<MyMmcs, _>(
             &run.zk_data,
-            &run.mask_commits,
+            &run.mask_commitment,
             ell_zk,
             folding_factor,
             pow_bits,
             &mut run.verifier_challenger,
         )
         .map_err(|_| "verifier rejected honest prover output")?;
-    Ok(verifier_point)
+    Ok(verifier_handoff.randomness)
 }
 
 /// End-to-end honest prover/verifier driver, parameterised by binding direction.

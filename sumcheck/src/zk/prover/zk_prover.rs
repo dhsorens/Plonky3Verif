@@ -8,7 +8,7 @@ use p3_commit::Mmcs;
 use p3_field::{ExtensionField, Field, HornerIter, TwoAdicField, dot_product};
 use p3_matrix::Matrix;
 use p3_multilinear_util::point::Point;
-use p3_zk_codes::ZkEncoding;
+use p3_zk_codes::{ZkEncoding, ZkEncodingWithRandomness};
 use rand::Rng;
 
 use super::common::{observe_masks_and_mu_tilde, sample_masks};
@@ -19,7 +19,8 @@ use crate::lagrange::lagrange_weights_01inf_multi;
 use crate::layout::{PrefixProver, SuffixProver};
 use crate::strategy::SumcheckProver;
 use crate::svo::calculate_accumulators_batch;
-use crate::zk::data::{MaskOracle, ZkSumcheckData};
+use crate::table::{OpeningEvals, OpeningRequest};
+use crate::zk::data::{ZkSumcheckData, ZkSumcheckHandoff};
 
 /// Honest-verifier zero-knowledge sumcheck prover.
 ///
@@ -86,7 +87,7 @@ impl<F, EF, Enc, M, L> ZkProver<F, EF, Enc, M, L>
 where
     F: TwoAdicField,
     EF: ExtensionField<F>,
-    Enc: ZkEncoding<EF>,
+    Enc: ZkEncodingWithRandomness<EF>,
     M: Mmcs<EF>,
     L: ZkLayout<F, EF>,
 {
@@ -110,13 +111,22 @@ where
         self.inner.num_variables()
     }
 
-    /// Records concrete opening claims on the inner prover.
-    pub fn eval<Ch>(&mut self, table_idx: usize, polys: &[usize], challenger: &mut Ch) -> Vec<EF>
+    /// Records opening claims at the current points and at their repeat-last successor points on the inner prover.
+    ///
+    /// # Returns
+    ///
+    /// The current-point evaluations first, then the successor-point evaluations.
+    pub fn eval<Ch>(
+        &mut self,
+        table_idx: usize,
+        batch: &OpeningRequest,
+        challenger: &mut Ch,
+    ) -> OpeningEvals<EF>
     where
         Ch: FieldChallenger<F> + GrindingChallenger<Witness = F>,
     {
         // Delegate; the HVZK overlay carries no extra state at claim time.
-        self.inner.eval(table_idx, polys, challenger)
+        self.inner.eval(table_idx, batch, challenger)
     }
 
     /// Records a virtual opening claim on the inner prover.
@@ -143,14 +153,15 @@ where
     ///
     /// - Residual sumcheck prover over the mode-specific product polynomial, scaled by `eps`.
     /// - Vector of per-round challenges `gamma_1, ..., gamma_k`.
-    /// - One mask oracle per round, in round order.
+    /// - Combining challenge `eps`, made explicit for code-switch composition.
+    /// - Plain mask messages and one mask oracle per round, in round order.
     ///
     /// # Panics
     ///
     /// - Base field characteristic is `2` (violates Lemma 6.4).
     /// - Mask code message length is below `3` (mask must cover the degree-2 plain piece).
     /// - Folding factor is `0` or exceeds the polynomial's arity.
-    #[allow(clippy::too_many_lines, clippy::type_complexity)]
+    #[allow(clippy::too_many_lines)]
     #[tracing::instrument(skip_all)]
     pub fn into_sumcheck<R, Ch>(
         self,
@@ -158,11 +169,7 @@ where
         pow_bits: usize,
         challenger: &mut Ch,
         rng: &mut R,
-    ) -> (
-        SumcheckProver<F, EF>,
-        Point<EF>,
-        Vec<MaskOracle<EF, Enc, M>>,
-    )
+    ) -> ZkSumcheckHandoff<F, EF, M>
     where
         EF: TwoAdicField,
         Enc::Codeword: Matrix<EF>,
@@ -220,7 +227,7 @@ where
         // Phase 2: sample, encode, commit, observe masks (Construction 6.3 step 1).
         //
         // The encoder draws zero-knowledge padding randomness from the same rng.
-        let (masks, mask_oracles) =
+        let (masks, mask_randomness, mask_oracle) =
             sample_masks::<EF, _, _, _, _>(k, &self.encoding, &self.mmcs, challenger, rng);
 
         // Phase 3: mu_tilde via the closed form (Construction 6.3 step 2).
@@ -353,22 +360,35 @@ where
             "residual product polynomial dot product must equal eps * plain_residual_sum",
         );
 
-        (
-            SumcheckProver::new(prod_poly, residual_sum),
-            rs,
-            mask_oracles,
-        )
+        ZkSumcheckHandoff {
+            residual_prover: SumcheckProver::new(prod_poly, residual_sum),
+            randomness: rs,
+            eps,
+            mask_messages: masks,
+            mask_randomness,
+            mask_oracle,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use alloc::vec;
+    use alloc::vec::Vec;
+
     use p3_field::{Field, PackedValue};
     use p3_util::log2_strict_usize;
     use proptest::prelude::*;
+    use rand::rngs::SmallRng;
+    use rand::{RngExt, SeedableRng};
 
+    use crate::layout::PrefixProver;
     use crate::strategy::VariableOrder;
-    use crate::zk::test_helpers::{F, run_roundtrip};
+    use crate::table::OpeningBatch;
+    use crate::zk::ZkSumcheckData;
+    use crate::zk::test_helpers::{
+        EF, F, MyChallenger, MyMmcs, build_prover_verifier, make_setup, run_roundtrip,
+    };
 
     #[test]
     fn prover_verifier_roundtrip_prefix() {
@@ -417,6 +437,84 @@ mod tests {
         // A regression that mishandles the combining factor on a long mask passes the prefix pin and trips here.
         run_roundtrip(VariableOrder::Suffix, 8, 3, 32, 1, 1, 0)
             .expect("honest roundtrip should accept");
+    }
+
+    #[test]
+    fn prover_verifier_roundtrip_mixed_current_next_batch() {
+        // Invariant: the zero-knowledge prefix wrapper accepts a batch that mixes
+        // a current opening point with its repeat-last successor point.
+        // Acceptance means the prover and verifier draw identical randomness.
+
+        // Fixture state: 8 variables, fold 3 at a time, mask width 4, no grinding.
+        let n_vars = 8;
+        let folding_factor = 3;
+        let ell_zk = 4;
+        let seed = 7u64;
+        let pow_bits = 0;
+
+        // Shared permutation, Merkle scheme, and encoding for both parties.
+        let (perm, mmcs, encoding) = make_setup(seed, ell_zk);
+        // Draw a random multilinear over the boolean cube of 2^8 = 256 points.
+        let mut data_rng = SmallRng::seed_from_u64(seed.wrapping_add(1));
+        let evals: Vec<F> = (0..(1usize << n_vars)).map(|_| data_rng.random()).collect();
+        let (mut prover, mut verifier, _) =
+            build_prover_verifier::<PrefixProver<F, EF>>(evals, folding_factor, encoding, mmcs);
+
+        // Two challengers seeded identically so the transcripts stay in lockstep.
+        let mut prover_challenger = MyChallenger::new(perm.clone());
+        let mut verifier_challenger = MyChallenger::new(perm);
+
+        // Open column 0 at one current point and at its successor point.
+        let batch = OpeningBatch::new(vec![0], vec![0]);
+        // Prover records the claims and returns one evaluation per requested point.
+        let evals = prover.eval(0, &batch, &mut prover_challenger);
+        assert_eq!(evals.len(), batch.len());
+        // Verifier mirrors the same draws against the returned evaluations.
+        verifier
+            .add_claim(0, &batch, &evals, &mut verifier_challenger)
+            .unwrap();
+
+        // Add the masking claim that hides the witness in the final sumcheck.
+        let virtual_eval = prover.add_virtual_eval(&mut prover_challenger);
+        verifier.add_virtual_eval(virtual_eval, &mut verifier_challenger);
+
+        // Prover commits to the mask and hands off the sumcheck transcript.
+        let mut zk_data = ZkSumcheckData::<F, EF>::default();
+        let mut prover_rng = SmallRng::seed_from_u64(seed.wrapping_add(2));
+        let prover_handoff = prover.into_sumcheck(
+            &mut zk_data,
+            pow_bits,
+            &mut prover_challenger,
+            &mut prover_rng,
+        );
+        // The mask commitment is the only extra public input the verifier needs.
+        let mask_commitment = prover_handoff.mask_oracle.0.clone();
+
+        // Verifier replays the sumcheck and must accept the mixed batch.
+        let verifier_handoff = verifier
+            .into_sumcheck::<MyMmcs, _>(
+                &zk_data,
+                &mask_commitment,
+                ell_zk,
+                folding_factor,
+                pow_bits,
+                &mut verifier_challenger,
+            )
+            .expect("verifier should accept mixed current/Next batch");
+
+        // Both parties must have folded along the same challenge sequence.
+        assert_eq!(
+            prover_handoff
+                .randomness
+                .iter()
+                .copied()
+                .collect::<Vec<_>>(),
+            verifier_handoff
+                .randomness
+                .iter()
+                .copied()
+                .collect::<Vec<_>>(),
+        );
     }
 
     proptest! {
