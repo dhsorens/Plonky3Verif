@@ -11,17 +11,17 @@ use p3_field::{ExtensionField, Field, TwoAdicField};
 use p3_matrix::Dimensions;
 use p3_multilinear_util::point::Point;
 use p3_multilinear_util::poly::Poly;
+use p3_sumcheck::constraints::statement::SelectStatement;
+use p3_sumcheck::constraints::{Constraint, Statements};
+use p3_sumcheck::strategy::VariableOrder;
+use p3_sumcheck::verify_final_sumcheck_rounds;
 use tracing::instrument;
 
 use super::committer::reader::ParsedCommitment;
 use super::utils::get_challenge_stir_queries;
 use crate::alloc::string::ToString;
-use crate::constraints::Constraint;
-use crate::constraints::statement::SelectStatement;
 use crate::parameters::{RoundConfig, WhirConfig};
 use crate::pcs::proof::{QueryOpening, WhirProof};
-use crate::sumcheck::strategy::VariableOrder;
-use crate::sumcheck::{SumcheckError, verify_final_sumcheck_rounds};
 
 pub mod errors;
 
@@ -118,17 +118,11 @@ where
         constraints.push(initial_constraint);
 
         // Initial sumcheck rounds == first-round folding factor.
-        let expected_initial_rounds = self.folding_factor(0);
-        let actual_initial_rounds = proof.initial_sumcheck.polynomial_evaluations().len();
-        if actual_initial_rounds != expected_initial_rounds {
-            return Err(VerifierError::Sumcheck(SumcheckError::RoundCountMismatch {
-                expected: expected_initial_rounds,
-                actual: actual_initial_rounds,
-            }));
-        }
+        // `verify_rounds` rejects a proof that carries the wrong number of rounds.
         let folding_randomness = proof.initial_sumcheck.verify_rounds(
             challenger,
             &mut claimed_eval,
+            self.round_folding_factor(0),
             self.starting_folding_pow_bits,
         )?;
         round_folding_randomness.push(folding_randomness);
@@ -160,17 +154,28 @@ where
                 round_index,
             )?;
 
+            // Rebuild the same batched constraint the prover formed for this round.
+            // The out-of-domain claims form the equality group.
+            // The query openings form the selection group.
+            // The challenge sampled here matches the prover's, weighting the groups
+            // by its successive powers so both sides combine the claims identically.
             let constraint = Constraint::new(
                 challenger.sample_algebra_element(),
-                new_commitment.ood_statement.clone(),
-                stir_statement,
+                new_commitment.ood_statement.num_variables(),
+                vec![
+                    Statements::Eq(new_commitment.ood_statement.clone()),
+                    Statements::Select(stir_statement),
+                ],
             );
             constraint.combine_evals(&mut claimed_eval);
             constraints.push(constraint);
 
+            // Intermediate-round sumcheck rounds == next-round folding factor.
+            // `verify_rounds` rejects a wrong count instead of desyncing Fiat-Shamir.
             let folding_randomness = proof.rounds[round_index].sumcheck.verify_rounds(
                 challenger,
                 &mut claimed_eval,
+                self.round_folding_factor(round_index + 1),
                 round_params.folding_pow_bits,
             )?;
             round_folding_randomness.push(folding_randomness);
@@ -261,7 +266,7 @@ where
     ///
     /// Checks PoW witness, generates query indices, verifies Merkle proofs,
     /// and evaluates folded polynomials at the queried positions.
-    pub fn verify_stir_challenges(
+    fn verify_stir_challenges(
         &self,
         proof: &WhirProof<F, EF, MT>,
         challenger: &mut Challenger,
@@ -288,7 +293,7 @@ where
         }
 
         // Sample STIR query positions.
-        let stir_challenges_indexes = get_challenge_stir_queries::<Challenger, F, EF>(
+        let stir_challenges_indexes = get_challenge_stir_queries::<Challenger, F>(
             params.domain_size,
             params.folding_factor,
             params.num_queries,
@@ -330,7 +335,7 @@ where
     }
 
     /// Verify Merkle multi-opening proofs at the given indices.
-    pub fn verify_merkle_proof(
+    fn verify_merkle_proof(
         &self,
         proof: &WhirProof<F, EF, MT>,
         root: &MT::Commitment,

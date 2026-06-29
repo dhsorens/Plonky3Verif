@@ -10,23 +10,23 @@ use p3_challenger::DuplexChallenger;
 use p3_commit::MultilinearPcs;
 use p3_dft::Radix2DFTSmallBatch;
 use p3_field::Field;
-use p3_field::extension::BinomialExtensionField;
+use p3_field::extension::QuinticTrinomialExtensionField;
 use p3_koala_bear::{KoalaBear, Poseidon2KoalaBear};
 use p3_merkle_tree::MerkleTreeMmcs;
 use p3_multilinear_util::poly::Poly;
+use p3_sumcheck::layout::{Layout, PrefixProver, SuffixProver, Table};
+use p3_sumcheck::{OpeningBatch, OpeningProtocol, PointSchedule, TableShape, TableSpec};
 use p3_symmetric::{PaddingFreeSponge, TruncatedPermutation};
 use p3_whir::fiat_shamir::domain_separator::DomainSeparator;
 use p3_whir::parameters::{
     DEFAULT_MAX_POW, FoldingFactor, ProtocolParameters, SecurityAssumption, WhirConfig,
 };
 use p3_whir::pcs::prover::WhirProver;
-use p3_whir::sumcheck::layout::{Layout, PrefixProver, SuffixProver, Table};
-use p3_whir::sumcheck::{OpeningProtocol, TableShape, TableSpec};
 use rand::SeedableRng;
 use rand::rngs::SmallRng;
 
 type F = KoalaBear;
-type EF = BinomialExtensionField<F, 4>;
+type EF = QuinticTrinomialExtensionField<F>;
 
 type Poseidon16 = Poseidon2KoalaBear<16>;
 type Poseidon24 = Poseidon2KoalaBear<24>;
@@ -99,7 +99,9 @@ impl Options {
 /// round. Round 0 starts at rate 1 and each subsequent round absorbs one fewer
 /// rate halving per folded variable.
 fn default_round_log_inv_rates(num_variables: usize, folding_factor: &FoldingFactor) -> Vec<usize> {
-    let (num_rounds, _) = folding_factor.compute_number_of_rounds(num_variables);
+    let (num_rounds, _) = folding_factor
+        .compute_number_of_rounds(num_variables)
+        .expect("valid folding schedule");
     let mut rates = Vec::with_capacity(num_rounds);
     let mut rate = 1;
     for round in 0..num_rounds {
@@ -152,7 +154,7 @@ impl<L: Layout<F, EF>> Bench<L> {
         };
 
         // Derive the per-round configuration and pre-allocate FFT twiddles.
-        let config = WhirConfig::<EF, F, Challenger>::new(opts.num_variables, params);
+        let config = WhirConfig::<EF, F, Challenger>::new(opts.num_variables, params).unwrap();
         let dft = Dft::new(1 << config.max_fft_size());
         let pcs = Pcs::<L>::new(config, dft, mmcs);
 
@@ -162,9 +164,12 @@ impl<L: Layout<F, EF>> Bench<L> {
         let witness = L::new_witness(vec![table], opts.folding);
 
         // Open the single column NUM_EVALUATIONS times at fresh sampled points.
+        let point_schedule: PointSchedule = (0..NUM_EVALUATIONS)
+            .map(|_| OpeningBatch::new(vec![0], Vec::new()))
+            .collect();
         let protocol = OpeningProtocol::new(vec![TableSpec::new(
             TableShape::new(opts.num_variables, 1),
-            vec![vec![0]; NUM_EVALUATIONS],
+            point_schedule,
         )]);
 
         // Bind the protocol structure into the Fiat-Shamir transcript.

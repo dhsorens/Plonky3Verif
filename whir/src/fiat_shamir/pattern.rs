@@ -82,8 +82,6 @@ pub enum Observe {
     /// Only c_0 and c_2 are sent; c_1 is derived by the verifier
     /// as `claimed_sum - c_0`.
     SumcheckPoly,
-    /// Evaluation answers at STIR query positions.
-    StirAnswers,
     /// Coefficients of the final folded polynomial.
     FinalCoeffs,
     /// Proof-of-work nonce solving the grinding challenge.
@@ -101,6 +99,12 @@ pub enum Observe {
     /// The wire skips the linear coefficient and has
     /// `max(ell_zk, 3) - 1` extension-field elements.
     ZkSumcheckPoly,
+    /// Joint claim bound before an HVZK residual sumcheck batch.
+    ZkSumcheckClaim,
+    /// Fresh-side claim `mu_g` of the HVZK base case.
+    ZkBaseCaseClaim,
+    /// Blinded one-time-pad reveals of the HVZK base case.
+    ZkBaseCaseReveal,
 }
 
 impl Observe {

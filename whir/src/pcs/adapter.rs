@@ -8,13 +8,13 @@ use p3_commit::{Mmcs, MultilinearPcs};
 use p3_dft::TwoAdicSubgroupDft;
 use p3_field::{ExtensionField, TwoAdicField};
 use p3_matrix::dense::DenseMatrix;
+use p3_sumcheck::OpeningProtocol;
+use p3_sumcheck::layout::{Layout, Verifier, Witness};
 
 use super::prover::WhirProver;
 use super::verifier::WhirVerifier;
 use super::verifier::errors::VerifierError;
 use crate::pcs::proof::PcsProof;
-use crate::sumcheck::OpeningProtocol;
-use crate::sumcheck::layout::{Layout, Verifier, Witness};
 
 /// Prover-side handoff between the commit and open phases of the PCS.
 ///
@@ -74,7 +74,7 @@ where
             &self.mmcs,
             challenger,
             witness,
-            self.config.folding_factor.at_round(0),
+            self.config.round_folding_factor(0),
             self.config.starting_log_inv_rate,
         );
         (
@@ -102,7 +102,7 @@ where
 
         let evals = protocol
             .iter_openings()
-            .map(|(table_idx, polys)| prover_data.layout.eval(table_idx, polys, challenger))
+            .map(|(table_idx, batch)| prover_data.layout.eval(table_idx, batch, challenger))
             .collect::<Vec<_>>();
 
         self.prove(
@@ -128,6 +128,16 @@ where
         challenger.observe(commitment.clone());
 
         let mut layout_verifier = Verifier::<F, EF>::new(&protocol.table_shapes(), L::strategy());
+
+        // The commitment fixes how many initial OOD answers exist.
+        // Each one drives a transcript draw, so a wrong count desyncs Fiat-Shamir.
+        // Reject it up front, matching the per-round OOD guard.
+        if proof.whir.initial_ood_answers.len() != self.commitment_ood_samples {
+            return Err(VerifierError::InitialOodAnswerCountMismatch {
+                expected: self.commitment_ood_samples,
+                actual: proof.whir.initial_ood_answers.len(),
+            });
+        }
         for &eval in &proof.whir.initial_ood_answers {
             layout_verifier.add_virtual_eval(eval, challenger);
         }
@@ -137,15 +147,20 @@ where
                 actual: proof.evals.len(),
             });
         }
-        for ((table_idx, polys), evals) in protocol.iter_openings().zip(&proof.evals) {
-            if polys.len() != evals.len() {
+        for ((table_idx, batch), evals) in protocol.iter_openings().zip(&proof.evals) {
+            // The supplied evaluations must match the schedule entry on both counts:
+            // the current-point list and the repeat-last successor list.
+            if !batch.has_same_shape(evals) {
                 return Err(VerifierError::OpeningBatchSizeMismatch {
                     table_idx,
-                    expected: polys.len(),
+                    expected: batch.len(),
                     actual: evals.len(),
                 });
             }
-            layout_verifier.add_claim(table_idx, polys, evals, challenger);
+            // The shape was pre-checked above, so this never errors in practice.
+            // The inner check is defense in depth.
+            // Its error maps into a verifier error if ever reached.
+            layout_verifier.add_claim(table_idx, batch, evals, challenger)?;
         }
 
         let alpha = challenger.sample_algebra_element();

@@ -66,13 +66,13 @@ use p3_koala_bear::{
 use p3_matrix::dense::RowMajorMatrix;
 use p3_merkle_tree::MerkleTreeMmcs;
 use p3_multilinear_util::poly::Poly;
+use p3_sumcheck::layout::{Layout, SuffixProver, Table, Witness};
+use p3_sumcheck::{OpeningBatch, OpeningProtocol, TableShape, TableSpec};
 use p3_symmetric::{PaddingFreeSponge, TruncatedPermutation};
 use p3_whir::fiat_shamir::domain_separator::DomainSeparator;
 use p3_whir::parameters::{FoldingFactor, ProtocolParameters, SecurityAssumption, WhirConfig};
 use p3_whir::pcs::proof::PcsProof;
 use p3_whir::pcs::prover::WhirProver;
-use p3_whir::sumcheck::layout::{Layout, SuffixProver, Table, Witness};
-use p3_whir::sumcheck::{OpeningProtocol, TableShape, TableSpec};
 use rand::SeedableRng;
 use rand::rngs::SmallRng;
 
@@ -248,7 +248,9 @@ type WhirCommitTy<MT> = <MT as Mmcs<F>>::Commitment;
 /// - Each round adds the count of variables it folds away, minus one.
 fn default_round_log_inv_rates(num_variables: usize, folding_factor: &FoldingFactor) -> Vec<usize> {
     // One entry per intermediate round; the trailing direct-send round has no entry.
-    let (num_rounds, _) = folding_factor.compute_number_of_rounds(num_variables);
+    let (num_rounds, _) = folding_factor
+        .compute_number_of_rounds(num_variables)
+        .expect("valid folding schedule");
     let mut rates = Vec::with_capacity(num_rounds);
     // Start at the base rate of the first committed codeword.
     let mut rate = 1;
@@ -339,7 +341,7 @@ where
     };
 
     // Per-round protocol layout: query counts, OOD samples, PoW bits per round.
-    let config = WhirConfig::<EF, F, Ch>::new(num_variables, params);
+    let config = WhirConfig::<EF, F, Ch>::new(num_variables, params).unwrap();
 
     // Per-rig RNG: distinct seed per `(num_variables, log_width)` so two rigs
     // cannot accidentally collide on polynomial samples.
@@ -359,7 +361,7 @@ where
     // This is the multilinear analogue of batched FRI's single common opening point.
     let protocol = OpeningProtocol::new(vec![TableSpec::new(
         TableShape::new(log_height, width),
-        vec![(0..width).collect()],
+        vec![OpeningBatch::new((0..width).collect(), Vec::new())],
     )])
     .pad_to_min_num_variables(folding);
 

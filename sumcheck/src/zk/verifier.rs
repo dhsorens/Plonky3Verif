@@ -7,11 +7,11 @@ use p3_commit::Mmcs;
 use p3_field::{ExtensionField, Field, HornerIter};
 use p3_multilinear_util::point::Point;
 
-use super::data::ZkSumcheckData;
+use super::data::{ZkSumcheckData, ZkVerifierHandoff};
 use crate::error::SumcheckError;
 use crate::layout::{LayoutStrategy, Verifier};
 use crate::strategy::VariableOrder;
-use crate::table::TableShape;
+use crate::table::{OpeningEvals, OpeningRequest, TableShape};
 
 /// HVZK verifier for the stacked sumcheck.
 ///
@@ -72,18 +72,116 @@ where
         self.inner.strategy()
     }
 
-    /// Records concrete opening claims on the inner verifier.
+    fn validate_shape(
+        zk_data: &ZkSumcheckData<F, EF>,
+        ell_zk: usize,
+        folding_factor: usize,
+        pow_bits: usize,
+    ) -> Result<(), SumcheckError> {
+        assert!(F::TWO != F::ZERO, "Lemma 6.4 requires char(F) != 2");
+        assert!(
+            ell_zk >= 3,
+            "mask degree ell_zk - 1 must cover the degree-2 plain piece (ell_zk >= 3)",
+        );
+        assert!(folding_factor >= 1, "sumcheck requires at least one round");
+
+        if zk_data.ell_zk != ell_zk {
+            return Err(SumcheckError::EllZkMismatch {
+                expected: ell_zk,
+                actual: zk_data.ell_zk,
+            });
+        }
+        if zk_data.round_coefficients.len() != folding_factor {
+            return Err(SumcheckError::RoundCountMismatch {
+                expected: folding_factor,
+                actual: zk_data.round_coefficients.len(),
+            });
+        }
+        let expected_pow = if pow_bits > 0 { folding_factor } else { 0 };
+        if zk_data.pow_witnesses.len() != expected_pow {
+            return Err(SumcheckError::PowWitnessCountMismatch {
+                expected: expected_pow,
+                actual: zk_data.pow_witnesses.len(),
+            });
+        }
+
+        let h_size = ell_zk.max(3);
+        let wire_size = h_size - 1;
+        for (idx, wire) in zk_data.round_coefficients.iter().enumerate() {
+            if wire.len() != wire_size {
+                return Err(SumcheckError::WireSizeMismatch {
+                    round: idx + 1,
+                    expected: wire_size,
+                    actual: wire.len(),
+                });
+            }
+        }
+
+        Ok(())
+    }
+
+    fn replay_claim_unchecked<M, Ch>(
+        zk_data: &ZkSumcheckData<F, EF>,
+        mask_commitment: &M::Commitment,
+        folding_factor: usize,
+        pow_bits: usize,
+        claimed_sum: EF,
+        challenger: &mut Ch,
+    ) -> Result<ZkVerifierHandoff<EF>, SumcheckError>
+    where
+        M: Mmcs<EF>,
+        Ch: FieldChallenger<F> + GrindingChallenger<Witness = F> + CanObserve<M::Commitment>,
+    {
+        challenger.observe(mask_commitment.clone());
+        challenger.observe_algebra_element(zk_data.mu_tilde);
+        let eps: EF = challenger.sample_algebra_element();
+
+        let mut target: EF = eps * claimed_sum + zk_data.mu_tilde;
+        let mut randomness: Vec<EF> = Vec::with_capacity(folding_factor);
+
+        for (j_idx, wire) in zk_data.round_coefficients.iter().enumerate() {
+            let c0 = wire[0];
+            let high_sum: EF = wire[1..].iter().copied().sum();
+            let c1 = target - c0.double() - high_sum;
+
+            challenger.observe_algebra_slice(wire);
+
+            if pow_bits > 0 && !challenger.check_witness(pow_bits, zk_data.pow_witnesses[j_idx]) {
+                return Err(SumcheckError::InvalidPowWitness);
+            }
+
+            let gamma_j: EF = challenger.sample_algebra_element();
+            target = core::iter::once(c0)
+                .chain(core::iter::once(c1))
+                .chain(wire[1..].iter().copied())
+                .horner(gamma_j);
+            randomness.push(gamma_j);
+        }
+
+        Ok(ZkVerifierHandoff {
+            randomness: Point::new(randomness),
+            claimed_residual: target,
+            eps,
+        })
+    }
+
+    /// Records opening claims at the current points and at their repeat-last successor points on the inner verifier.
+    ///
+    /// # Errors
+    ///
+    /// - Propagates [`SumcheckError::OpeningShapeMismatch`] from the inner verifier.
     pub fn add_claim<Ch>(
         &mut self,
         table_idx: usize,
-        polys: &[usize],
-        evals: &[EF],
+        batch: &OpeningRequest,
+        evals: &OpeningEvals<EF>,
         challenger: &mut Ch,
-    ) where
+    ) -> Result<(), SumcheckError>
+    where
         Ch: FieldChallenger<F> + GrindingChallenger<Witness = F>,
     {
         // Delegate; the HVZK overlay carries no extra state at claim time.
-        self.inner.add_claim(table_idx, polys, evals, challenger);
+        self.inner.add_claim(table_idx, batch, evals, challenger)
     }
 
     /// Records a virtual evaluation claim on the inner verifier.
@@ -128,7 +226,7 @@ where
     /// # Errors
     ///
     /// - Mismatch between the verifier-side and proof-side mask code length.
-    /// - Wrong number of rounds, mask commitments, or PoW witnesses.
+    /// - Wrong number of rounds or PoW witnesses.
     /// - A per-round wire of the wrong shape.
     /// - A failing proof-of-work witness check.
     ///
@@ -141,71 +239,18 @@ where
     pub fn into_sumcheck<M, Ch>(
         self,
         zk_data: &ZkSumcheckData<F, EF>,
-        mask_commits: &[M::Commitment],
+        mask_commitment: &M::Commitment,
         ell_zk: usize,
         folding_factor: usize,
         pow_bits: usize,
         challenger: &mut Ch,
-    ) -> Result<(Point<EF>, EF), SumcheckError>
+    ) -> Result<ZkVerifierHandoff<EF>, SumcheckError>
     where
         M: Mmcs<EF>,
         Ch: FieldChallenger<F> + GrindingChallenger<Witness = F> + CanObserve<M::Commitment>,
     {
-        // Lemma 6.4 hypotheses on the verifier-side parameters.
-        assert!(F::TWO != F::ZERO, "Lemma 6.4 requires char(F) != 2");
-        assert!(
-            ell_zk >= 3,
-            "mask degree ell_zk - 1 must cover the degree-2 plain piece (ell_zk >= 3)",
-        );
-        assert!(folding_factor >= 1, "sumcheck requires at least one round");
-
         // Phase 1: shape checks (input validation before Construction 6.3 replay).
-
-        // ell_zk mismatch reject.
-        // Closes the (2, 3) non-injectivity gap in the wire-shape check: lengths 2 and 3 share a wire layout.
-        if zk_data.ell_zk != ell_zk {
-            return Err(SumcheckError::EllZkMismatch {
-                expected: ell_zk,
-                actual: zk_data.ell_zk,
-            });
-        }
-        // One wire entry per round.
-        if zk_data.round_coefficients.len() != folding_factor {
-            return Err(SumcheckError::RoundCountMismatch {
-                expected: folding_factor,
-                actual: zk_data.round_coefficients.len(),
-            });
-        }
-        // One mask commitment per round.
-        if mask_commits.len() != folding_factor {
-            return Err(SumcheckError::MaskCommitmentCountMismatch {
-                expected: folding_factor,
-                actual: mask_commits.len(),
-            });
-        }
-        // PoW witnesses are required only when grinding is enabled.
-        let expected_pow = if pow_bits > 0 { folding_factor } else { 0 };
-        if zk_data.pow_witnesses.len() != expected_pow {
-            return Err(SumcheckError::PowWitnessCountMismatch {
-                expected: expected_pow,
-                actual: zk_data.pow_witnesses.len(),
-            });
-        }
-        // Each wire carries h_size - 1 coefficients (c_1 dropped):
-        //
-        //     h_size    = max(ell_zk, 3)
-        //     wire_size = h_size - 1
-        let h_size = ell_zk.max(3);
-        let wire_size = h_size - 1;
-        for (idx, wire) in zk_data.round_coefficients.iter().enumerate() {
-            if wire.len() != wire_size {
-                return Err(SumcheckError::WireSizeMismatch {
-                    round: idx + 1,
-                    expected: wire_size,
-                    actual: wire.len(),
-                });
-            }
-        }
+        Self::validate_shape(zk_data, ell_zk, folding_factor, pow_bits)?;
 
         // Phase 2: transcript prelude (matches the prover byte-for-byte; replays Construction 6.3 setup).
 
@@ -213,56 +258,49 @@ where
         let alpha: EF = challenger.sample_algebra_element();
         let mu = self.inner.sum(alpha);
 
-        // Phase 3: absorb mask commits and mu_tilde, sample eps (Construction 6.3 steps 1-3 replay).
-        for commit in mask_commits {
-            challenger.observe(commit.clone());
-        }
-        challenger.observe_algebra_element(zk_data.mu_tilde);
-        let eps: EF = challenger.sample_algebra_element();
+        // Phase 3: absorb the mask commitment and mu_tilde, sample eps, and walk the round chain.
+        Self::replay_claim_unchecked::<M, _>(
+            zk_data,
+            mask_commitment,
+            folding_factor,
+            pow_bits,
+            mu,
+            challenger,
+        )
+    }
 
-        // Phase 4: walk the round chain (Construction 6.3 step 4 verifier replay).
-        //
-        // Round-1 target from the initial Construction 6.3 verifier identity:
-        //
-        //     h_1(0) + h_1(1) = eps * mu + mu_tilde
-        let mut target: EF = eps * mu + zk_data.mu_tilde;
-        let mut randomness: Vec<EF> = Vec::with_capacity(folding_factor);
-
-        for (j_idx, wire) in zk_data.round_coefficients.iter().enumerate() {
-            // Wire layout (`c_1` dropped):  [ c_0, c_2, c_3, ..., c_d ].
-            let c0 = wire[0];
-            let high_sum: EF = wire[1..].iter().copied().sum();
-
-            // Reconstruct c_1 from the Construction 6.3 verifier identity:
-            //
-            //     2 c_0 + c_1 + sum_{i>=2} c_i = target
-            //     => c_1 = target - 2 c_0 - sum_{i>=2} c_i
-            let c1 = target - c0.double() - high_sum;
-
-            // Absorb the wire on the transcript.
-            challenger.observe_algebra_slice(wire);
-
-            // Optional proof-of-work check before the per-round challenge.
-            if pow_bits > 0 && !challenger.check_witness(pow_bits, zk_data.pow_witnesses[j_idx]) {
-                return Err(SumcheckError::InvalidPowWitness);
-            }
-
-            // Sample the per-round challenge.
-            let gamma_j: EF = challenger.sample_algebra_element();
-
-            // Next target via Horner (Construction 6.3 round chaining: target_{j+1} = h_j(gamma_j)):
-            //
-            //     h_j(gamma) = c_0 + gamma * (c_1 + gamma * (c_2 + ... + gamma * c_d))
-            let h_at_gamma_j: EF = core::iter::once(c0)
-                .chain(core::iter::once(c1))
-                .chain(wire[1..].iter().copied())
-                .horner(gamma_j);
-
-            target = h_at_gamma_j;
-            randomness.push(gamma_j);
-        }
-
-        Ok((Point::new(randomness), target))
+    /// Replays an HVZK sumcheck transcript for an already-batched scalar claim.
+    ///
+    /// This is the verifier-side counterpart of
+    /// [`crate::strategy::SumcheckProver::into_zk_sumcheck`]. It skips the
+    /// claim-batching `alpha` prelude because the caller already supplies the
+    /// scalar claim that the masked sumcheck should prove. The scalar is
+    /// absorbed before the masking prelude so this standalone residual-claim
+    /// API is transcript-bound even without recorded layout claims.
+    #[allow(clippy::too_many_arguments)]
+    pub fn verify_claim<M, Ch>(
+        zk_data: &ZkSumcheckData<F, EF>,
+        mask_commitment: &M::Commitment,
+        ell_zk: usize,
+        folding_factor: usize,
+        pow_bits: usize,
+        claimed_sum: EF,
+        challenger: &mut Ch,
+    ) -> Result<ZkVerifierHandoff<EF>, SumcheckError>
+    where
+        M: Mmcs<EF>,
+        Ch: FieldChallenger<F> + GrindingChallenger<Witness = F> + CanObserve<M::Commitment>,
+    {
+        Self::validate_shape(zk_data, ell_zk, folding_factor, pow_bits)?;
+        challenger.observe_algebra_element(claimed_sum);
+        Self::replay_claim_unchecked::<M, _>(
+            zk_data,
+            mask_commitment,
+            folding_factor,
+            pow_bits,
+            claimed_sum,
+            challenger,
+        )
     }
 }
 
@@ -367,7 +405,7 @@ mod tests {
         // Verifier replay against the tampered proof.
         let result = run.verifier.clone().into_sumcheck::<MyMmcs, _>(
             &run.zk_data,
-            &run.mask_commits,
+            &run.mask_commitment,
             ell_zk,
             folding_factor,
             pow_bits,
@@ -446,7 +484,7 @@ mod tests {
         let wrong_ell_zk = ell_zk + 1;
         let result = run.verifier.clone().into_sumcheck::<MyMmcs, _>(
             &run.zk_data,
-            &run.mask_commits,
+            &run.mask_commitment,
             wrong_ell_zk,
             folding_factor,
             pow_bits,
@@ -573,28 +611,28 @@ mod tests {
         let mut honest_v_challenger = run.verifier_challenger.clone();
         let honest_result = honest_verifier.into_sumcheck::<MyMmcs, _>(
             &run.zk_data,
-            &run.mask_commits,
+            &run.mask_commitment,
             ell_zk,
             folding_factor,
             pow_bits,
             &mut honest_v_challenger,
         );
         prop_assert!(honest_result.is_ok());
-        let (_honest_rand, honest_target) = honest_result.unwrap();
+        let honest_target = honest_result.unwrap().claimed_residual;
 
         // Tampered verifier replay from the same starting state.
         let tampered_verifier = run.verifier.clone();
         let mut tampered_v_challenger = run.verifier_challenger.clone();
         let tampered_result = tampered_verifier.into_sumcheck::<MyMmcs, _>(
             &tampered_zk_data,
-            &run.mask_commits,
+            &run.mask_commitment,
             ell_zk,
             folding_factor,
             pow_bits,
             &mut tampered_v_challenger,
         );
         prop_assert!(tampered_result.is_ok());
-        let (_tampered_rand, tampered_target) = tampered_result.unwrap();
+        let tampered_target = tampered_result.unwrap().claimed_residual;
 
         // The two targets must differ.
         // Accidental coincidence is bounded by Lemma 6.5's negligible soundness error.

@@ -62,7 +62,7 @@ impl SecurityAssumption {
     /// eta-dependent arithmetic; the panic locks down that invariant so a
     /// future refactor that strays into the eta path under UD fails loudly.
     #[must_use]
-    pub const fn log_eta(&self, log_inv_rate: usize) -> f64 {
+    pub(crate) const fn log_eta(&self, log_inv_rate: usize) -> f64 {
         match self {
             Self::UniqueDecoding => panic!("log_eta is undefined for UniqueDecoding"),
             // Set as sqrt(rho)/20
@@ -74,7 +74,7 @@ impl SecurityAssumption {
 
     /// Given a RS code (specified by the log of the degree and log inv of the rate), compute the list size at the specified distance delta.
     #[must_use]
-    pub const fn list_size_bits(&self, log_degree: usize, log_inv_rate: usize) -> f64 {
+    pub(crate) const fn list_size_bits(&self, log_degree: usize, log_inv_rate: usize) -> f64 {
         match self {
             // In UD the list size is 1
             Self::UniqueDecoding => 0.,
@@ -120,7 +120,7 @@ impl SecurityAssumption {
     /// The improvement factor of `n*eta^2` translates to approximately `log_2(n)` additional bits
     /// of provable security, enabling 128-bit security with degree-5 extensions of KoalaBear.
     #[must_use]
-    pub fn prox_gaps_error(
+    pub(crate) fn prox_gaps_error(
         &self,
         log_degree: usize,
         log_inv_rate: usize,
@@ -190,7 +190,7 @@ impl SecurityAssumption {
     /// - In JB, delta is (1 - sqrt(rho) - eta)
     /// - In CB, delta is (1 - rho - eta)
     #[must_use]
-    pub fn log_1_delta(&self, log_inv_rate: usize) -> f64 {
+    pub(crate) fn log_1_delta(&self, log_inv_rate: usize) -> f64 {
         let rate = 1. / f64::from(1 << log_inv_rate);
 
         let delta = match self {
@@ -205,8 +205,17 @@ impl SecurityAssumption {
     /// Compute the number of queries to match the security level
     /// The error to drive down is (1-delta)^t < 2^-lambda.
     /// Where delta is set as in the `log_1_delta` function.
+    ///
+    /// Requires a redundant code rate, at most `1/2`:
+    /// - A redundant rate keeps the proximity parameter `delta > 0`.
+    /// - With `delta > 0` the term `log2(1 - delta)` is negative.
+    /// - Dividing `-lambda` by a negative number gives a positive, finite count.
+    /// - A rate of `1` forces `delta <= 0` and rounds the count down to zero.
+    /// - Zero queries would make the proximity test check nothing.
+    ///
+    /// Configuration construction rejects rate `1`, so the precondition holds.
     #[must_use]
-    pub fn queries(&self, protocol_security_level: usize, log_inv_rate: usize) -> usize {
+    pub(crate) fn queries(&self, protocol_security_level: usize, log_inv_rate: usize) -> usize {
         let num_queries_f = -(protocol_security_level as f64) / self.log_1_delta(log_inv_rate);
 
         libm::ceil(num_queries_f) as usize
@@ -216,7 +225,7 @@ impl SecurityAssumption {
     /// The error to drive down is (1-delta)^t < 2^-lambda.
     /// Where delta is set as in the `log_1_delta` function.
     #[must_use]
-    pub fn queries_error(&self, log_inv_rate: usize, num_queries: usize) -> f64 {
+    pub(crate) fn queries_error(&self, log_inv_rate: usize, num_queries: usize) -> f64 {
         let num_queries = num_queries as f64;
 
         -num_queries * self.log_1_delta(log_inv_rate)
@@ -227,7 +236,7 @@ impl SecurityAssumption {
     /// The error is list_size^2 * (degree/field_size_bits)^reps
     /// NOTE: Here we are discounting the domain size as we assume it is negligible compared to the size of the field.
     #[must_use]
-    pub const fn ood_error(
+    pub(crate) const fn ood_error(
         &self,
         log_degree: usize,
         log_inv_rate: usize,
@@ -244,30 +253,34 @@ impl SecurityAssumption {
         (ood_samples * field_size_bits) as f64 + 1. - error
     }
 
-    /// Computes the number of OOD samples required to achieve security_level bits of security
-    /// We note that in both STIR and WHIR there are various strategies to set OOD samples.
-    /// In this case, we are just sampling one element from the extension field
+    /// Number of OOD samples needed to reach the requested security level.
+    ///
+    /// In both STIR and WHIR there are various strategies to set OOD samples.
+    /// Here we sample one element from the extension field per OOD query.
+    ///
+    /// # Returns
+    ///
+    /// - `Some(0)` for unique decoding, which uses no OOD samples.
+    /// - `Some(n)` for the smallest count reaching the security level.
+    /// - `None` when no count in range suffices, i.e. the field is too small.
     #[must_use]
-    pub fn determine_ood_samples(
+    pub(crate) fn determine_ood_samples(
         &self,
         security_level: usize,
         log_degree: usize,
         log_inv_rate: usize,
         field_size_bits: usize,
-    ) -> usize {
+    ) -> Option<usize> {
         if matches!(self, Self::UniqueDecoding) {
-            return 0;
+            return Some(0);
         }
 
-        for ood_samples in 1..64 {
-            if self.ood_error(log_degree, log_inv_rate, field_size_bits, ood_samples)
+        // Each extra OOD sample adds roughly `field_size_bits - log_degree` bits.
+        // When the field is too small that term never reaches the target.
+        (1..64).find(|&ood_samples| {
+            self.ood_error(log_degree, log_inv_rate, field_size_bits, ood_samples)
                 >= security_level as f64
-            {
-                return ood_samples;
-            }
-        }
-
-        panic!("Could not find an appropriate number of OOD samples");
+        })
     }
 
     /// Compute the sumcheck soundness term of the folding step (in bits).
@@ -284,7 +297,7 @@ impl SecurityAssumption {
     ///
     /// The `+1` accounts for the union bound over the list.
     #[must_use]
-    pub const fn fold_sumcheck_error(
+    pub(crate) const fn fold_sumcheck_error(
         &self,
         field_size_bits: usize,
         num_variables: usize,
@@ -315,7 +328,7 @@ impl SecurityAssumption {
     ///
     /// The `+1` accounts for the union bound over list elements.
     #[must_use]
-    pub fn queries_combination_error(
+    pub(crate) fn queries_combination_error(
         &self,
         field_size_bits: usize,
         num_variables: usize,
@@ -350,7 +363,7 @@ impl SecurityAssumption {
     ///
     /// Returns 0 when the algebraic bounds alone meet the target.
     #[must_use]
-    pub fn folding_pow_bits(
+    pub(crate) fn folding_pow_bits(
         &self,
         security_level: usize,
         field_size_bits: usize,
@@ -449,6 +462,25 @@ mod tests {
     fn prox_gaps_error_panics_when_num_functions_is_zero() {
         let assumption = SecurityAssumption::UniqueDecoding;
         let _ = assumption.prox_gaps_error(1, 1, 64, 0);
+    }
+
+    #[test]
+    fn determine_ood_samples_reports_infeasibility() {
+        let jb = SecurityAssumption::JohnsonBound;
+
+        // A 10-bit field cannot reach 100-bit security at log-degree 20.
+        // Each OOD sample adds at most ~ (10 - 20) < 0 bits, so the loop never
+        // hits the target and the search yields nothing.
+        assert_eq!(jb.determine_ood_samples(100, 20, 2, 10), None);
+
+        // A large field reaches the target with a small sample count.
+        assert!(jb.determine_ood_samples(100, 20, 2, 128).is_some());
+
+        // Unique decoding never needs OOD samples.
+        assert_eq!(
+            SecurityAssumption::UniqueDecoding.determine_ood_samples(100, 20, 2, 10),
+            Some(0)
+        );
     }
 
     #[test]
@@ -788,12 +820,15 @@ mod tests {
         let num_queries = jb.queries(security_level, log_inv_rate);
 
         // OOD sample count for the OOD term to reach security_level alone.
-        let ood_samples = jb.determine_ood_samples(
-            security_level,
-            log_degree,
-            log_inv_rate,
-            KOALABEAR_QUINTIC_BITS,
-        );
+        // The quintic field is large, so a feasible count always exists here.
+        let ood_samples = jb
+            .determine_ood_samples(
+                security_level,
+                log_degree,
+                log_inv_rate,
+                KOALABEAR_QUINTIC_BITS,
+            )
+            .expect("quintic field is large enough for these parameters");
 
         // Five algebraic error bounds at the chosen configuration.
         let prox_gap = jb.prox_gaps_error(log_degree, log_inv_rate, KOALABEAR_QUINTIC_BITS, 2);
