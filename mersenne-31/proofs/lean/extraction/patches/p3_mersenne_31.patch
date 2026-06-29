@@ -1,0 +1,4399 @@
+--- pristine.snapshot.lean	2026-06-29 14:54:05
++++ ../p3_mersenne_31.lean	2026-06-29 15:04:43
+@@ -2,6 +2,7 @@
+ -- Experimental lean backend for Hax
+ -- The Hax prelude library can be found in hax/proof-libs/lean
+ import Hax
++import p3_mersenne_31.dependencies
+ import Std.Tactic.Do
+ import Std.Do.Triple
+ import Std.Tactic.Do.Syntax
+@@ -56,13 +57,13 @@
+   -- no fields
+ 
+ def Impl_1.parity_dot.LOWMASK : i128 :=
+-  RustM.of_isOk (do ((← ((1 : i128) <<<? (42 : i32))) -? (1 : i128))) (by rfl)
++  RustM.of_isOk (do ((← ((1 : i128) <<<? (42 : i32))) -? (1 : i128))) (by sorry)
+ 
+ def Impl_1.parity_dot.HIGHMASK : i128 :=
+-  RustM.of_isOk (do (~? Impl_1.parity_dot.LOWMASK)) (by rfl)
++  RustM.of_isOk (do (~? Impl_1.parity_dot.LOWMASK)) (by sorry)
+ 
+ def Impl_1.reduce.MASK : i64 :=
+-  RustM.of_isOk (do ((← ((1 : i64) <<<? (31 : i32))) -? (1 : i64))) (by rfl)
++  RustM.of_isOk (do ((← ((1 : i64) <<<? (31 : i32))) -? (1 : i64))) (by sorry)
+ 
+ def MATRIX_CIRC_MDS_8_SML_ROW : (RustArray i64 8) :=
+   RustM.of_isOk
+@@ -75,14 +76,14 @@
+                                 (3 : i64),
+                                 (4 : i64),
+                                 (9 : i64)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def Impl_2.permute.MATRIX_CIRC_MDS_8_SML_COL : (RustArray i64 8) :=
+   RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((8 : usize)) i64
+       MATRIX_CIRC_MDS_8_SML_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ def MATRIX_CIRC_MDS_12_SML_ROW : (RustArray i64 12) :=
+   RustM.of_isOk
+@@ -99,14 +100,14 @@
+                                 (9 : i64),
+                                 (4 : i64),
+                                 (10 : i64)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def Impl_4.permute.MATRIX_CIRC_MDS_12_SML_COL : (RustArray i64 12) :=
+   RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((12 : usize)) i64
+       MATRIX_CIRC_MDS_12_SML_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ def MATRIX_CIRC_MDS_16_SML_ROW : (RustArray i64 16) :=
+   RustM.of_isOk
+@@ -127,14 +128,14 @@
+                                 (22 : i64),
+                                 (13 : i64),
+                                 (3 : i64)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def Impl_6.permute.MATRIX_CIRC_MDS_16_SML_COL : (RustArray i64 16) :=
+   RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((16 : usize)) i64
+       MATRIX_CIRC_MDS_16_SML_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ def MATRIX_CIRC_MDS_32_MERSENNE31_ROW : (RustArray i64 32) :=
+   RustM.of_isOk
+@@ -171,14 +172,14 @@
+                                 (185870542 : i64),
+                                 (979558870 : i64),
+                                 (2003379079 : i64)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def Impl_8.permute.MATRIX_CIRC_MDS_32_MERSENNE31_COL : (RustArray i64 32) :=
+   RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((32 : usize)) i64
+       MATRIX_CIRC_MDS_32_MERSENNE31_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ def MATRIX_CIRC_MDS_64_MERSENNE31_ROW : (RustArray i64 64) :=
+   RustM.of_isOk
+@@ -247,14 +248,14 @@
+                                 (1015334133 : i64),
+                                 (1358784448 : i64),
+                                 (821942362 : i64)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def Impl_10.permute.MATRIX_CIRC_MDS_64_MERSENNE31_COL : (RustArray i64 64) :=
+   RustM.of_isOk
+     (do
+     (p3_mds.util.first_row_to_first_col ((64 : usize)) i64
+       MATRIX_CIRC_MDS_64_MERSENNE31_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ end p3_mersenne_31.mds
+ 
+@@ -263,7 +264,7 @@
+ 
+ --  The Mersenne31 prime
+ def P : u32 :=
+-  RustM.of_isOk (do ((← ((1 : u32) <<<? (31 : i32))) -? (1 : u32))) (by rfl)
++  RustM.of_isOk (do ((← ((1 : u32) <<<? (31 : i32))) -? (1 : u32))) (by sorry)
+ 
+ --  The prime field `F_p` where `p = 2^31 - 1`.
+ -- 
+@@ -286,12 +287,7 @@
+   p3_symmetric.permutation.Permutation
+   MdsMatrixMersenne31
+   (RustArray p3_mersenne_31.mersenne_31.Mersenne31 8)
+-  where
+-  permute :=
+-    fun
+-      (self : MdsMatrixMersenne31)
+-      (input : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 8)) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_3.AssociatedTypes :
+   p3_mds.MdsPermutation.AssociatedTypes
+@@ -317,12 +313,7 @@
+   p3_symmetric.permutation.Permutation
+   MdsMatrixMersenne31
+   (RustArray p3_mersenne_31.mersenne_31.Mersenne31 12)
+-  where
+-  permute :=
+-    fun
+-      (self : MdsMatrixMersenne31)
+-      (input : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 12)) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_5.AssociatedTypes :
+   p3_mds.MdsPermutation.AssociatedTypes
+@@ -348,12 +339,7 @@
+   p3_symmetric.permutation.Permutation
+   MdsMatrixMersenne31
+   (RustArray p3_mersenne_31.mersenne_31.Mersenne31 16)
+-  where
+-  permute :=
+-    fun
+-      (self : MdsMatrixMersenne31)
+-      (input : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 16)) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_7.AssociatedTypes :
+   p3_mds.MdsPermutation.AssociatedTypes
+@@ -379,12 +365,7 @@
+   p3_symmetric.permutation.Permutation
+   MdsMatrixMersenne31
+   (RustArray p3_mersenne_31.mersenne_31.Mersenne31 32)
+-  where
+-  permute :=
+-    fun
+-      (self : MdsMatrixMersenne31)
+-      (input : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 32)) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_9.AssociatedTypes :
+   p3_mds.MdsPermutation.AssociatedTypes
+@@ -410,12 +391,7 @@
+   p3_symmetric.permutation.Permutation
+   MdsMatrixMersenne31
+   (RustArray p3_mersenne_31.mersenne_31.Mersenne31 64)
+-  where
+-  permute :=
+-    fun
+-      (self : MdsMatrixMersenne31)
+-      (input : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 64)) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_11.AssociatedTypes :
+   p3_mds.MdsPermutation.AssociatedTypes
+@@ -513,8 +489,8 @@
+   where
+ 
+ instance Impl_8 : core_models.fmt.Debug Mersenne31 where
+-  fmt := fun (self : Mersenne31) (f : core_models.fmt.Formatter) => do
+-    let ⟨tmp0, out⟩ ← (core_models.fmt.Debug.fmt u32 (Mersenne31.value self) f);
++  dbg_fmt := fun (self : Mersenne31) (f : core_models.fmt.Formatter) => do
++    let ⟨tmp0, out⟩ ← (core_models.fmt.Debug.dbg_fmt u32 (Mersenne31.value self) f);
+     let f : core_models.fmt.Formatter := tmp0;
+     let
+       hax_temp_output : (core_models.result.Result
+@@ -531,58 +507,21 @@
+ 
+ instance Impl_9 :
+   rand.distr.distribution.Distribution rand.distr.StandardUniform Mersenne31
+-  where
+-  sample :=
+-    fun
+-      (R : Type)
+-      [trait_constr_sample_associated_type_i0 : rand_core.Rng.AssociatedTypes R]
+-      [trait_constr_sample_i0 : rand_core.Rng R ]
+-      (self : rand.distr.StandardUniform)
+-      (rng : R) => do
+-    let ⟨rng, hoist3⟩ :=
+-      (rust_primitives.hax.Tuple2.mk
+-        (← match sorry with
+-          | (core_models.ops.control_flow.ControlFlow.Break  ret) => do
+-            (pure sorry)
+-          | (core_models.ops.control_flow.ControlFlow.Continue  loop_res) => do
+-            (pure loop_res))
+-        rust_primitives.hax.Tuple0.mk);
+-    let hax_temp_output : Mersenne31 ←
+-      (rust_primitives.hax.never_to_any hoist3);
+-    (pure (rust_primitives.hax.Tuple2.mk rng hax_temp_output))
++  := sorry
+ 
+ @[reducible] instance Impl_11.AssociatedTypes :
+   serde_core.de.Deserialize.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_11 : serde_core.de.Deserialize Mersenne31 where
+-  deserialize :=
+-    fun
+-      (D : Type)
+-      [trait_constr_deserialize_associated_type_i0 :
+-        serde_core.de.Deserializer.AssociatedTypes
+-        D]
+-      [trait_constr_deserialize_i0 : serde_core.de.Deserializer D ] (d : D) =>
+-      do
+-    match (← (serde_core.de.Deserialize.deserialize u32 D d)) with
+-      | (core_models.result.Result.Ok  val) => do
+-        if (← (val <? P)) then do
+-          (pure (core_models.result.Result.Ok (← (Impl.new_reduced val))))
+-        else do
+-          (pure (core_models.result.Result.Err
+-            (← (serde_core.de.Error.custom
+-              (serde_core.de.Deserializer.Error D) String
+-              "Value is out of range"))))
+-      | (core_models.result.Result.Err  err) => do
+-        (pure (core_models.result.Result.Err err))
++instance Impl_11 : serde_core.de.Deserialize Mersenne31 := sorry
+ 
+ def Impl_16.try_inverse.NUM_PRIME_BITS : u32 := (31 : u32)
+ 
+ def Impl_18.from_canonical_checked.TWO_EXP_30 : i32 :=
+-  RustM.of_isOk (do ((1 : i32) <<<? (30 : i32))) (by rfl)
++  RustM.of_isOk (do ((1 : i32) <<<? (30 : i32))) (by sorry)
+ 
+ def Impl_18.from_canonical_checked.NEG_TWO_EXP_30_PLUS_1 : i32 :=
+-  RustM.of_isOk (do ((← ((-1 : i32) <<<? (30 : i32))) +? (1 : i32))) (by rfl)
++  RustM.of_isOk (do ((← ((-1 : i32) <<<? (30 : i32))) +? (1 : i32))) (by sorry)
+ 
+ --  Perform a partial reduction of a u64 value modulo P = 2^31 - 1.
+ --  The result will be contained in [0, 2^34 - 1].
+@@ -623,46 +562,7 @@
+ 
+ instance Impl_27 :
+   p3_challenger.duplex_challenger.UniformSamplingField Mersenne31
+-  where
+-  MAX_SINGLE_SAMPLE_BITS := (16 : usize)
+-  SAMPLING_BITS_M := RustM.of_isOk
+-    (do
+-    let prime : u64 ← (rust_primitives.hax.cast_op P : RustM u64);
+-    let a : (RustArray u64 64) ←
+-      (rust_primitives.hax.repeat (0 : u64) (64 : usize));
+-    let k : usize := (0 : usize);
+-    let ⟨a, k⟩ ←
+-      (rust_primitives.hax.while_loop
+-        (fun ⟨a, k⟩ => (do (pure true) : RustM Bool))
+-        (fun ⟨a, k⟩ => (do (k <? (64 : usize)) : RustM Bool))
+-        (fun ⟨a, k⟩ =>
+-          (do
+-          (rust_primitives.hax.int.from_machine (0 : u32)) :
+-          RustM hax_lib.int.Int))
+-        (rust_primitives.hax.Tuple2.mk a k)
+-        (fun ⟨a, k⟩ =>
+-          (do
+-          let a : (RustArray u64 64) ←
+-            if (← (k ==? (0 : usize))) then do
+-              let a : (RustArray u64 64) ←
+-                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-                  a
+-                  k
+-                  prime);
+-              (pure a)
+-            else do
+-              let mask : u64 ← (~? (← ((← ((1 : u64) <<<? k)) -? (1 : u64))));
+-              let a : (RustArray u64 64) ←
+-                (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-                  a
+-                  k
+-                  (← (prime &&&? mask)));
+-              (pure a);
+-          let k : usize ← (k +? (1 : usize));
+-          (pure (rust_primitives.hax.Tuple2.mk a k)) :
+-          RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
+-    (pure a))
+-    (by rfl)
++  := sorry
+ 
+ end p3_mersenne_31.mersenne_31
+ 
+@@ -706,7 +606,7 @@
+     (do
+     (p3_mds.util.first_row_to_first_col ((16 : usize)) i64
+       p3_mersenne_31.mds.MATRIX_CIRC_MDS_16_SML_ROW))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Generic (non-SIMD) Poseidon1 permutation for Mersenne31.
+ -- 
+@@ -814,7 +714,7 @@
+                                 (14 : u8),
+                                 (15 : u8),
+                                 (16 : u8)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def POSEIDON2_INTERNAL_MATRIX_DIAG_24_SHIFTS : (RustArray u8 23) :=
+   RustM.of_isOk
+@@ -842,7 +742,7 @@
+                                 (20 : u8),
+                                 (21 : u8),
+                                 (22 : u8)])))
+-    (by rfl)
++    (by sorry)
+ 
+ def POSEIDON2_INTERNAL_MATRIX_DIAG_32_SHIFTS : (RustArray u8 31) :=
+   RustM.of_isOk
+@@ -878,7 +778,7 @@
+                                 (28 : u8),
+                                 (29 : u8),
+                                 (30 : u8)])))
+-    (by rfl)
++    (by sorry)
+ 
+ @[reducible] instance Impl_4.AssociatedTypes :
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers.AssociatedTypes
+@@ -890,63 +790,7 @@
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers
+   GenericPoseidon2LinearLayersMersenne31
+   ((16 : usize))
+-  where
+-  internal_linear_layer :=
+-    fun
+-      (R : Type)
+-      [trait_constr_internal_linear_layer_associated_type_i0 :
+-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
+-        R]
+-      [trait_constr_internal_linear_layer_i0 :
+-        p3_field.field.PrimeCharacteristicRing
+-        R
+-        ] (state : (RustArray R 16)) => do
+-    let part_sum : R ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map
+-          (core_models.slice.iter.Iter R)
+-          (R -> RustM R)) R
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.slice.iter.Iter R) R (R -> RustM R)
+-          (← (core_models.slice.Impl.iter R
+-            (← state[
+-              (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-              ]_?)))
+-          (fun r => (do (p3_field.dup.Dup.dup R r) : RustM R)))));
+-    let full_sum : R ←
+-      (core_models.ops.arith.Add.add
+-        R
+-        R
+-        (← (p3_field.dup.Dup.dup R part_sum))
+-        (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (0 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R part_sum (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.dup.Dup.dup R (← state[(1 : usize)]_?))))));
+-    let state : (RustArray R 16) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?))))));
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ @[reducible] instance Impl_5.AssociatedTypes :
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers.AssociatedTypes
+@@ -958,63 +802,7 @@
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers
+   GenericPoseidon2LinearLayersMersenne31
+   ((24 : usize))
+-  where
+-  internal_linear_layer :=
+-    fun
+-      (R : Type)
+-      [trait_constr_internal_linear_layer_associated_type_i0 :
+-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
+-        R]
+-      [trait_constr_internal_linear_layer_i0 :
+-        p3_field.field.PrimeCharacteristicRing
+-        R
+-        ] (state : (RustArray R 24)) => do
+-    let part_sum : R ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map
+-          (core_models.slice.iter.Iter R)
+-          (R -> RustM R)) R
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.slice.iter.Iter R) R (R -> RustM R)
+-          (← (core_models.slice.Impl.iter R
+-            (← state[
+-              (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-              ]_?)))
+-          (fun r => (do (p3_field.dup.Dup.dup R r) : RustM R)))));
+-    let full_sum : R ←
+-      (core_models.ops.arith.Add.add
+-        R
+-        R
+-        (← (p3_field.dup.Dup.dup R part_sum))
+-        (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (0 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R part_sum (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.dup.Dup.dup R (← state[(1 : usize)]_?))))));
+-    let state : (RustArray R 24) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?))))));
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ @[reducible] instance Impl_6.AssociatedTypes :
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers.AssociatedTypes
+@@ -1026,63 +814,7 @@
+   p3_poseidon2.generic.GenericPoseidon2LinearLayers
+   GenericPoseidon2LinearLayersMersenne31
+   ((32 : usize))
+-  where
+-  internal_linear_layer :=
+-    fun
+-      (R : Type)
+-      [trait_constr_internal_linear_layer_associated_type_i0 :
+-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
+-        R]
+-      [trait_constr_internal_linear_layer_i0 :
+-        p3_field.field.PrimeCharacteristicRing
+-        R
+-        ] (state : (RustArray R 32)) => do
+-    let part_sum : R ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map
+-          (core_models.slice.iter.Iter R)
+-          (R -> RustM R)) R
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.slice.iter.Iter R) R (R -> RustM R)
+-          (← (core_models.slice.Impl.iter R
+-            (← state[
+-              (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-              ]_?)))
+-          (fun r => (do (p3_field.dup.Dup.dup R r) : RustM R)))));
+-    let full_sum : R ←
+-      (core_models.ops.arith.Add.add
+-        R
+-        R
+-        (← (p3_field.dup.Dup.dup R part_sum))
+-        (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (0 : usize)
+-        (← (core_models.ops.arith.Sub.sub
+-          R
+-          R part_sum (← (p3_field.dup.Dup.dup R (← state[(0 : usize)]_?))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (1 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.dup.Dup.dup R (← state[(1 : usize)]_?))))));
+-    let state : (RustArray R 32) ←
+-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-        state
+-        (2 : usize)
+-        (← (core_models.ops.arith.Add.add
+-          R
+-          R
+-          (← (p3_field.dup.Dup.dup R full_sum))
+-          (← (p3_field.field.PrimeCharacteristicRing.double
+-            R (← state[(2 : usize)]_?))))));
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ end p3_mersenne_31.poseidon2
+ 
+@@ -1192,30 +924,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  add :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_2.AssociatedTypes :
+   core_models.ops.arith.AddAssign.AssociatedTypes
+@@ -1261,70 +970,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  add_assign :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let
+-      self : (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)) ←
+-      (core_models.ops.arith.Add.add
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_3.AssociatedTypes :
+   core_models.ops.arith.Sub.AssociatedTypes
+@@ -1388,30 +1034,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  sub :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_4.AssociatedTypes :
+   core_models.ops.arith.SubAssign.AssociatedTypes
+@@ -1457,70 +1080,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  sub_assign :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let
+-      self : (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)) ←
+-      (core_models.ops.arith.Sub.sub
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_5.AssociatedTypes :
+   core_models.ops.arith.Mul.AssociatedTypes
+@@ -1584,30 +1144,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  mul :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_6.AssociatedTypes :
+   core_models.ops.arith.MulAssign.AssociatedTypes
+@@ -1653,70 +1190,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  mul_assign :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)))
+-      (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let
+-      self : (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)) ←
+-      (core_models.ops.arith.Mul.mul
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_8.AssociatedTypes :
+   p3_field.field.BasedVectorSpace.AssociatedTypes
+@@ -1762,176 +1236,8 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  DIMENSION := (4 : usize)
+-  as_basis_coefficients_slice :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (p3_util.as_base_slice
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))
+-      (← (core_models.slice.raw.from_ref
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)) self)))
+-  from_basis_coefficients_fn :=
+-    fun
+-      (Fn : Type)
+-      [trait_constr_from_basis_coefficients_fn_associated_type_i0 :
+-        core_models.ops.function.FnMut.AssociatedTypes
+-        Fn
+-        (rust_primitives.hax.Tuple1 usize)]
+-      [trait_constr_from_basis_coefficients_fn_i0 :
+-        core_models.ops.function.FnMut
+-        Fn
+-        (rust_primitives.hax.Tuple1 usize)
+-        (associatedTypes := {
+-          show
+-            core_models.ops.function.FnMut.AssociatedTypes
+-            Fn
+-            (rust_primitives.hax.Tuple1 usize)
+-          by infer_instance
+-          with sorry})] (f : Fn) => do
+-    (pure sorry)
+-  from_basis_coefficients_iter :=
+-    fun
+-      (I : Type)
+-      [trait_constr_from_basis_coefficients_iter_associated_type_i0 :
+-        core_models.iter.traits.exact_size.ExactSizeIterator.AssociatedTypes
+-        I]
+-      [trait_constr_from_basis_coefficients_iter_i0 :
+-        core_models.iter.traits.exact_size.ExactSizeIterator
+-        I
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.exact_size.ExactSizeIterator.AssociatedTypes
+-            I
+-          by infer_instance
+-          with sorry})] (iter : I) => do
+-    (pure sorry)
+-  flatten_to_base :=
+-    fun
+-      (vec :
+-      (alloc.vec.Vec
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        alloc.alloc.Global)) => do
+-    (p3_util.flatten_to_base
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)) vec)
+-  reconstitute_from_base :=
+-    fun
+-      (vec :
+-      (alloc.vec.Vec p3_mersenne_31.mersenne_31.Mersenne31 alloc.alloc.Global))
+-      => do
+-    (p3_util.reconstitute_from_base
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)) vec)
++  := sorry
+ 
+---  Packed representation of [`QM31`]: two packed `Complex<Mersenne31>`
+---  coefficients, each holding `PackedM31::WIDTH` lanes.
+ structure PackedQM31 where
+   _0 :
+     (RustArray
+@@ -2003,52 +1309,20 @@
+   where
+   Output := PackedQM31
+ 
+-instance Impl_11 : core_models.ops.arith.Neg PackedQM31 where
+-  neg := fun (self : PackedQM31) => do
+-    (pure (PackedQM31.mk
+-      (← (core_models.array.Impl_23.map
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ((2 : usize))
+-        ((p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ->
+-        RustM (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)))
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        (PackedQM31._0 self)
+-        core_models.ops.arith.Neg.neg))))
++instance Impl_11 : core_models.ops.arith.Neg PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_16.AssociatedTypes :
+   core_models.ops.arith.Mul.AssociatedTypes PackedQM31 PackedQM31
+   where
+   Output := PackedQM31
+ 
+-instance Impl_16 : core_models.ops.arith.Mul PackedQM31 PackedQM31 where
+-  mul := fun (self : PackedQM31) (rhs : PackedQM31) => do (pure sorry)
++instance Impl_16 : core_models.ops.arith.Mul PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_17.AssociatedTypes :
+   core_models.ops.arith.MulAssign.AssociatedTypes PackedQM31 PackedQM31
+   where
+ 
+-instance Impl_17 : core_models.ops.arith.MulAssign PackedQM31 PackedQM31 where
+-  mul_assign := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Mul.mul PackedQM31 PackedQM31 self rhs);
+-    (pure self)
++instance Impl_17 : core_models.ops.arith.MulAssign PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_22.AssociatedTypes :
+   core_models.convert.From.AssociatedTypes
+@@ -2094,29 +1368,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  _from :=
+-    fun
+-      (x :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_23.AssociatedTypes :
+   core_models.ops.arith.Add.AssociatedTypes
+@@ -2163,30 +1415,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  add :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_24.AssociatedTypes :
+   core_models.ops.arith.AddAssign.AssociatedTypes
+@@ -2232,52 +1461,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  add_assign :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Add.add
+-        PackedQM31
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)) self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_25.AssociatedTypes :
+   core_models.ops.arith.Sub.AssociatedTypes
+@@ -2324,30 +1508,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  sub :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_26.AssociatedTypes :
+   core_models.ops.arith.SubAssign.AssociatedTypes
+@@ -2393,52 +1554,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  sub_assign :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Sub.sub
+-        PackedQM31
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)) self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_27.AssociatedTypes :
+   core_models.ops.arith.Mul.AssociatedTypes
+@@ -2485,30 +1601,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  mul :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_28.AssociatedTypes :
+   core_models.ops.arith.MulAssign.AssociatedTypes
+@@ -2554,103 +1647,19 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
++  := sorry
++
++@[reducible] instance Impl_38.AssociatedTypes :
++  p3_field.field.BasedVectorSpace.AssociatedTypes
++  PackedQM31
++  p3_mersenne_31.mersenne_31.Mersenne31
+   where
+-  mul_assign :=
+-    fun
+-      (self : PackedQM31)
+-      (rhs :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Mul.mul
+-        PackedQM31
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)) self rhs);
+-    (pure self)
+ 
+-@[reducible] instance Impl_38.AssociatedTypes :
+-  p3_field.field.BasedVectorSpace.AssociatedTypes
+-  PackedQM31
+-  p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-
+ instance Impl_38 :
+   p3_field.field.BasedVectorSpace
+   PackedQM31
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  DIMENSION := (4 : usize)
+-  as_basis_coefficients_slice := fun (self : PackedQM31) => do
+-    (p3_util.as_base_slice p3_mersenne_31.mersenne_31.Mersenne31 PackedQM31
+-      (← (core_models.slice.raw.from_ref PackedQM31 self)))
+-  from_basis_coefficients_fn :=
+-    fun
+-      (Fn : Type)
+-      [trait_constr_from_basis_coefficients_fn_associated_type_i0 :
+-        core_models.ops.function.FnMut.AssociatedTypes
+-        Fn
+-        (rust_primitives.hax.Tuple1 usize)]
+-      [trait_constr_from_basis_coefficients_fn_i0 :
+-        core_models.ops.function.FnMut
+-        Fn
+-        (rust_primitives.hax.Tuple1 usize)
+-        (associatedTypes := {
+-          show
+-            core_models.ops.function.FnMut.AssociatedTypes
+-            Fn
+-            (rust_primitives.hax.Tuple1 usize)
+-          by infer_instance
+-          with sorry})] (f : Fn) => do
+-    (pure sorry)
+-  from_basis_coefficients_iter :=
+-    fun
+-      (I : Type)
+-      [trait_constr_from_basis_coefficients_iter_associated_type_i0 :
+-        core_models.iter.traits.exact_size.ExactSizeIterator.AssociatedTypes
+-        I]
+-      [trait_constr_from_basis_coefficients_iter_i0 :
+-        core_models.iter.traits.exact_size.ExactSizeIterator
+-        I
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.exact_size.ExactSizeIterator.AssociatedTypes
+-            I
+-          by infer_instance
+-          with sorry})] (iter : I) => do
+-    (pure sorry)
++  := sorry
+ 
+ @[reducible] instance Impl_39.AssociatedTypes :
+   rand.distr.distribution.Distribution.AssociatedTypes
+@@ -2660,15 +1669,7 @@
+ 
+ instance Impl_39 :
+   rand.distr.distribution.Distribution rand.distr.StandardUniform PackedQM31
+-  where
+-  sample :=
+-    fun
+-      (R : Type)
+-      [trait_constr_sample_associated_type_i0 : rand_core.Rng.AssociatedTypes R]
+-      [trait_constr_sample_i0 : rand_core.Rng R ]
+-      (self : rand.distr.StandardUniform)
+-      (rng : R) => do
+-    (pure sorry)
++  := sorry
+ 
+ end p3_mersenne_31.qm31
+ 
+@@ -2716,14 +1717,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((16 : usize))
+   ((5 : u64))
+-  where
+-  permute_state :=
+-    fun
+-      (self :
+-      p3_mersenne_31.no_packing.poseidon2.Poseidon2InternalLayerMersenne31)
+-      (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 16)) => do
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ @[reducible] instance Impl_1.AssociatedTypes :
+   p3_poseidon2.internal.InternalLayer.AssociatedTypes
+@@ -2739,14 +1733,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((24 : usize))
+   ((5 : u64))
+-  where
+-  permute_state :=
+-    fun
+-      (self :
+-      p3_mersenne_31.no_packing.poseidon2.Poseidon2InternalLayerMersenne31)
+-      (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 24)) => do
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ @[reducible] instance Impl_2.AssociatedTypes :
+   p3_poseidon2.internal.InternalLayer.AssociatedTypes
+@@ -2762,14 +1749,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((32 : usize))
+   ((5 : u64))
+-  where
+-  permute_state :=
+-    fun
+-      (self :
+-      p3_mersenne_31.no_packing.poseidon2.Poseidon2InternalLayerMersenne31)
+-      (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 32)) => do
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ end p3_mersenne_31.poseidon2
+ 
+@@ -2834,23 +1814,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   (WIDTH)
+   ((5 : u64))
+-  where
+-  permute_state_initial :=
+-    fun
+-      (self :
+-      (p3_mersenne_31.no_packing.poseidon2.Poseidon2ExternalLayerMersenne31
+-        (WIDTH)))
+-      (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 WIDTH)) => do
+-    let _ := sorry;
+-    (pure state)
+-  permute_state_terminal :=
+-    fun
+-      (self :
+-      (p3_mersenne_31.no_packing.poseidon2.Poseidon2ExternalLayerMersenne31
+-        (WIDTH)))
+-      (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 WIDTH)) => do
+-    let _ := sorry;
+-    (pure state)
++  := sorry
+ 
+ end p3_mersenne_31.poseidon2
+ 
+@@ -2867,14 +1831,7 @@
+   p3_poseidon2.internal.InternalLayerConstructor
+   Poseidon2InternalLayerMersenne31
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  new_from_constants :=
+-    fun
+-      (internal_constants :
+-      (alloc.vec.Vec p3_mersenne_31.mersenne_31.Mersenne31 alloc.alloc.Global))
+-      => do
+-    (pure (Poseidon2InternalLayerMersenne31.mk
+-      (internal_constants := internal_constants)))
++  := sorry
+ 
+ @[reducible] instance Impl_1.AssociatedTypes (WIDTH : usize) :
+   p3_poseidon2.external.ExternalLayerConstructor.AssociatedTypes
+@@ -2888,15 +1845,7 @@
+   (Poseidon2ExternalLayerMersenne31 (WIDTH))
+   p3_mersenne_31.mersenne_31.Mersenne31
+   (WIDTH)
+-  where
+-  new_from_constants :=
+-    fun
+-      (external_constants :
+-      (p3_poseidon2.external.ExternalLayerConstants
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (WIDTH))) => do
+-    (pure (Poseidon2ExternalLayerMersenne31.mk
+-      (external_constants := external_constants)))
++  := sorry
+ 
+ end p3_mersenne_31.no_packing.poseidon2
+ 
+@@ -2917,71 +1866,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   i64
+   i64
+-  where
+-  T_ZERO := (0 : i64)
+-  U_ZERO := (0 : i64)
+-  halve := fun (val : i64) => do (val >>>? (1 : i32))
+-  read := fun (input : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (rust_primitives.hax.cast_op
+-      (p3_mersenne_31.mersenne_31.Mersenne31.value input) :
+-      RustM i64)
+-  parity_dot :=
+-    fun (N : usize) (u : (RustArray i64 N)) (v : (RustArray i64 N)) => do
+-    let dp : i128 := (0 : i128);
+-    let dp : i128 ←
+-      (rust_primitives.hax.folds.fold_range
+-        (0 : usize)
+-        N
+-        (fun dp _ => (do (pure true) : RustM Bool))
+-        dp
+-        (fun dp i =>
+-          (do
+-          (dp
+-            +? (← ((← (rust_primitives.hax.cast_op (← u[i]_?) : RustM i128))
+-              *? (← (rust_primitives.hax.cast_op (← v[i]_?) : RustM i128))))) :
+-          RustM i128)));
+-    let low_bits : i64 ←
+-      (rust_primitives.hax.cast_op
+-        (← (dp &&&? Impl_1.parity_dot.LOWMASK)) :
+-        RustM i64);
+-    let high_bits : i64 ←
+-      (rust_primitives.hax.cast_op
+-        (← ((← (dp &&&? Impl_1.parity_dot.HIGHMASK)) >>>? (31 : i32))) :
+-        RustM i64);
+-    (low_bits +? high_bits)
+-  reduce := fun (z : i64) => do
+-    let _ ←
+-      if true then do
+-        let _ ←
+-          (hax_lib.assert (← (z >? (← (-? (← ((1 : i64) <<<? (49 : i32))))))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    let _ ←
+-      if true then do
+-        let _ ← (hax_lib.assert (← (z <? (← ((1 : i64) <<<? (49 : i32))))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    let low_bits : p3_mersenne_31.mersenne_31.Mersenne31 ←
+-      (p3_mersenne_31.mersenne_31.Impl.new_reduced
+-        (← (rust_primitives.hax.cast_op
+-          (← (z &&&? Impl_1.reduce.MASK)) :
+-          RustM u32)));
+-    let high_bits : i32 ←
+-      (rust_primitives.hax.cast_op
+-        (← ((← (z >>>? (31 : i32))) &&&? Impl_1.reduce.MASK)) :
+-        RustM i32);
+-    let sign_bits : i32 ←
+-      (rust_primitives.hax.cast_op (← (z >>>? (62 : i32))) : RustM i32);
+-    let high : p3_mersenne_31.mersenne_31.Mersenne31 ←
+-      (p3_mersenne_31.mersenne_31.Impl.new_reduced
+-        (← (rust_primitives.hax.cast_op
+-          (← (high_bits +? sign_bits)) :
+-          RustM u32)));
+-    (core_models.ops.arith.Add.add
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      p3_mersenne_31.mersenne_31.Mersenne31 low_bits high)
++  := sorry
+ 
+ end p3_mersenne_31.mds
+ 
+@@ -2995,78 +1880,7 @@
+ def permute_mut (N : usize)
+     (state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N))
+     (shifts : (RustSlice u8)) :
+-    RustM (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N) := do
+-  let _ ←
+-    if true then do
+-      let _ ←
+-        match
+-          (rust_primitives.hax.Tuple2.mk
+-            (← ((← (core_models.slice.Impl.len u8 shifts)) +? (1 : usize)))
+-            N)
+-        with
+-          | ⟨left_val, right_val⟩ => do
+-            (hax_lib.assert (← (left_val ==? right_val)));
+-      (pure rust_primitives.hax.Tuple0.mk)
+-    else do
+-      (pure rust_primitives.hax.Tuple0.mk);
+-  let part_sum : u64 ←
+-    (core_models.iter.traits.iterator.Iterator.sum
+-      (core_models.iter.adapters.map.Map
+-        (core_models.slice.iter.Iter p3_mersenne_31.mersenne_31.Mersenne31)
+-        (p3_mersenne_31.mersenne_31.Mersenne31 -> RustM u64)) u64
+-      (← (core_models.iter.traits.iterator.Iterator.map
+-        (core_models.slice.iter.Iter p3_mersenne_31.mersenne_31.Mersenne31)
+-        u64
+-        (p3_mersenne_31.mersenne_31.Mersenne31 -> RustM u64)
+-        (← (core_models.slice.Impl.iter p3_mersenne_31.mersenne_31.Mersenne31
+-          (← state[
+-            (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-            ]_?)))
+-        (fun x =>
+-          (do
+-          (rust_primitives.hax.cast_op
+-            (p3_mersenne_31.mersenne_31.Mersenne31.value x) :
+-            RustM u64) :
+-          RustM u64)))));
+-  let full_sum : u64 ←
+-    (part_sum
+-      +? (← (rust_primitives.hax.cast_op
+-        (p3_mersenne_31.mersenne_31.Mersenne31.value (← state[(0 : usize)]_?)) :
+-        RustM u64)));
+-  let s0 : u64 ←
+-    (part_sum
+-      +? (← (rust_primitives.hax.cast_op
+-        (p3_mersenne_31.mersenne_31.Mersenne31.value
+-          (← (core_models.ops.arith.Neg.neg
+-            p3_mersenne_31.mersenne_31.Mersenne31 (← state[(0 : usize)]_?)))) :
+-        RustM u64)));
+-  let state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N) ←
+-    (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-      state
+-      (0 : usize)
+-      (← (p3_mersenne_31.mersenne_31.from_u62 s0)));
+-  let state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N) ←
+-    (rust_primitives.hax.folds.fold_range
+-      (1 : usize)
+-      N
+-      (fun state _ => (do (pure true) : RustM Bool))
+-      state
+-      (fun state i =>
+-        (do
+-        let si : u64 ←
+-          (full_sum
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (p3_mersenne_31.mersenne_31.Mersenne31.value (← state[i]_?)) :
+-                RustM u64))
+-              <<<? (← shifts[(← (i -? (1 : usize)))]_?))));
+-        let state : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N) ←
+-          (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-            state
+-            i
+-            (← (p3_mersenne_31.mersenne_31.from_u62 si)));
+-        (pure state) :
+-        RustM (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N))));
+-  (pure state)
++    RustM (RustArray p3_mersenne_31.mersenne_31.Mersenne31 N) := sorry
+ 
+ end p3_mersenne_31.poseidon2
+ 
+@@ -3087,27 +1901,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   i64
+   i64
+-  where
+-  T_ZERO := (0 : i64)
+-  U_ZERO := (0 : i64)
+-  halve := fun (val : i64) => do (val >>>? (1 : i32))
+-  read := fun (input : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (rust_primitives.hax.cast_op
+-      (p3_mersenne_31.mersenne_31.Mersenne31.value input) :
+-      RustM i64)
+-  parity_dot :=
+-    fun (N : usize) (u : (RustArray i64 N)) (v : (RustArray i64 N)) => do
+-    (p3_mds.util.dot_product i64 (N) u v)
+-  reduce := fun (z : i64) => do
+-    let _ ←
+-      if true then do
+-        let _ ← (hax_lib.assert (← (z >=? (0 : i64))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    (p3_field.field.PrimeCharacteristicRing.from_u64
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (rust_primitives.hax.cast_op z : RustM u64)))
++  := sorry
+ 
+ end p3_mersenne_31.mds
+ 
+@@ -3119,139 +1913,9 @@
+ --  Const version of `input.map(Mersenne31::new)`.
+ @[spec]
+ def Impl.new_array (N : usize) (input : (RustArray u32 N)) :
+-    RustM (RustArray Mersenne31 N) := do
+-  let output : (RustArray Mersenne31 N) ←
+-    (rust_primitives.hax.repeat
+-      (p3_field.field.PrimeCharacteristicRing.ZERO Mersenne31)
+-      N);
+-  let i : usize := (0 : usize);
+-  let ⟨i, output⟩ ←
+-    (rust_primitives.hax.while_loop
+-      (fun ⟨i, output⟩ => (do (pure true) : RustM Bool))
+-      (fun ⟨i, output⟩ => (do (i <? N) : RustM Bool))
+-      (fun ⟨i, output⟩ =>
+-        (do
+-        (rust_primitives.hax.int.from_machine (0 : u32)) :
+-        RustM hax_lib.int.Int))
+-      (rust_primitives.hax.Tuple2.mk i output)
+-      (fun ⟨i, output⟩ =>
+-        (do
+-        let output : (RustArray Mersenne31 N) ←
+-          (rust_primitives.hax.monomorphized_update_at.update_at_usize
+-            output
+-            i
+-            {(← output[i]_?) with value := (← ((← input[i]_?) %? P))});
+-        let i : usize ← (i +? (1 : usize));
+-        (pure (rust_primitives.hax.Tuple2.mk i output)) :
+-        RustM (rust_primitives.hax.Tuple2 usize (RustArray Mersenne31 N)))));
+-  (pure output)
++    RustM (RustArray Mersenne31 N) := sorry
+ 
+---  Precomputed table of generators for two-adic subgroups of the degree two extension field over Mersenne31.
+---  The `i`'th element is a generator of the subgroup of order `2^i`.
+-def Impl.EXT_TWO_ADIC_GENERATORS : (RustArray (RustArray Mersenne31 2) 33) :=
+-  RustM.of_isOk
+-    (do
+-    (pure
+-    (RustArray.ofVec #v[(RustArray.ofVec #v[(p3_field.field.PrimeCharacteristicRing.ONE
+-                                                Mersenne31),
+-                                              (p3_field.field.PrimeCharacteristicRing.ZERO
+-                                                Mersenne31)]),
+-                          (RustArray.ofVec #v[(← (Impl.new (2147483646 : u32))),
+-                                                (← (Impl.new (0 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (0 : u32))),
+-                                                (← (Impl.new
+-                                                  (2147483646 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (32768 : u32))),
+-                                                (← (Impl.new
+-                                                  (2147450879 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (590768354 : u32))),
+-                                                (← (Impl.new
+-                                                  (978592373 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1179735656 : u32))),
+-                                                (← (Impl.new
+-                                                  (1241207368 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1567857810 : u32))),
+-                                                (← (Impl.new
+-                                                  (456695729 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1774253895 : u32))),
+-                                                (← (Impl.new
+-                                                  (1309288441 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (736262640 : u32))),
+-                                                (← (Impl.new
+-                                                  (1553669210 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1819216575 : u32))),
+-                                                (← (Impl.new
+-                                                  (1662816114 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1323191254 : u32))),
+-                                                (← (Impl.new
+-                                                  (1936974060 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (605622498 : u32))),
+-                                                (← (Impl.new
+-                                                  (1964232216 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (343674985 : u32))),
+-                                                (← (Impl.new
+-                                                  (501786993 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1995316534 : u32))),
+-                                                (← (Impl.new
+-                                                  (149306621 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (2107600913 : u32))),
+-                                                (← (Impl.new
+-                                                  (1378821388 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (541476169 : u32))),
+-                                                (← (Impl.new
+-                                                  (2101081972 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (2135874973 : u32))),
+-                                                (← (Impl.new
+-                                                  (483411332 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (2097144245 : u32))),
+-                                                (← (Impl.new
+-                                                  (1684033590 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1662322247 : u32))),
+-                                                (← (Impl.new
+-                                                  (670236780 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1172215635 : u32))),
+-                                                (← (Impl.new
+-                                                  (595888646 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (241940101 : u32))),
+-                                                (← (Impl.new
+-                                                  (323856519 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1957194259 : u32))),
+-                                                (← (Impl.new
+-                                                  (2139647100 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1957419629 : u32))),
+-                                                (← (Impl.new
+-                                                  (1541039442 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1062045235 : u32))),
+-                                                (← (Impl.new
+-                                                  (1824580421 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1929382196 : u32))),
+-                                                (← (Impl.new
+-                                                  (1664698822 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1889294251 : u32))),
+-                                                (← (Impl.new
+-                                                  (331248939 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1214231414 : u32))),
+-                                                (← (Impl.new
+-                                                  (1646302518 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1765392370 : u32))),
+-                                                (← (Impl.new
+-                                                  (461136547 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1629751483 : u32))),
+-                                                (← (Impl.new
+-                                                  (66485474 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1501355827 : u32))),
+-                                                (← (Impl.new
+-                                                  (1439063420 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (509778402 : u32))),
+-                                                (← (Impl.new
+-                                                  (800467507 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (311014874 : u32))),
+-                                                (← (Impl.new
+-                                                  (1584694829 : u32)))]),
+-                          (RustArray.ofVec #v[(← (Impl.new (1166849849 : u32))),
+-                                                (← (Impl.new
+-                                                  (1117296306 : u32)))])])))
+-    (by rfl)
++def Impl.EXT_TWO_ADIC_GENERATORS : (RustArray (RustArray Mersenne31 2) 33) := sorry
+ 
+ @[reducible] instance Impl_14.AssociatedTypes :
+   p3_field.field.InjectiveMonomial.AssociatedTypes Mersenne31 ((5 : u64))
+@@ -3268,21 +1932,13 @@
+   core_models.ops.arith.AddAssign.AssociatedTypes PackedQM31 PackedQM31
+   where
+ 
+-instance Impl_13 : core_models.ops.arith.AddAssign PackedQM31 PackedQM31 where
+-  add_assign := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Add.add PackedQM31 PackedQM31 self rhs);
+-    (pure self)
++instance Impl_13 : core_models.ops.arith.AddAssign PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_15.AssociatedTypes :
+   core_models.ops.arith.SubAssign.AssociatedTypes PackedQM31 PackedQM31
+   where
+ 
+-instance Impl_15 : core_models.ops.arith.SubAssign PackedQM31 PackedQM31 where
+-  sub_assign := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Sub.sub PackedQM31 PackedQM31 self rhs);
+-    (pure self)
++instance Impl_15 : core_models.ops.arith.SubAssign PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_32.AssociatedTypes :
+   core_models.ops.arith.AddAssign.AssociatedTypes
+@@ -3294,14 +1950,7 @@
+   core_models.ops.arith.AddAssign
+   PackedQM31
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  add_assign :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Add.add
+-        PackedQM31
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_34.AssociatedTypes :
+   core_models.ops.arith.SubAssign.AssociatedTypes
+@@ -3313,14 +1962,7 @@
+   core_models.ops.arith.SubAssign
+   PackedQM31
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  sub_assign :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Sub.sub
+-        PackedQM31
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_36.AssociatedTypes :
+   core_models.ops.arith.MulAssign.AssociatedTypes
+@@ -3332,14 +1974,7 @@
+   core_models.ops.arith.MulAssign
+   PackedQM31
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  mul_assign :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Mul.mul
+-        PackedQM31
+-        p3_mersenne_31.mersenne_31.Mersenne31 self rhs);
+-    (pure self)
++  := sorry
+ 
+ end p3_mersenne_31.qm31
+ 
+@@ -3756,7 +2391,7 @@
+                                                         (385862305 : u32),
+                                                         (1057147875 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-32 Poseidon1 on Mersenne31.
+ -- 
+@@ -5064,7 +3699,7 @@
+                                                         (1067341765 : u32),
+                                                         (1744770897 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ end p3_mersenne_31.poseidon1
+ 
+@@ -5157,7 +3792,7 @@
+                                                         (880473871 : u32),
+                                                         (511174042 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-16 Poseidon2 on Mersenne31.
+ -- 
+@@ -5245,7 +3880,7 @@
+                                                         (595810771 : u32),
+                                                         (1234594393 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-16 Poseidon2 on Mersenne31.
+ -- 
+@@ -5275,7 +3910,7 @@
+                             (1088763546 : u32),
+                             (955319292 : u32),
+                             (488794657 : u32)])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-24 Poseidon2 on Mersenne31.
+ -- 
+@@ -5395,7 +4030,7 @@
+                                                         (1301780243 : u32),
+                                                         (1369709669 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-24 Poseidon2 on Mersenne31.
+ -- 
+@@ -5515,7 +4150,7 @@
+                                                         (1691612016 : u32),
+                                                         (1180330520 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-24 Poseidon2 on Mersenne31.
+ -- 
+@@ -5553,7 +4188,7 @@
+                             (1916984863 : u32),
+                             (1010267433 : u32),
+                             (865826083 : u32)])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-32 Poseidon2 on Mersenne31.
+ -- 
+@@ -5705,7 +4340,7 @@
+                                                         (1815753128 : u32),
+                                                         (1837293392 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-32 Poseidon2 on Mersenne31.
+ -- 
+@@ -5857,7 +4492,7 @@
+                                                         (660162122 : u32),
+                                                         (507714002 :
+                                                         u32)])))])))
+-    (by rfl)
++    (by sorry)
+ 
+ --  Round constants for width-32 Poseidon2 on Mersenne31.
+ -- 
+@@ -5903,7 +4538,7 @@
+                             (1776654280 : u32),
+                             (1016141171 : u32),
+                             (700970754 : u32)])))
+-    (by rfl)
++    (by sorry)
+ 
+ end p3_mersenne_31.poseidon2
+ 
+@@ -5916,9 +4551,7 @@
+ 
+ instance Impl_15 :
+   p3_field.field.PermutationMonomial Mersenne31 ((5 : u64))
+-  where
+-  injective_exp_root_n := fun (self : Mersenne31) => do
+-    (p3_field.exponentiation.exp_1717986917 Mersenne31 self)
++  := sorry
+ 
+ end p3_mersenne_31.mersenne_31
+ 
+@@ -6079,11 +4712,7 @@
+   core_models.ops.arith.DivAssign.AssociatedTypes PackedQM31 PackedQM31
+   where
+ 
+-instance Impl_19 : core_models.ops.arith.DivAssign PackedQM31 PackedQM31 where
+-  div_assign := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    let self : PackedQM31 ←
+-      (core_models.ops.arith.Div.div PackedQM31 PackedQM31 self rhs);
+-    (pure self)
++instance Impl_19 : core_models.ops.arith.DivAssign PackedQM31 PackedQM31 := sorry
+ 
+ end p3_mersenne_31.qm31
+ 
+@@ -6091,47 +4720,20 @@
+ namespace p3_mersenne_31.mersenne_31
+ 
+ @[spec]
+-def from_u62 (input : u64) : RustM Mersenne31 := do
+-  let _ ←
+-    if true then do
+-      let _ ← (hax_lib.assert (← (input <? (← ((1 : u64) <<<? (62 : i32))))));
+-      (pure rust_primitives.hax.Tuple0.mk)
+-    else do
+-      (pure rust_primitives.hax.Tuple0.mk);
+-  let input_lo : u32 ←
+-    (rust_primitives.hax.cast_op
+-      (← (input &&&? (← ((← ((1 : u64) <<<? (31 : i32))) -? (1 : u64))))) :
+-      RustM u32);
+-  let input_high : u32 ←
+-    (rust_primitives.hax.cast_op (← (input >>>? (31 : i32))) : RustM u32);
+-  (core_models.ops.arith.Add.add
+-    Mersenne31
+-    Mersenne31
+-    (← (Impl.new_reduced input_lo))
+-    (← (Impl.new_reduced input_high)))
++def from_u62 (input : u64) : RustM Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_44.AssociatedTypes :
+   core_models.ops.arith.DivAssign.AssociatedTypes Mersenne31 Mersenne31
+   where
+ 
+-instance Impl_44 : core_models.ops.arith.DivAssign Mersenne31 Mersenne31 where
+-  div_assign := fun (self : Mersenne31) (rhs : Mersenne31) => do
+-    let self : Mersenne31 ←
+-      (core_models.ops.arith.MulAssign.mul_assign
+-        Mersenne31
+-        Mersenne31 self (← (p3_field.field.Field.inverse Mersenne31 rhs)));
+-    (pure self)
++instance Impl_44 : core_models.ops.arith.DivAssign Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_43.AssociatedTypes :
+   core_models.ops.arith.Div.AssociatedTypes Mersenne31 Mersenne31
+   where
+   Output := Mersenne31
+ 
+-instance Impl_43 : core_models.ops.arith.Div Mersenne31 Mersenne31 where
+-  div := fun (self : Mersenne31) (rhs : Mersenne31) => do
+-    (core_models.ops.arith.Mul.mul
+-      Mersenne31
+-      Mersenne31 self (← (p3_field.field.Field.inverse Mersenne31 rhs)))
++instance Impl_43 : core_models.ops.arith.Div Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_42.AssociatedTypes :
+   core_models.iter.traits.accum.Product.AssociatedTypes Mersenne31 Mersenne31
+@@ -6139,28 +4741,7 @@
+ 
+ instance Impl_42 :
+   core_models.iter.traits.accum.Product Mersenne31 Mersenne31
+-  where
+-  product :=
+-    fun
+-      (I : Type)
+-      [trait_constr_product_associated_type_i0 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_product_i0 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := Mersenne31})] (iter : I) => do
+-    (core_models.option.Impl.unwrap_or Mersenne31
+-      (← (core_models.iter.traits.iterator.Iterator.reduce
+-        I (Mersenne31 -> Mersenne31 -> RustM Mersenne31)
+-        iter
+-        (fun x y =>
+-          (do
+-          (core_models.ops.arith.Mul.mul Mersenne31 Mersenne31 x y) :
+-          RustM Mersenne31))))
+-      (p3_field.field.PrimeCharacteristicRing.ONE Mersenne31))
++  := sorry
+ 
+ @[reducible] instance Impl_41.AssociatedTypes
+   (T : Type)
+@@ -6180,13 +4761,7 @@
+     Mersenne31]
+   [trait_constr_Impl_41_i0 : core_models.convert.Into T Mersenne31 ] :
+   core_models.ops.arith.MulAssign Mersenne31 T
+-  where
+-  mul_assign := fun (self : Mersenne31) (rhs : T) => do
+-    let self : Mersenne31 ←
+-      (core_models.ops.arith.Mul.mul
+-        Mersenne31
+-        Mersenne31 self (← (core_models.convert.Into.into T Mersenne31 rhs)));
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_40.AssociatedTypes
+   (T : Type)
+@@ -6206,13 +4781,7 @@
+     Mersenne31]
+   [trait_constr_Impl_40_i0 : core_models.convert.Into T Mersenne31 ] :
+   core_models.ops.arith.SubAssign Mersenne31 T
+-  where
+-  sub_assign := fun (self : Mersenne31) (rhs : T) => do
+-    let self : Mersenne31 ←
+-      (core_models.ops.arith.Sub.sub
+-        Mersenne31
+-        Mersenne31 self (← (core_models.convert.Into.into T Mersenne31 rhs)));
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_39.AssociatedTypes
+   (T : Type)
+@@ -6232,902 +4801,169 @@
+     Mersenne31]
+   [trait_constr_Impl_39_i0 : core_models.convert.Into T Mersenne31 ] :
+   core_models.ops.arith.AddAssign Mersenne31 T
+-  where
+-  add_assign := fun (self : Mersenne31) (rhs : T) => do
+-    let self : Mersenne31 ←
+-      (core_models.ops.arith.Add.add
+-        Mersenne31
+-        Mersenne31 self (← (core_models.convert.Into.into T Mersenne31 rhs)));
+-    (pure self)
++  := sorry
+ 
+ @[reducible] instance Impl_38.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 i128
+   where
+ 
+-instance Impl_38 : p3_field.integers.QuotientMap Mersenne31 i128 where
+-  from_int := fun (int : i128) => do
+-    if (← (int >=? (0 : i128))) then do
+-      (p3_field.integers.QuotientMap.from_int
+-        Mersenne31
+-        u128 (← (rust_primitives.hax.cast_op int : RustM u128)))
+-    else do
+-      (core_models.ops.arith.Neg.neg
+-        Mersenne31
+-        (← (p3_field.integers.QuotientMap.from_int
+-          Mersenne31
+-          u128 (← (core_models.num.Impl_4.unsigned_abs int)))))
+-  from_canonical_checked := fun (int : i128) => do
+-    let int_small : (core_models.option.Option i32) ←
+-      (core_models.result.Impl.ok i32 core_models.num.error.TryFromIntError
+-        (← (core_models.convert.TryInto.try_into i128 i32 int)));
+-    match
+-      (← (core_models.option.Impl.map
+-        i32
+-        (core_models.option.Option Mersenne31)
+-        (i32 -> RustM (core_models.option.Option Mersenne31))
+-        int_small
+-        p3_field.integers.QuotientMap.from_canonical_checked))
+-    with
+-      | (core_models.option.Option.Some  some) => do (pure some)
+-      | (core_models.option.Option.None ) => do
+-        (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : i128) => do
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++instance Impl_38 : p3_field.integers.QuotientMap Mersenne31 i128 := sorry
+ 
+ @[reducible] instance Impl_37.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 i64
+   where
+ 
+-instance Impl_37 : p3_field.integers.QuotientMap Mersenne31 i64 where
+-  from_int := fun (int : i64) => do
+-    if (← (int >=? (0 : i64))) then do
+-      (p3_field.integers.QuotientMap.from_int
+-        Mersenne31
+-        u64 (← (rust_primitives.hax.cast_op int : RustM u64)))
+-    else do
+-      (core_models.ops.arith.Neg.neg
+-        Mersenne31
+-        (← (p3_field.integers.QuotientMap.from_int
+-          Mersenne31
+-          u64 (← (core_models.num.Impl_3.unsigned_abs int)))))
+-  from_canonical_checked := fun (int : i64) => do
+-    let int_small : (core_models.option.Option i32) ←
+-      (core_models.result.Impl.ok i32 core_models.num.error.TryFromIntError
+-        (← (core_models.convert.TryInto.try_into i64 i32 int)));
+-    match
+-      (← (core_models.option.Impl.map
+-        i32
+-        (core_models.option.Option Mersenne31)
+-        (i32 -> RustM (core_models.option.Option Mersenne31))
+-        int_small
+-        p3_field.integers.QuotientMap.from_canonical_checked))
+-    with
+-      | (core_models.option.Option.Some  some) => do (pure some)
+-      | (core_models.option.Option.None ) => do
+-        (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : i64) => do
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++instance Impl_37 : p3_field.integers.QuotientMap Mersenne31 i64 := sorry
+ 
+ @[reducible] instance Impl_36.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 u128
+   where
+ 
+-instance Impl_36 : p3_field.integers.QuotientMap Mersenne31 u128 where
+-  from_int := fun (int : u128) => do
+-    let _ := sorry;
+-    let red : u32 ←
+-      (rust_primitives.hax.cast_op
+-        (← (int
+-          %? (← (rust_primitives.hax.cast_op
+-            (p3_field.field.PrimeField32.ORDER_U32 Mersenne31) :
+-            RustM u128)))) :
+-        RustM u32);
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked Mersenne31 u32 red)
+-  from_canonical_checked := fun (int : u128) => do
+-    if
+-    (← (int
+-      <? (← (rust_primitives.hax.cast_op
+-        (p3_field.field.PrimeField32.ORDER_U32 Mersenne31) :
+-        RustM u128)))) then do
+-      (pure (core_models.option.Option.Some
+-        (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-          Mersenne31
+-          u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-    else do
+-      (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : u128) => do
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++instance Impl_36 : p3_field.integers.QuotientMap Mersenne31 u128 := sorry
+ 
+ @[reducible] instance Impl_35.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 u64
+   where
+ 
+-instance Impl_35 : p3_field.integers.QuotientMap Mersenne31 u64 where
+-  from_int := fun (int : u64) => do
+-    let _ := sorry;
+-    let red : u32 ←
+-      (rust_primitives.hax.cast_op
+-        (← (int
+-          %? (← (rust_primitives.hax.cast_op
+-            (p3_field.field.PrimeField32.ORDER_U32 Mersenne31) :
+-            RustM u64)))) :
+-        RustM u32);
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked Mersenne31 u32 red)
+-  from_canonical_checked := fun (int : u64) => do
+-    if
+-    (← (int
+-      <? (← (rust_primitives.hax.cast_op
+-        (p3_field.field.PrimeField32.ORDER_U32 Mersenne31) :
+-        RustM u64)))) then do
+-      (pure (core_models.option.Option.Some
+-        (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-          Mersenne31
+-          u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-    else do
+-      (pure core_models.option.Option.None)
+-  from_canonical_unchecked := fun (int : u64) => do
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++instance Impl_35 : p3_field.integers.QuotientMap Mersenne31 u64 := sorry
+ 
+ @[reducible] instance Impl_34.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 i16
+   where
+ 
+-instance Impl_34 : p3_field.integers.QuotientMap Mersenne31 i16 where
+-  from_int := fun (int : i16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
+-  from_canonical_checked := fun (int : i16) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        Mersenne31
+-        i32 (← (rust_primitives.hax.cast_op int : RustM i32))))))
+-  from_canonical_unchecked := fun (int : i16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++instance Impl_34 : p3_field.integers.QuotientMap Mersenne31 i16 := sorry
+ 
+ @[reducible] instance Impl_33.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 i8
+   where
+ 
+-instance Impl_33 : p3_field.integers.QuotientMap Mersenne31 i8 where
+-  from_int := fun (int : i8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
+-  from_canonical_checked := fun (int : i8) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        Mersenne31
+-        i32 (← (rust_primitives.hax.cast_op int : RustM i32))))))
+-  from_canonical_unchecked := fun (int : i8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      i32 (← (rust_primitives.hax.cast_op int : RustM i32)))
++instance Impl_33 : p3_field.integers.QuotientMap Mersenne31 i8 := sorry
+ 
+ @[reducible] instance Impl_32.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 u16
+   where
+ 
+-instance Impl_32 : p3_field.integers.QuotientMap Mersenne31 u16 where
+-  from_int := fun (int : u16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
+-  from_canonical_checked := fun (int : u16) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        Mersenne31
+-        u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-  from_canonical_unchecked := fun (int : u16) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++instance Impl_32 : p3_field.integers.QuotientMap Mersenne31 u16 := sorry
+ 
+ @[reducible] instance Impl_31.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 u8
+   where
+ 
+-instance Impl_31 : p3_field.integers.QuotientMap Mersenne31 u8 where
+-  from_int := fun (int : u8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
+-  from_canonical_checked := fun (int : u8) => do
+-    let _ := sorry;
+-    (pure (core_models.option.Option.Some
+-      (← (p3_field.integers.QuotientMap.from_canonical_unchecked
+-        Mersenne31
+-        u32 (← (rust_primitives.hax.cast_op int : RustM u32))))))
+-  from_canonical_unchecked := fun (int : u8) => do
+-    let _ := sorry;
+-    (p3_field.integers.QuotientMap.from_canonical_unchecked
+-      Mersenne31
+-      u32 (← (rust_primitives.hax.cast_op int : RustM u32)))
++instance Impl_31 : p3_field.integers.QuotientMap Mersenne31 u8 := sorry
+ 
+ @[reducible] instance Impl_26.AssociatedTypes :
+   core_models.iter.traits.accum.Sum.AssociatedTypes Mersenne31 Mersenne31
+   where
+ 
+-instance Impl_26 : core_models.iter.traits.accum.Sum Mersenne31 Mersenne31 where
+-  sum :=
+-    fun
+-      (I : Type)
+-      [trait_constr_sum_associated_type_i0 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_sum_i0 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := Mersenne31})] (iter : I) => do
+-    let sum : u64 ←
+-      (core_models.iter.traits.iterator.Iterator.sum
+-        (core_models.iter.adapters.map.Map I (Mersenne31 -> RustM u64)) u64
+-        (← (core_models.iter.traits.iterator.Iterator.map
+-          I u64 (Mersenne31 -> RustM u64)
+-          iter
+-          (fun x =>
+-            (do
+-            (rust_primitives.hax.cast_op (Mersenne31.value x) : RustM u64) :
+-            RustM u64)))));
+-    (from_u62 sum)
++instance Impl_26 : core_models.iter.traits.accum.Sum Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_25.AssociatedTypes :
+   core_models.ops.arith.Mul.AssociatedTypes Mersenne31 Mersenne31
+   where
+   Output := Mersenne31
+ 
+-instance Impl_25 : core_models.ops.arith.Mul Mersenne31 Mersenne31 where
+-  mul := fun (self : Mersenne31) (rhs : Mersenne31) => do
+-    let prod : u64 ←
+-      ((← (core_models.convert.From._from u64 u32 (Mersenne31.value self)))
+-        *? (← (core_models.convert.From._from u64 u32 (Mersenne31.value rhs))));
+-    (from_u62 prod)
++instance Impl_25 : core_models.ops.arith.Mul Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_24.AssociatedTypes :
+   core_models.ops.arith.Neg.AssociatedTypes Mersenne31
+   where
+   Output := Mersenne31
+ 
+-instance Impl_24 : core_models.ops.arith.Neg Mersenne31 where
+-  neg := fun (self : Mersenne31) => do
+-    (Impl.new_reduced
+-      (← ((p3_field.field.PrimeField32.ORDER_U32 Mersenne31)
+-        -? (Mersenne31.value self))))
++instance Impl_24 : core_models.ops.arith.Neg Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_23.AssociatedTypes :
+   core_models.ops.arith.Sub.AssociatedTypes Mersenne31 Mersenne31
+   where
+   Output := Mersenne31
+ 
+-instance Impl_23 : core_models.ops.arith.Sub Mersenne31 Mersenne31 where
+-  sub := fun (self : Mersenne31) (rhs : Mersenne31) => do
+-    let ⟨sub, over⟩ ←
+-      (core_models.num.Impl_8.overflowing_sub
+-        (Mersenne31.value self)
+-        (Mersenne31.value rhs));
+-    let sub : u32 ← (sub -? (← (rust_primitives.hax.cast_op over : RustM u32)));
+-    (Impl.new_reduced
+-      (← (sub &&&? (p3_field.field.PrimeField32.ORDER_U32 Mersenne31))))
++instance Impl_23 : core_models.ops.arith.Sub Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_22.AssociatedTypes :
+   core_models.ops.arith.Add.AssociatedTypes Mersenne31 Mersenne31
+   where
+   Output := Mersenne31
+ 
+-instance Impl_22 : core_models.ops.arith.Add Mersenne31 Mersenne31 where
+-  add := fun (self : Mersenne31) (rhs : Mersenne31) => do
+-    let ⟨sum_i32, over⟩ ←
+-      (core_models.num.Impl_2.overflowing_add
+-        (← (rust_primitives.hax.cast_op (Mersenne31.value self) : RustM i32))
+-        (← (rust_primitives.hax.cast_op (Mersenne31.value rhs) : RustM i32)));
+-    let sum_u32 : u32 ← (rust_primitives.hax.cast_op sum_i32 : RustM u32);
+-    let sum_corr : u32 ←
+-      (core_models.num.Impl_8.wrapping_sub
+-        sum_u32
+-        (p3_field.field.PrimeField32.ORDER_U32 Mersenne31));
+-    (Impl.new_reduced
+-      (← if over then do (pure sum_corr) else do (pure sum_u32)))
++instance Impl_22 : core_models.ops.arith.Add Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_21.AssociatedTypes :
+   p3_field.field.PrimeField64.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_21 : p3_field.field.PrimeField64 Mersenne31 where
+-  ORDER_U64 := RustM.of_isOk
+-    (do
+-    (rust_primitives.hax.cast_op
+-      (p3_field.field.PrimeField32.ORDER_U32 Mersenne31) :
+-      RustM u64))
+-    (by rfl)
+-  as_canonical_u64 := fun (self : Mersenne31) => do
+-    (core_models.convert.Into.into
+-      u32
+-      u64 (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 self)))
++instance Impl_21 : p3_field.field.PrimeField64 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_20.AssociatedTypes :
+   p3_field.field.PrimeField32.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_20 : p3_field.field.PrimeField32 Mersenne31 where
+-  ORDER_U32 := P
+-  as_canonical_u32 := fun (self : Mersenne31) => do
+-    if
+-    (← ((Mersenne31.value self)
+-      ==? (p3_field.field.PrimeField32.ORDER_U32 Mersenne31))) then do
+-      (pure (0 : u32))
+-    else do
+-      (pure (Mersenne31.value self))
++instance Impl_20 : p3_field.field.PrimeField32 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_19.AssociatedTypes :
+   p3_field.field.PrimeField.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_19 : p3_field.field.PrimeField Mersenne31 where
+-  as_canonical_biguint := fun (self : Mersenne31) => do
+-    (core_models.convert.Into.into
+-      u32
+-      num_bigint.biguint.BigUint
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 self)))
++instance Impl_19 : p3_field.field.PrimeField Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_18.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 i32
+   where
+ 
+-instance Impl_18 : p3_field.integers.QuotientMap Mersenne31 i32 where
+-  from_int := fun (int : i32) => do
+-    if (← (int >=? (0 : i32))) then do
+-      (Impl.new_reduced (← (rust_primitives.hax.cast_op int : RustM u32)))
+-    else do
+-      if (← (int >? (← ((-1 : i32) <<<? (31 : i32))))) then do
+-        (Impl.new_reduced
+-          (← (core_models.num.Impl_8.wrapping_add_signed
+-            (p3_field.field.PrimeField32.ORDER_U32 Mersenne31)
+-            int)))
+-      else do
+-        (pure (p3_field.field.PrimeCharacteristicRing.NEG_ONE Mersenne31))
+-  from_canonical_checked := fun (int : i32) => do (pure sorry)
+-  from_canonical_unchecked := fun (int : i32) => do
+-    if (← (int >=? (0 : i32))) then do
+-      (Impl.new_reduced (← (rust_primitives.hax.cast_op int : RustM u32)))
+-    else do
+-      (Impl.new_reduced
+-        (← (core_models.num.Impl_8.wrapping_add_signed
+-          (p3_field.field.PrimeField32.ORDER_U32 Mersenne31)
+-          int)))
++instance Impl_18 : p3_field.integers.QuotientMap Mersenne31 i32 := sorry
+ 
+ @[reducible] instance Impl_17.AssociatedTypes :
+   p3_field.integers.QuotientMap.AssociatedTypes Mersenne31 u32
+   where
+ 
+-instance Impl_17 : p3_field.integers.QuotientMap Mersenne31 u32 where
+-  from_int := fun (int : u32) => do
+-    let msb : u32 ← (int &&&? (← ((1 : u32) <<<? (31 : i32))));
+-    let msb_reduced : u32 ← (msb >>>? (31 : i32));
+-    (core_models.ops.arith.Add.add
+-      Mersenne31
+-      Mersenne31
+-      (← (Impl.new_reduced (← (int ^^^? msb))))
+-      (← (Impl.new_reduced msb_reduced)))
+-  from_canonical_checked := fun (int : u32) => do
+-    (core_models.bool.Impl.then
+-      Mersenne31
+-      (rust_primitives.hax.Tuple0 -> RustM Mersenne31)
+-      (← (int <? (p3_field.field.PrimeField32.ORDER_U32 Mersenne31)))
+-      (fun _ => (do (Impl.new_reduced int) : RustM Mersenne31)))
+-  from_canonical_unchecked := fun (int : u32) => do
+-    let _ ←
+-      if true then do
+-        let _ ←
+-          (hax_lib.assert
+-            (← (int <? (p3_field.field.PrimeField32.ORDER_U32 Mersenne31))));
+-        (pure rust_primitives.hax.Tuple0.mk)
+-      else do
+-        (pure rust_primitives.hax.Tuple0.mk);
+-    (Impl.new_reduced int)
++instance Impl_17 : p3_field.integers.QuotientMap Mersenne31 u32 := sorry
+ 
+ @[reducible] instance Impl_16.AssociatedTypes :
+   p3_field.field.Field.AssociatedTypes Mersenne31
+   where
+   Packing := Mersenne31
+ 
+-instance Impl_16 : p3_field.field.Field Mersenne31 where
+-  GENERATOR := RustM.of_isOk (do (Impl.new (7 : u32))) (by rfl)
+-  is_zero := fun (self : Mersenne31) => do
+-    ((← ((Mersenne31.value self) ==? (0 : u32)))
+-      ||? (← ((Mersenne31.value self)
+-        ==? (p3_field.field.PrimeField32.ORDER_U32 Mersenne31))))
+-  try_inverse := fun (self : Mersenne31) => do
+-    if (← (p3_field.field.Field.is_zero Mersenne31 self)) then do
+-      (pure core_models.option.Option.None)
+-    else do
+-      let inverse_i64 : i64 ←
+-        (p3_util.gcd_inversion_prime_field_32 ((31 : u32))
+-          (Mersenne31.value self)
+-          P);
+-      (pure (core_models.option.Option.Some
+-        (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-          Mersenne31
+-          (← (p3_field.integers.QuotientMap.from_int
+-            Mersenne31
+-            i64 inverse_i64))
+-          (60 : u64)))))
+-  order := fun (_ : rust_primitives.hax.Tuple0) => do
+-    (core_models.convert.Into.into u32 num_bigint.biguint.BigUint P)
+-  try_sqrt := fun (self : Mersenne31) => do
+-    let candidate : Mersenne31 ←
+-      (p3_field.field.PrimeCharacteristicRing.exp_power_of_2
+-        Mersenne31 self (29 : usize));
+-    (core_models.bool.Impl.then_some Mersenne31
+-      (← (core_models.cmp.PartialEq.eq
+-        Mersenne31
+-        Mersenne31
+-        (← (p3_field.field.PrimeCharacteristicRing.square Mersenne31 candidate))
+-        self))
+-      candidate)
++instance Impl_16 : p3_field.field.Field Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_13.AssociatedTypes :
+   p3_field.field.PrimeCharacteristicRing.AssociatedTypes Mersenne31
+   where
+   PrimeSubfield := Mersenne31
+ 
+-instance Impl_13 : p3_field.field.PrimeCharacteristicRing Mersenne31 where
+-  ZERO := RustM.of_isOk
+-    (do (pure (Mersenne31.mk (value := (0 : u32)))))
+-    (by rfl)
+-  ONE := RustM.of_isOk (do (pure (Mersenne31.mk (value := (1 : u32))))) (by rfl)
+-  TWO := RustM.of_isOk (do (pure (Mersenne31.mk (value := (2 : u32))))) (by rfl)
+-  NEG_ONE := RustM.of_isOk
+-    (do
+-    (pure (Mersenne31.mk
+-      (value := (← ((p3_field.field.PrimeField32.ORDER_U32 Mersenne31)
+-        -? (1 : u32)))))))
+-    (by rfl)
+-  from_prime_subfield := fun (f : Mersenne31) => do (pure f)
+-  from_bool := fun (b : Bool) => do
+-    (Impl.new_reduced (← (rust_primitives.hax.cast_op b : RustM u32)))
+-  halve := fun (self : Mersenne31) => do
+-    (Impl.new_reduced
+-      (← (p3_field.helpers.halve_u32 ((2147483647 : u32))
+-        (Mersenne31.value self))))
+-  mul_2exp_u64 := fun (self : Mersenne31) (exp : u64) => do
+-    let exp : u64 ← (exp %? (31 : u64));
+-    let left : u32 ←
+-      ((← ((Mersenne31.value self) <<<? exp))
+-        &&&? (← ((← ((1 : u32) <<<? (31 : i32))) -? (1 : u32))));
+-    let right : u32 ← ((Mersenne31.value self) >>>? (← ((31 : u64) -? exp)));
+-    let rotated : u32 ← (left |||? right);
+-    (Impl.new_reduced rotated)
+-  div_2exp_u64 := fun (self : Mersenne31) (exp : u64) => do
+-    let exp : u8 ←
+-      (rust_primitives.hax.cast_op (← (exp %? (31 : u64))) : RustM u8);
+-    let left : u32 ← ((Mersenne31.value self) >>>? exp);
+-    let right : u32 ←
+-      ((← ((Mersenne31.value self) <<<? (← ((31 : u8) -? exp))))
+-        &&&? (← ((← ((1 : u32) <<<? (31 : i32))) -? (1 : u32))));
+-    let rotated : u32 ← (left |||? right);
+-    (Impl.new_reduced rotated)
+-  sum_array := fun (N : usize) (input : (RustSlice Mersenne31)) => do
+-    let _ ←
+-      match
+-        (rust_primitives.hax.Tuple2.mk
+-          N
+-          (← (core_models.slice.Impl.len Mersenne31 input)))
+-      with
+-        | ⟨left_val, right_val⟩ => do
+-          (hax_lib.assert (← (left_val ==? right_val)));
+-    match N with
+-      | 0 => do (pure (p3_field.field.PrimeCharacteristicRing.ZERO Mersenne31))
+-      | 1 => do input[(0 : usize)]_?
+-      | 2 => do
+-        (core_models.ops.arith.Add.add
+-          Mersenne31
+-          Mersenne31 (← input[(0 : usize)]_?) (← input[(1 : usize)]_?))
+-      | 3 => do
+-        (core_models.ops.arith.Add.add
+-          Mersenne31
+-          Mersenne31
+-          (← (core_models.ops.arith.Add.add
+-            Mersenne31
+-            Mersenne31 (← input[(0 : usize)]_?) (← input[(1 : usize)]_?)))
+-          (← input[(2 : usize)]_?))
+-      | 4 => do
+-        (core_models.ops.arith.Add.add
+-          Mersenne31
+-          Mersenne31
+-          (← (core_models.ops.arith.Add.add
+-            Mersenne31
+-            Mersenne31 (← input[(0 : usize)]_?) (← input[(1 : usize)]_?)))
+-          (← (core_models.ops.arith.Add.add
+-            Mersenne31
+-            Mersenne31 (← input[(2 : usize)]_?) (← input[(3 : usize)]_?))))
+-      | 5 => do
+-        let lhs : Mersenne31 ←
+-          (core_models.ops.arith.Add.add
+-            Mersenne31
+-            Mersenne31 (← input[(0 : usize)]_?) (← input[(1 : usize)]_?));
+-        let rhs : Mersenne31 ←
+-          (core_models.ops.arith.Add.add
+-            Mersenne31
+-            Mersenne31 (← input[(2 : usize)]_?) (← input[(3 : usize)]_?));
+-        (core_models.ops.arith.Add.add
+-          Mersenne31
+-          Mersenne31
+-          (← (core_models.ops.arith.Add.add Mersenne31 Mersenne31 lhs rhs))
+-          (← input[(4 : usize)]_?))
+-      | _ => do
+-        (core_models.iter.traits.iterator.Iterator.sum
+-          (core_models.iter.adapters.copied.Copied
+-            (core_models.slice.iter.Iter Mersenne31)) Mersenne31
+-          (← (core_models.iter.traits.iterator.Iterator.copied
+-            (core_models.slice.iter.Iter Mersenne31) Mersenne31
+-            (← (core_models.slice.Impl.iter Mersenne31 input)))))
+-  dot_product :=
+-    fun (N : usize)
+-      (lhs : (RustArray Mersenne31 N))
+-      (rhs : (RustArray Mersenne31 N)) => do
+-    match N with
+-      | 0 => do (pure (p3_field.field.PrimeCharacteristicRing.ZERO Mersenne31))
+-      | 1 => do
+-        (core_models.ops.arith.Mul.mul
+-          Mersenne31
+-          Mersenne31 (← lhs[(0 : usize)]_?) (← rhs[(0 : usize)]_?))
+-      | 2 => do
+-        let sum : u64 ←
+-          ((← ((← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← lhs[(0 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← rhs[(0 : usize)]_?)) :
+-                RustM u64))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← lhs[(1 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← rhs[(1 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_reduced (← (reduce_64 sum)))
+-      | 3 => do
+-        let sum : u64 ←
+-          ((← ((← ((← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← lhs[(0 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← rhs[(0 : usize)]_?)) :
+-                  RustM u64))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← lhs[(1 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← rhs[(1 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← lhs[(2 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← rhs[(2 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_reduced (← (reduce_64 sum)))
+-      | 4 => do
+-        let sum : u64 ←
+-          ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                    (Mersenne31.value (← lhs[(0 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (Mersenne31.value (← rhs[(0 : usize)]_?)) :
+-                    RustM u64))))
+-                +? (← ((← (rust_primitives.hax.cast_op
+-                    (Mersenne31.value (← lhs[(1 : usize)]_?)) :
+-                    RustM u64))
+-                  *? (← (rust_primitives.hax.cast_op
+-                    (Mersenne31.value (← rhs[(1 : usize)]_?)) :
+-                    RustM u64))))))
+-              +? (← ((← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← lhs[(2 : usize)]_?)) :
+-                  RustM u64))
+-                *? (← (rust_primitives.hax.cast_op
+-                  (Mersenne31.value (← rhs[(2 : usize)]_?)) :
+-                  RustM u64))))))
+-            +? (← ((← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← lhs[(3 : usize)]_?)) :
+-                RustM u64))
+-              *? (← (rust_primitives.hax.cast_op
+-                (Mersenne31.value (← rhs[(3 : usize)]_?)) :
+-                RustM u64)))));
+-        (Impl.new_reduced (← (reduce_64 sum)))
+-      | _ => do
+-        let acc : u64 := (0 : u64);
+-        let i : usize := (0 : usize);
+-        let ⟨acc, i⟩ ←
+-          (rust_primitives.hax.while_loop
+-            (fun ⟨acc, i⟩ => (do (pure true) : RustM Bool))
+-            (fun ⟨acc, i⟩ => (do ((← (i +? (4 : usize))) <=? N) : RustM Bool))
+-            (fun ⟨acc, i⟩ =>
+-              (do
+-              (rust_primitives.hax.int.from_machine (0 : u32)) :
+-              RustM hax_lib.int.Int))
+-            (rust_primitives.hax.Tuple2.mk acc i)
+-            (fun ⟨acc, i⟩ =>
+-              (do
+-              let chunk_sum : u64 ←
+-                ((← ((← ((← ((← (rust_primitives.hax.cast_op
+-                          (Mersenne31.value (← lhs[i]_?)) :
+-                          RustM u64))
+-                        *? (← (rust_primitives.hax.cast_op
+-                          (Mersenne31.value (← rhs[i]_?)) :
+-                          RustM u64))))
+-                      +? (← ((← (rust_primitives.hax.cast_op
+-                          (Mersenne31.value (← lhs[(← (i +? (1 : usize)))]_?)) :
+-                          RustM u64))
+-                        *? (← (rust_primitives.hax.cast_op
+-                          (Mersenne31.value (← rhs[(← (i +? (1 : usize)))]_?)) :
+-                          RustM u64))))))
+-                    +? (← ((← (rust_primitives.hax.cast_op
+-                        (Mersenne31.value (← lhs[(← (i +? (2 : usize)))]_?)) :
+-                        RustM u64))
+-                      *? (← (rust_primitives.hax.cast_op
+-                        (Mersenne31.value (← rhs[(← (i +? (2 : usize)))]_?)) :
+-                        RustM u64))))))
+-                  +? (← ((← (rust_primitives.hax.cast_op
+-                      (Mersenne31.value (← lhs[(← (i +? (3 : usize)))]_?)) :
+-                      RustM u64))
+-                    *? (← (rust_primitives.hax.cast_op
+-                      (Mersenne31.value (← rhs[(← (i +? (3 : usize)))]_?)) :
+-                      RustM u64)))));
+-              let acc : u64 ← (acc +? (← (partial_reduce chunk_sum)));
+-              let i : usize ← (i +? (4 : usize));
+-              (pure (rust_primitives.hax.Tuple2.mk acc i)) :
+-              RustM (rust_primitives.hax.Tuple2 u64 usize))));
+-        let ⟨acc, i⟩ ←
+-          (rust_primitives.hax.while_loop
+-            (fun ⟨acc, i⟩ => (do (pure true) : RustM Bool))
+-            (fun ⟨acc, i⟩ => (do (i <? N) : RustM Bool))
+-            (fun ⟨acc, i⟩ =>
+-              (do
+-              (rust_primitives.hax.int.from_machine (0 : u32)) :
+-              RustM hax_lib.int.Int))
+-            (rust_primitives.hax.Tuple2.mk acc i)
+-            (fun ⟨acc, i⟩ =>
+-              (do
+-              let acc : u64 ←
+-                (acc
+-                  +? (← ((← (rust_primitives.hax.cast_op
+-                      (Mersenne31.value (← lhs[i]_?)) :
+-                      RustM u64))
+-                    *? (← (rust_primitives.hax.cast_op
+-                      (Mersenne31.value (← rhs[i]_?)) :
+-                      RustM u64)))));
+-              let i : usize ← (i +? (1 : usize));
+-              (pure (rust_primitives.hax.Tuple2.mk acc i)) :
+-              RustM (rust_primitives.hax.Tuple2 u64 usize))));
+-        (Impl.new_reduced (← (reduce_64 acc)))
+-  zero_vec := fun (len : usize) => do
+-    (p3_util.flatten_to_base Mersenne31 u32
+-      (← (alloc.vec.from_elem u32 (0 : u32) len)))
++instance Impl_13 : p3_field.field.PrimeCharacteristicRing Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_12.AssociatedTypes :
+   p3_field.field.RawDataSerializable.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_12 : p3_field.field.RawDataSerializable Mersenne31 where
+-  NUM_BYTES := (4 : usize)
+-  into_bytes := fun (self : Mersenne31) => do
+-    (core_models.num.Impl_8.to_le_bytes
+-      (← (p3_field.field.PrimeField32.to_unique_u32 Mersenne31 self)))
+-  into_u32_stream :=
+-    fun
+-      (impl_IntoIterator_Item_=_Self_ : Type)
+-      [trait_constr_into_u32_stream_associated_type_i0 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_Self_]
+-      [trait_constr_into_u32_stream_i0 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_Self_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_Self_
+-          by infer_instance
+-          with Item := Mersenne31})] (input : impl_IntoIterator_Item_=_Self_) =>
+-      do
+-    (core_models.iter.traits.iterator.Iterator.map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_Self_) u32 (Mersenne31 -> RustM u32)
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_Self_ input))
+-      (fun x =>
+-        (do
+-        (p3_field.field.PrimeField32.to_unique_u32 Mersenne31 x) : RustM u32)))
+-  into_u64_stream :=
+-    fun
+-      (impl_IntoIterator_Item_=_Self_ : Type)
+-      [trait_constr_into_u64_stream_associated_type_i0 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_Self_]
+-      [trait_constr_into_u64_stream_i0 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_Self_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_Self_
+-          by infer_instance
+-          with Item := Mersenne31})] (input : impl_IntoIterator_Item_=_Self_) =>
+-      do
+-    (pure sorry)
+-  into_parallel_byte_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_byte_streams_associated_type_i0 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_byte_streams_i0 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray Mersenne31 N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (core_models.iter.traits.iterator.Iterator.flat_map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_[Self;_N]_)
+-      (core_models.iter.adapters.map.Map
+-        (core_models.ops.range.Range usize)
+-        (usize -> RustM (RustArray u8 N)))
+-      ((RustArray Mersenne31 N) ->
+-      RustM (core_models.iter.adapters.map.Map
+-        (core_models.ops.range.Range usize)
+-        (usize -> RustM (RustArray u8 N))))
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_[Self;_N]_ input))
+-      (fun vector =>
+-        (do
+-        let bytes : (RustArray (RustArray u8 4) N) ←
+-          (core_models.array.Impl_23.map
+-            Mersenne31
+-            (N)
+-            (Mersenne31 -> RustM (RustArray u8 4))
+-            (RustArray u8 4)
+-            vector
+-            (fun elem =>
+-              (do
+-              (p3_field.field.RawDataSerializable.into_bytes Mersenne31 elem) :
+-              RustM (RustArray u8 4))));
+-        (core_models.iter.traits.iterator.Iterator.map
+-          (core_models.ops.range.Range usize)
+-          (RustArray u8 N)
+-          (usize -> RustM (RustArray u8 N))
+-          (core_models.ops.range.Range.mk
+-            (start := (0 : usize))
+-            (_end := (p3_field.field.RawDataSerializable.NUM_BYTES Mersenne31)))
+-          (fun i =>
+-            (do
+-            (core_models.array.from_fn u8 (N) (usize -> RustM u8)
+-              (fun j => (do (← bytes[j]_?)[i]_? : RustM u8))) :
+-            RustM (RustArray u8 N)))) :
+-        RustM
+-        (core_models.iter.adapters.map.Map
+-          (core_models.ops.range.Range usize)
+-          (usize -> RustM (RustArray u8 N))))))
+-  into_parallel_u32_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_u32_streams_associated_type_i0 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_u32_streams_i0 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray Mersenne31 N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (core_models.iter.traits.iterator.Iterator.map
+-      (core_models.iter.traits.collect.IntoIterator.IntoIter
+-        impl_IntoIterator_Item_=_[Self;_N]_)
+-      (RustArray u32 N)
+-      ((RustArray Mersenne31 N) -> RustM (RustArray u32 N))
+-      (← (core_models.iter.traits.collect.IntoIterator.into_iter
+-        impl_IntoIterator_Item_=_[Self;_N]_ input))
+-      (fun vec =>
+-        (do
+-        (core_models.array.Impl_23.map
+-          Mersenne31
+-          (N)
+-          (Mersenne31 -> RustM u32)
+-          u32
+-          vec
+-          (fun x =>
+-            (do
+-            (p3_field.field.PrimeField32.to_unique_u32 Mersenne31 x) :
+-            RustM u32))) :
+-        RustM (RustArray u32 N))))
+-  into_parallel_u64_streams :=
+-    fun
+-      (N : usize)
+-      (impl_IntoIterator_Item_=_[Self;_N]_ : Type)
+-      [trait_constr_into_parallel_u64_streams_associated_type_i0 :
+-        core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-        impl_IntoIterator_Item_=_[Self;_N]_]
+-      [trait_constr_into_parallel_u64_streams_i0 :
+-        core_models.iter.traits.collect.IntoIterator
+-        impl_IntoIterator_Item_=_[Self;_N]_
+-        (associatedTypes := {
+-          show
+-            core_models.iter.traits.collect.IntoIterator.AssociatedTypes
+-            impl_IntoIterator_Item_=_[Self;_N]_
+-          by infer_instance
+-          with Item := (RustArray Mersenne31 N)})]
+-      (input : impl_IntoIterator_Item_=_[Self;_N]_) => do
+-    (pure sorry)
++instance Impl_12 : p3_field.field.RawDataSerializable Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_10.AssociatedTypes :
+   serde_core.ser.Serialize.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_10 : serde_core.ser.Serialize Mersenne31 where
+-  serialize :=
+-    fun
+-      (S : Type)
+-      [trait_constr_serialize_associated_type_i0 :
+-        serde_core.ser.Serializer.AssociatedTypes
+-        S]
+-      [trait_constr_serialize_i0 : serde_core.ser.Serializer S ]
+-      (self : Mersenne31)
+-      (serializer : S) => do
+-    (serde_core.ser.Serializer.serialize_u32
+-      S
+-      serializer
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 self)))
++instance Impl_10 : serde_core.ser.Serialize Mersenne31 := sorry
+ 
++@[reducible] instance Impl_1.AssociatedTypes :
++  core_models.cmp.PartialEq.AssociatedTypes Mersenne31 Mersenne31
++  where
++
++instance Impl_1 : core_models.cmp.PartialEq Mersenne31 Mersenne31 := sorry
++
++@[reducible] instance Impl_2.AssociatedTypes :
++  core_models.cmp.Eq.AssociatedTypes Mersenne31
++  where
++
++instance Impl_2 : core_models.cmp.Eq Mersenne31 where
++
+ @[reducible] instance Impl_6.AssociatedTypes :
+   core_models.cmp.PartialOrd.AssociatedTypes Mersenne31 Mersenne31
+   where
+ 
+-instance Impl_6 : core_models.cmp.PartialOrd Mersenne31 Mersenne31 where
+-  partial_cmp := fun (self : Mersenne31) (other : Mersenne31) => do
+-    (pure (core_models.option.Option.Some
+-      (← (core_models.cmp.Ord.cmp Mersenne31 self other))))
++instance Impl_6 : core_models.cmp.PartialOrd Mersenne31 Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_5.AssociatedTypes :
+   core_models.cmp.Ord.AssociatedTypes Mersenne31
+   where
+ 
+-instance Impl_5 : core_models.cmp.Ord Mersenne31 where
+-  cmp := fun (self : Mersenne31) (other : Mersenne31) => do
+-    (core_models.cmp.Ord.cmp
+-      u32
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 self))
+-      (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 other)))
++instance Impl_5 : core_models.cmp.Ord Mersenne31 := sorry
+ 
+ @[reducible] instance Impl_4.AssociatedTypes :
+   core_models.hash.Hash.AssociatedTypes Mersenne31
+@@ -7155,22 +4991,7 @@
+   where
+ 
+ instance Impl_3 : p3_field.packed.packed_traits.Packable Mersenne31 where
+-
+-@[reducible] instance Impl_2.AssociatedTypes :
+-  core_models.cmp.Eq.AssociatedTypes Mersenne31
+-  where
+-
+-instance Impl_2 : core_models.cmp.Eq Mersenne31 where
+ 
+-@[reducible] instance Impl_1.AssociatedTypes :
+-  core_models.cmp.PartialEq.AssociatedTypes Mersenne31 Mersenne31
+-  where
+-
+-instance Impl_1 : core_models.cmp.PartialEq Mersenne31 Mersenne31 where
+-  eq := fun (self : Mersenne31) (other : Mersenne31) => do
+-    ((← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 self))
+-      ==? (← (p3_field.field.PrimeField32.as_canonical_u32 Mersenne31 other)))
+-
+ end p3_mersenne_31.mersenne_31
+ 
+ 
+@@ -7261,42 +5082,7 @@
+ instance Impl :
+   p3_field.extension.complex.ComplexExtendable
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  CIRCLE_TWO_ADICITY := (31 : usize)
+-  COMPLEX_GENERATOR := RustM.of_isOk
+-    (do
+-    (p3_field.extension.complex.Impl_2.new_complex
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (p3_mersenne_31.mersenne_31.Impl.new (12 : u32)))
+-      (p3_field.field.PrimeCharacteristicRing.ONE
+-        p3_mersenne_31.mersenne_31.Mersenne31)))
+-    (by rfl)
+-  circle_two_adic_generator := fun (bits : usize) => do
+-    let _ ←
+-      (hax_lib.assert
+-        (← (bits
+-          <=? (p3_field.extension.complex.ComplexExtendable.CIRCLE_TWO_ADICITY
+-            p3_mersenne_31.mersenne_31.Mersenne31))));
+-    let
+-      base : (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31) ←
+-      (p3_field.extension.complex.Impl_2.new_complex
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (← (p3_mersenne_31.mersenne_31.Impl.new_reduced (311014874 : u32)))
+-        (← (p3_mersenne_31.mersenne_31.Impl.new_reduced (1584694829 : u32))));
+-    (p3_field.field.PrimeCharacteristicRing.exp_power_of_2
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31)
+-      base
+-      (← ((p3_field.extension.complex.ComplexExtendable.CIRCLE_TWO_ADICITY
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        -? bits)))
++  := sorry
+ 
+ end p3_mersenne_31.complex
+ 
+@@ -7313,22 +5099,7 @@
+   p3_field.extension.BinomiallyExtendable
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((3 : usize))
+-  where
+-  W := RustM.of_isOk
+-    (do (p3_mersenne_31.mersenne_31.Impl.new (5 : u32)))
+-    (by rfl)
+-  DTH_ROOT := RustM.of_isOk
+-    (do (p3_mersenne_31.mersenne_31.Impl.new (1513477735 : u32)))
+-    (by rfl)
+-  EXT_GENERATOR := RustM.of_isOk
+-    (do
+-    (pure (RustArray.ofVec #v[(← (p3_mersenne_31.mersenne_31.Impl.new
+-                                  (10 : u32))),
+-                                (p3_field.field.PrimeCharacteristicRing.ONE
+-                                  p3_mersenne_31.mersenne_31.Mersenne31),
+-                                (p3_field.field.PrimeCharacteristicRing.ZERO
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)])))
+-    (by rfl)
++  := sorry
+ 
+ @[reducible] instance Impl.AssociatedTypes :
+   p3_field.extension.ExtensionAlgebra.AssociatedTypes
+@@ -7344,40 +5115,7 @@
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((3 : usize))
+   (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-  where
+-  ext_mul :=
+-    fun
+-      (a : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3))
+-      (b : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3))
+-      (res : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3)) => do
+-    let res : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3) ←
+-      (p3_field.extension.binomial_extension.binomial_mul
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((3 : usize))
+-        a
+-        b
+-        res
+-        (p3_field.extension.BinomiallyExtendable.W
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((3 : usize))));
+-    (pure res)
+-  ext_square :=
+-    fun
+-      (a : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3))
+-      (res : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3)) => do
+-    let res : (RustArray p3_mersenne_31.mersenne_31.Mersenne31 3) ←
+-      (p3_field.extension.binomial_extension.binomial_square
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((3 : usize))
+-        a
+-        res
+-        (p3_field.extension.BinomiallyExtendable.W
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((3 : usize))));
+-    (pure res)
++  := sorry
+ 
+ @[reducible] instance Impl_2.AssociatedTypes :
+   p3_field.extension.complex.HasComplexBinomialExtension.AssociatedTypes
+@@ -7389,66 +5127,7 @@
+   p3_field.extension.complex.HasComplexBinomialExtension
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((2 : usize))
+-  where
+-  W := RustM.of_isOk
+-    (do
+-    (p3_field.extension.complex.Impl_2.new_complex
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (p3_field.field.PrimeCharacteristicRing.TWO
+-        p3_mersenne_31.mersenne_31.Mersenne31)
+-      (p3_field.field.PrimeCharacteristicRing.ONE
+-        p3_mersenne_31.mersenne_31.Mersenne31)))
+-    (by rfl)
+-  DTH_ROOT := RustM.of_isOk
+-    (do
+-    (p3_field.extension.complex.Impl_2.new_real
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (p3_mersenne_31.mersenne_31.Impl.new (2147483646 : u32)))))
+-    (by rfl)
+-  EXT_GENERATOR := RustM.of_isOk
+-    (do
+-    (pure (RustArray.ofVec #v[(← (p3_field.extension.complex.Impl_2.new_real
+-                                  p3_mersenne_31.mersenne_31.Mersenne31
+-                                  (← (p3_mersenne_31.mersenne_31.Impl.new
+-                                    (6 : u32))))),
+-                                (p3_field.field.PrimeCharacteristicRing.ONE
+-                                  (p3_field.extension.ExtField
+-                                    p3_mersenne_31.mersenne_31.Mersenne31
+-                                    ((2 : usize))
+-                                    (p3_field.extension.Binomial
+-                                      p3_mersenne_31.mersenne_31.Mersenne31)
+-                                    p3_mersenne_31.mersenne_31.Mersenne31))])))
+-    (by rfl)
+-  mul_by_w :=
+-    fun
+-      (z :
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31)) => do
+-    let re : p3_mersenne_31.mersenne_31.Mersenne31 ←
+-      (p3_field.extension.complex.Impl_2.real
+-        p3_mersenne_31.mersenne_31.Mersenne31 z);
+-    let im : p3_mersenne_31.mersenne_31.Mersenne31 ←
+-      (p3_field.extension.complex.Impl_2.imag
+-        p3_mersenne_31.mersenne_31.Mersenne31 z);
+-    (p3_field.extension.complex.Impl_2.new_complex
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (core_models.ops.arith.Sub.sub
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (← (core_models.ops.arith.Add.add
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31 re re))
+-        im))
+-      (← (core_models.ops.arith.Add.add
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (← (core_models.ops.arith.Add.add
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31 re im))
+-        im)))
++  := sorry
+ 
+ @[reducible] instance Impl_4.AssociatedTypes :
+   p3_field.extension.complex.HasComplexBinomialExtension.AssociatedTypes
+@@ -7460,37 +5139,7 @@
+   p3_field.extension.complex.HasComplexBinomialExtension
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((3 : usize))
+-  where
+-  W := RustM.of_isOk
+-    (do
+-    (p3_field.extension.complex.Impl_2.new_imag
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (p3_mersenne_31.mersenne_31.Impl.new (5 : u32)))))
+-    (by rfl)
+-  DTH_ROOT := RustM.of_isOk
+-    (do
+-    (p3_field.extension.complex.Impl_2.new_real
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (← (p3_mersenne_31.mersenne_31.Impl.new (634005911 : u32)))))
+-    (by rfl)
+-  EXT_GENERATOR := RustM.of_isOk
+-    (do
+-    (pure (RustArray.ofVec #v[(← (p3_field.extension.complex.Impl_2.new_real
+-                                  p3_mersenne_31.mersenne_31.Mersenne31
+-                                  (← (p3_mersenne_31.mersenne_31.Impl.new
+-                                    (5 : u32))))),
+-                                (← (p3_field.extension.complex.Impl_2.new_real
+-                                  p3_mersenne_31.mersenne_31.Mersenne31
+-                                  (p3_field.field.PrimeCharacteristicRing.ONE
+-                                    p3_mersenne_31.mersenne_31.Mersenne31))),
+-                                (p3_field.field.PrimeCharacteristicRing.ZERO
+-                                  (p3_field.extension.ExtField
+-                                    p3_mersenne_31.mersenne_31.Mersenne31
+-                                    ((2 : usize))
+-                                    (p3_field.extension.Binomial
+-                                      p3_mersenne_31.mersenne_31.Mersenne31)
+-                                    p3_mersenne_31.mersenne_31.Mersenne31))])))
+-    (by rfl)
++  := sorry
+ 
+ end p3_mersenne_31.extension
+ 
+@@ -7527,42 +5176,8 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31)
+     2)
+-    := do
+-  let
+-    s : (RustSlice
+-    (p3_field.extension.ExtField
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      ((2 : usize))
+-      (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-      p3_mersenne_31.mersenne_31.Mersenne31)) ←
+-    (p3_field.field.BasedVectorSpace.as_basis_coefficients_slice
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31) x);
+-  (pure (RustArray.ofVec #v[(← s[(0 : usize)]_?), (← s[(1 : usize)]_?)]))
++ := sorry
+ 
+---  Multiply a packed complex coefficient by `W = 2 + i` using only additions:
+---  `(a + bi)(2 + i) = (2a - b) + (a + 2b)i`.
+ @[spec]
+ def packed_mul_by_w
+     (c :
+@@ -7577,36 +5192,7 @@
+       p3_mersenne_31.mersenne_31.Mersenne31
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-    := do
+-  let s : (RustSlice p3_mersenne_31.mersenne_31.Mersenne31) ←
+-    (p3_field.field.BasedVectorSpace.as_basis_coefficients_slice
+-      (p3_field.extension.PackedExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-      p3_mersenne_31.mersenne_31.Mersenne31 c);
+-  let ⟨re, im⟩ :=
+-    (rust_primitives.hax.Tuple2.mk (← s[(0 : usize)]_?) (← s[(1 : usize)]_?));
+-  (p3_field.extension.Impl_7.new
+-    p3_mersenne_31.mersenne_31.Mersenne31
+-    p3_mersenne_31.mersenne_31.Mersenne31
+-    ((2 : usize))
+-    (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-    (RustArray.ofVec #v[(← (core_models.ops.arith.Sub.sub
+-                            p3_mersenne_31.mersenne_31.Mersenne31
+-                            p3_mersenne_31.mersenne_31.Mersenne31
+-                            (← (core_models.ops.arith.Add.add
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              p3_mersenne_31.mersenne_31.Mersenne31 re re))
+-                            im)),
+-                          (← (core_models.ops.arith.Add.add
+-                            p3_mersenne_31.mersenne_31.Mersenne31
+-                            p3_mersenne_31.mersenne_31.Mersenne31
+-                            (← (core_models.ops.arith.Add.add
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              p3_mersenne_31.mersenne_31.Mersenne31 re im))
+-                            im))]))
++ := sorry
+ 
+ @[reducible] instance Impl.AssociatedTypes :
+   core_models.convert.From.AssociatedTypes
+@@ -7652,41 +5238,7 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  _from := fun (x : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (p3_field.extension.Impl_6.new
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31)
+-      ((2 : usize))
+-      (p3_field.extension.Binomial
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31)
+-      (RustArray.ofVec #v[(← (core_models.convert.From._from
+-                              (p3_field.extension.ExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                                p3_mersenne_31.mersenne_31.Mersenne31)
+-                              p3_mersenne_31.mersenne_31.Mersenne31 x)),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.ExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                                p3_mersenne_31.mersenne_31.Mersenne31))]))
++  := sorry
+ 
+ @[reducible] instance Impl_7.AssociatedTypes :
+   p3_field.field.Algebra.AssociatedTypes
+@@ -7739,78 +5291,14 @@
+   where
+   Output := PackedQM31
+ 
+-instance Impl_12 : core_models.ops.arith.Add PackedQM31 PackedQM31 where
+-  add := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.ops.arith.Add.add
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (← (PackedQM31._0 self)[(0 : usize)]_?)
+-                              (← (PackedQM31._0 rhs)[(0 : usize)]_?))),
+-                            (← (core_models.ops.arith.Add.add
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (← (PackedQM31._0 self)[(1 : usize)]_?)
+-                              (← (PackedQM31._0 rhs)[(1 : usize)]_?)))])))
++instance Impl_12 : core_models.ops.arith.Add PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_14.AssociatedTypes :
+   core_models.ops.arith.Sub.AssociatedTypes PackedQM31 PackedQM31
+   where
+   Output := PackedQM31
+ 
+-instance Impl_14 : core_models.ops.arith.Sub PackedQM31 PackedQM31 where
+-  sub := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.ops.arith.Sub.sub
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (← (PackedQM31._0 self)[(0 : usize)]_?)
+-                              (← (PackedQM31._0 rhs)[(0 : usize)]_?))),
+-                            (← (core_models.ops.arith.Sub.sub
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              (← (PackedQM31._0 self)[(1 : usize)]_?)
+-                              (← (PackedQM31._0 rhs)[(1 : usize)]_?)))])))
++instance Impl_14 : core_models.ops.arith.Sub PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_30.AssociatedTypes :
+   core_models.convert.From.AssociatedTypes
+@@ -7820,50 +5308,19 @@
+ 
+ instance Impl_30 :
+   core_models.convert.From PackedQM31 p3_mersenne_31.mersenne_31.Mersenne31
++  := sorry
++
++@[reducible] instance Impl_31.AssociatedTypes :
++  core_models.ops.arith.Add.AssociatedTypes
++  PackedQM31
++  p3_mersenne_31.mersenne_31.Mersenne31
+   where
+-  _from := fun (x : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.convert.Into.into
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)) x)),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)))])))
++  Output := PackedQM31
++
++instance Impl_31 :
++  core_models.ops.arith.Add PackedQM31 p3_mersenne_31.mersenne_31.Mersenne31
++  := sorry
+ 
+-@[reducible] instance Impl_31.AssociatedTypes :
+-  core_models.ops.arith.Add.AssociatedTypes
+-  PackedQM31
+-  p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  Output := PackedQM31
+-
+-instance Impl_31 :
+-  core_models.ops.arith.Add PackedQM31 p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  add :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.ops.arith.Add.add
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              (← (PackedQM31._0 self)[(0 : usize)]_?)
+-                              rhs)),
+-                            (← (PackedQM31._0 self)[(1 : usize)]_?)])))
+-
+ @[reducible] instance Impl_33.AssociatedTypes :
+   core_models.ops.arith.Sub.AssociatedTypes
+   PackedQM31
+@@ -7873,21 +5330,7 @@
+ 
+ instance Impl_33 :
+   core_models.ops.arith.Sub PackedQM31 p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  sub :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.ops.arith.Sub.sub
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              (← (PackedQM31._0 self)[(0 : usize)]_?)
+-                              rhs)),
+-                            (← (PackedQM31._0 self)[(1 : usize)]_?)])))
++  := sorry
+ 
+ @[reducible] instance Impl_35.AssociatedTypes :
+   core_models.ops.arith.Mul.AssociatedTypes
+@@ -7898,30 +5341,7 @@
+ 
+ instance Impl_35 :
+   core_models.ops.arith.Mul PackedQM31 p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  mul :=
+-    fun (self : PackedQM31) (rhs : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(← (core_models.ops.arith.Mul.mul
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              (← (PackedQM31._0 self)[(0 : usize)]_?)
+-                              rhs)),
+-                            (← (core_models.ops.arith.Mul.mul
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))
+-                              p3_mersenne_31.mersenne_31.Mersenne31
+-                              (← (PackedQM31._0 self)[(1 : usize)]_?)
+-                              rhs))])))
++  := sorry
+ 
+ end p3_mersenne_31.qm31
+ 
+@@ -7938,16 +5358,7 @@
+   p3_field.extension.HasTwoAdicBinomialExtension
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((2 : usize))
+-  where
+-  EXT_TWO_ADICITY := (32 : usize)
+-  ext_two_adic_generator := fun (bits : usize) => do
+-    let _ ←
+-      (hax_lib.assert
+-        (← (bits
+-          <=? (p3_field.extension.HasTwoAdicBinomialExtension.EXT_TWO_ADICITY
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))))));
+-    p3_mersenne_31.mersenne_31.Impl.EXT_TWO_ADIC_GENERATORS[bits]_?
++  := sorry
+ 
+ end p3_mersenne_31.complex
+ 
+@@ -7960,285 +5371,20 @@
+ 
+ instance Impl_21 :
+   core_models.iter.traits.accum.Product PackedQM31 PackedQM31
+-  where
+-  product :=
+-    fun
+-      (I : Type)
+-      [trait_constr_product_associated_type_i0 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_product_i0 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := PackedQM31})] (iter : I) => do
+-    (core_models.iter.traits.iterator.Iterator.fold
+-      I PackedQM31 (PackedQM31 -> PackedQM31 -> RustM PackedQM31)
+-      iter
+-      (p3_field.field.PrimeCharacteristicRing.ONE PackedQM31)
+-      (fun acc x =>
+-        (do
+-        (core_models.ops.arith.Mul.mul PackedQM31 PackedQM31 acc x) :
+-        RustM PackedQM31)))
++  := sorry
+ 
+ @[reducible] instance Impl_20.AssociatedTypes :
+   core_models.iter.traits.accum.Sum.AssociatedTypes PackedQM31 PackedQM31
+   where
+ 
+-instance Impl_20 : core_models.iter.traits.accum.Sum PackedQM31 PackedQM31 where
+-  sum :=
+-    fun
+-      (I : Type)
+-      [trait_constr_sum_associated_type_i0 :
+-        core_models.iter.traits.iterator.Iterator.AssociatedTypes
+-        I]
+-      [trait_constr_sum_i0 : core_models.iter.traits.iterator.Iterator
+-        I
+-        (associatedTypes := {
+-          show core_models.iter.traits.iterator.Iterator.AssociatedTypes I
+-          by infer_instance
+-          with Item := PackedQM31})] (iter : I) => do
+-    (core_models.iter.traits.iterator.Iterator.fold
+-      I PackedQM31 (PackedQM31 -> PackedQM31 -> RustM PackedQM31)
+-      iter
+-      (p3_field.field.PrimeCharacteristicRing.ZERO PackedQM31)
+-      (fun acc x =>
+-        (do
+-        (core_models.ops.arith.Add.add PackedQM31 PackedQM31 acc x) :
+-        RustM PackedQM31)))
++instance Impl_20 : core_models.iter.traits.accum.Sum PackedQM31 PackedQM31 := sorry
+ 
+ @[reducible] instance Impl_10.AssociatedTypes :
+   p3_field.field.PrimeCharacteristicRing.AssociatedTypes PackedQM31
+   where
+   PrimeSubfield := p3_mersenne_31.mersenne_31.Mersenne31
+ 
+-instance Impl_10 : p3_field.field.PrimeCharacteristicRing PackedQM31 where
+-  ZERO := RustM.of_isOk
+-    (do
+-    (pure (PackedQM31.mk
+-      (← (rust_primitives.hax.repeat
+-        (p3_field.field.PrimeCharacteristicRing.ZERO
+-          (p3_field.extension.PackedExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial
+-              p3_mersenne_31.mersenne_31.Mersenne31)))
+-        (2 : usize))))))
+-    (by rfl)
+-  ONE := RustM.of_isOk
+-    (do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(p3_field.field.PrimeCharacteristicRing.ONE
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)))]))))
+-    (by rfl)
+-  TWO := RustM.of_isOk
+-    (do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(p3_field.field.PrimeCharacteristicRing.TWO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)))]))))
+-    (by rfl)
+-  NEG_ONE := RustM.of_isOk
+-    (do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(p3_field.field.PrimeCharacteristicRing.NEG_ONE
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31))),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)))]))))
+-    (by rfl)
+-  from_prime_subfield := fun (val : p3_mersenne_31.mersenne_31.Mersenne31) => do
+-    (pure (PackedQM31.mk
+-      (RustArray.ofVec #v[(←
+-                            (p3_field.field.PrimeCharacteristicRing.from_prime_subfield
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)) val)),
+-                            (p3_field.field.PrimeCharacteristicRing.ZERO
+-                              (p3_field.extension.PackedExtField
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                p3_mersenne_31.mersenne_31.Mersenne31
+-                                ((2 : usize))
+-                                (p3_field.extension.Binomial
+-                                  p3_mersenne_31.mersenne_31.Mersenne31)))])))
+-  halve := fun (self : PackedQM31) => do
+-    (pure (PackedQM31.mk
+-      (← (core_models.array.Impl_23.map
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ((2 : usize))
+-        ((p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ->
+-        RustM (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)))
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        (PackedQM31._0 self)
+-        (fun c =>
+-          (do
+-          (p3_field.field.PrimeCharacteristicRing.halve
+-            (p3_field.extension.PackedExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)) c) :
+-          RustM
+-          (p3_field.extension.PackedExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial
+-              p3_mersenne_31.mersenne_31.Mersenne31))))))))
+-  mul_2exp_u64 := fun (self : PackedQM31) (exp : u64) => do
+-    (pure (PackedQM31.mk
+-      (← (core_models.array.Impl_23.map
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ((2 : usize))
+-        ((p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ->
+-        RustM (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)))
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        (PackedQM31._0 self)
+-        (fun c =>
+-          (do
+-          (p3_field.field.PrimeCharacteristicRing.mul_2exp_u64
+-            (p3_field.extension.PackedExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)) c exp) :
+-          RustM
+-          (p3_field.extension.PackedExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial
+-              p3_mersenne_31.mersenne_31.Mersenne31))))))))
+-  div_2exp_u64 := fun (self : PackedQM31) (exp : u64) => do
+-    (pure (PackedQM31.mk
+-      (← (core_models.array.Impl_23.map
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ((2 : usize))
+-        ((p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        ->
+-        RustM (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)))
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        (PackedQM31._0 self)
+-        (fun c =>
+-          (do
+-          (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
+-            (p3_field.extension.PackedExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)) c exp) :
+-          RustM
+-          (p3_field.extension.PackedExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial
+-              p3_mersenne_31.mersenne_31.Mersenne31))))))))
+-  zero_vec := fun (len : usize) => do
+-    (p3_util.reconstitute_from_base
+-      (p3_field.extension.PackedExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-      PackedQM31
+-      (← (p3_field.field.PrimeCharacteristicRing.zero_vec
+-        (p3_field.extension.PackedExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31))
+-        (← (len *? (2 : usize))))))
++instance Impl_10 : p3_field.field.PrimeCharacteristicRing PackedQM31 := sorry
+ 
+ end p3_mersenne_31.qm31
+ 
+@@ -8255,72 +5401,20 @@
+   p3_field.extension.complex.HasTwoAdicComplexBinomialExtension
+   p3_mersenne_31.mersenne_31.Mersenne31
+   ((2 : usize))
++  := sorry
++
++@[reducible] instance Impl_5.AssociatedTypes :
++  p3_field.extension.complex.HasTwoAdicComplexBinomialExtension.AssociatedTypes
++  p3_mersenne_31.mersenne_31.Mersenne31
++  ((3 : usize))
+   where
+-  COMPLEX_EXT_TWO_ADICITY := (33 : usize)
+-  complex_ext_two_adic_generator := fun (bits : usize) => do
+-    let _ ← (hax_lib.assert (← (bits <=? (33 : usize))));
+-    if (← (bits ==? (33 : usize))) then do
+-      (pure (RustArray.ofVec #v[(p3_field.field.PrimeCharacteristicRing.ZERO
+-                                    (p3_field.extension.ExtField
+-                                      p3_mersenne_31.mersenne_31.Mersenne31
+-                                      ((2 : usize))
+-                                      (p3_field.extension.Binomial
+-                                        p3_mersenne_31.mersenne_31.Mersenne31)
+-                                      p3_mersenne_31.mersenne_31.Mersenne31)),
+-                                  (←
+-                                  (p3_field.extension.complex.Impl_2.new_complex
+-                                    p3_mersenne_31.mersenne_31.Mersenne31
+-                                    (←
+-                                    (p3_mersenne_31.mersenne_31.Impl.new_reduced
+-                                      (1437746044 : u32)))
+-                                    (←
+-                                    (p3_mersenne_31.mersenne_31.Impl.new_reduced
+-                                      (946469285 : u32)))))]))
+-    else do
+-      (pure (RustArray.ofVec #v[(←
+-                                  (p3_field.field.TwoAdicField.two_adic_generator
+-                                    (p3_field.extension.ExtField
+-                                      p3_mersenne_31.mersenne_31.Mersenne31
+-                                      ((2 : usize))
+-                                      (p3_field.extension.Binomial
+-                                        p3_mersenne_31.mersenne_31.Mersenne31)
+-                                      p3_mersenne_31.mersenne_31.Mersenne31)
+-                                    bits)),
+-                                  (p3_field.field.PrimeCharacteristicRing.ZERO
+-                                    (p3_field.extension.ExtField
+-                                      p3_mersenne_31.mersenne_31.Mersenne31
+-                                      ((2 : usize))
+-                                      (p3_field.extension.Binomial
+-                                        p3_mersenne_31.mersenne_31.Mersenne31)
+-                                      p3_mersenne_31.mersenne_31.Mersenne31))]))
++
++instance Impl_5 :
++  p3_field.extension.complex.HasTwoAdicComplexBinomialExtension
++  p3_mersenne_31.mersenne_31.Mersenne31
++  ((3 : usize))
++  := sorry
+ 
+-@[reducible] instance Impl_5.AssociatedTypes :
+-  p3_field.extension.complex.HasTwoAdicComplexBinomialExtension.AssociatedTypes
+-  p3_mersenne_31.mersenne_31.Mersenne31
+-  ((3 : usize))
+-  where
+-
+-instance Impl_5 :
+-  p3_field.extension.complex.HasTwoAdicComplexBinomialExtension
+-  p3_mersenne_31.mersenne_31.Mersenne31
+-  ((3 : usize))
+-  where
+-  COMPLEX_EXT_TWO_ADICITY := (32 : usize)
+-  complex_ext_two_adic_generator := fun (bits : usize) => do
+-    (p3_field.helpers.field_to_array
+-      (p3_field.extension.ExtField
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        ((2 : usize))
+-        (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-        p3_mersenne_31.mersenne_31.Mersenne31)
+-      ((3 : usize))
+-      (← (p3_field.field.TwoAdicField.two_adic_generator
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31) bits)))
+-
+ end p3_mersenne_31.extension
+ 
+ 
+@@ -8382,143 +5476,7 @@
+       ((2 : usize))
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+-  where
+-  packed_ext_powers :=
+-    fun
+-      (base :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    let width : usize :=
+-      (p3_field.packed.packed_traits.PackedValue.WIDTH
+-        p3_mersenne_31.mersenne_31.Mersenne31);
+-    let
+-      powers : (alloc.vec.Vec
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        alloc.alloc.Global) ←
+-      (p3_field.field.Impl_8.collect_n
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (← (p3_field.field.PrimeCharacteristicRing.powers
+-          (p3_field.extension.ExtField
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31)
+-            ((2 : usize))
+-            (p3_field.extension.Binomial
+-              (p3_field.extension.ExtField
+-                p3_mersenne_31.mersenne_31.Mersenne31
+-                ((2 : usize))
+-                (p3_field.extension.Binomial
+-                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                p3_mersenne_31.mersenne_31.Mersenne31))
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31)) base))
+-        (← (width +? (1 : usize))));
+-    let current : PackedQM31 ←
+-      (p3_field.packed.packed_traits.PackedFieldExtension.from_ext_slice
+-        PackedQM31
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (← powers[(core_models.ops.range.RangeTo.mk (_end := width))]_?));
+-    (pure (p3_field.field.Powers.mk
+-      (base := (← (core_models.convert.Into.into
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        PackedQM31 (← powers[width]_?))))
+-      (current := current)))
++  := sorry
+ 
+ @[reducible] instance Impl_9.AssociatedTypes :
+   p3_field.field.ExtensionField.AssociatedTypes
+@@ -8565,167 +5523,14 @@
+       (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+       p3_mersenne_31.mersenne_31.Mersenne31))
+   p3_mersenne_31.mersenne_31.Mersenne31
+-  where
+-  is_in_basefield :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    let ⟨_, out⟩ ←
+-      (core_models.iter.traits.iterator.Iterator.all
+-        (core_models.slice.iter.Iter p3_mersenne_31.mersenne_31.Mersenne31)
+-        (p3_mersenne_31.mersenne_31.Mersenne31 -> RustM Bool)
+-        (← (core_models.slice.Impl.iter p3_mersenne_31.mersenne_31.Mersenne31
+-          (← (← (p3_field.field.BasedVectorSpace.as_basis_coefficients_slice
+-              (p3_field.extension.ExtField
+-                (p3_field.extension.ExtField
+-                  p3_mersenne_31.mersenne_31.Mersenne31
+-                  ((2 : usize))
+-                  (p3_field.extension.Binomial
+-                    p3_mersenne_31.mersenne_31.Mersenne31)
+-                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                ((2 : usize))
+-                (p3_field.extension.Binomial
+-                  (p3_field.extension.ExtField
+-                    p3_mersenne_31.mersenne_31.Mersenne31
+-                    ((2 : usize))
+-                    (p3_field.extension.Binomial
+-                      p3_mersenne_31.mersenne_31.Mersenne31)
+-                    p3_mersenne_31.mersenne_31.Mersenne31))
+-                (p3_field.extension.ExtField
+-                  p3_mersenne_31.mersenne_31.Mersenne31
+-                  ((2 : usize))
+-                  (p3_field.extension.Binomial
+-                    p3_mersenne_31.mersenne_31.Mersenne31)
+-                  p3_mersenne_31.mersenne_31.Mersenne31))
+-              p3_mersenne_31.mersenne_31.Mersenne31 self))[
+-            (core_models.ops.range.RangeFrom.mk (start := (1 : usize)))
+-            ]_?)))
+-        p3_field.field.Field.is_zero);
+-    (pure out)
+-  as_base :=
+-    fun
+-      (self :
+-      (p3_field.extension.ExtField
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31)
+-        ((2 : usize))
+-        (p3_field.extension.Binomial
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        (p3_field.extension.ExtField
+-          p3_mersenne_31.mersenne_31.Mersenne31
+-          ((2 : usize))
+-          (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-          p3_mersenne_31.mersenne_31.Mersenne31))) => do
+-    (core_models.bool.Impl.then
+-      p3_mersenne_31.mersenne_31.Mersenne31
+-      (rust_primitives.hax.Tuple0 ->
+-      RustM p3_mersenne_31.mersenne_31.Mersenne31)
+-      (← (p3_field.field.ExtensionField.is_in_basefield
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31))
+-        p3_mersenne_31.mersenne_31.Mersenne31 self))
+-      (fun _ =>
+-        (do
+-        (← (p3_field.field.BasedVectorSpace.as_basis_coefficients_slice
+-            (p3_field.extension.ExtField
+-              (p3_field.extension.ExtField
+-                p3_mersenne_31.mersenne_31.Mersenne31
+-                ((2 : usize))
+-                (p3_field.extension.Binomial
+-                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                (p3_field.extension.ExtField
+-                  p3_mersenne_31.mersenne_31.Mersenne31
+-                  ((2 : usize))
+-                  (p3_field.extension.Binomial
+-                    p3_mersenne_31.mersenne_31.Mersenne31)
+-                  p3_mersenne_31.mersenne_31.Mersenne31))
+-              (p3_field.extension.ExtField
+-                p3_mersenne_31.mersenne_31.Mersenne31
+-                ((2 : usize))
+-                (p3_field.extension.Binomial
+-                  p3_mersenne_31.mersenne_31.Mersenne31)
+-                p3_mersenne_31.mersenne_31.Mersenne31))
+-            p3_mersenne_31.mersenne_31.Mersenne31 self))[
+-          (0 : usize)
+-          ]_? :
+-        RustM p3_mersenne_31.mersenne_31.Mersenne31)))
++  := sorry
+ 
+ @[reducible] instance Impl_18.AssociatedTypes :
+   core_models.ops.arith.Div.AssociatedTypes PackedQM31 PackedQM31
+   where
+   Output := PackedQM31
+ 
+-instance Impl_18 : core_models.ops.arith.Div PackedQM31 PackedQM31 where
+-  div := fun (self : PackedQM31) (rhs : PackedQM31) => do
+-    (core_models.ops.arith.Mul.mul
+-      PackedQM31
+-      PackedQM31
+-      self
+-      (← (p3_field.batch_inverse.invert_packed_extension
+-        p3_mersenne_31.mersenne_31.Mersenne31
+-        (p3_field.extension.ExtField
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)
+-          ((2 : usize))
+-          (p3_field.extension.Binomial
+-            (p3_field.extension.ExtField
+-              p3_mersenne_31.mersenne_31.Mersenne31
+-              ((2 : usize))
+-              (p3_field.extension.Binomial
+-                p3_mersenne_31.mersenne_31.Mersenne31)
+-              p3_mersenne_31.mersenne_31.Mersenne31))
+-          (p3_field.extension.ExtField
+-            p3_mersenne_31.mersenne_31.Mersenne31
+-            ((2 : usize))
+-            (p3_field.extension.Binomial p3_mersenne_31.mersenne_31.Mersenne31)
+-            p3_mersenne_31.mersenne_31.Mersenne31)) rhs)))
++instance Impl_18 : core_models.ops.arith.Div PackedQM31 PackedQM31 := sorry
+ 
+ end p3_mersenne_31.qm31
+ 

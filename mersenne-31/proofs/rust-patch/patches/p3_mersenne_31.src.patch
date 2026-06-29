@@ -1,0 +1,164 @@
+diff --git a/mersenne-31/src/lib.rs b/mersenne-31/src/lib.rs
+index 00f665ab..7111b4e0 100644
+--- a/mersenne-31/src/lib.rs
++++ b/mersenne-31/src/lib.rs
+@@ -5,6 +5,7 @@
+ extern crate alloc;
+ 
+ mod complex;
++#[cfg(not(hax))]
+ mod dft;
+ mod extension;
+ mod mds;
+@@ -12,46 +13,51 @@ mod mersenne_31;
+ mod poseidon1;
+ mod poseidon2;
+ mod qm31;
++#[cfg(not(hax))]
+ mod radix_2_dit;
+ 
++#[cfg(not(hax))]
+ pub use dft::Mersenne31Dft;
+ pub use mds::*;
+ pub use mersenne_31::*;
+ pub use poseidon1::*;
+ pub use poseidon2::*;
+ pub use qm31::*;
++#[cfg(not(hax))]
+ pub use radix_2_dit::Mersenne31ComplexRadix2Dit;
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ mod aarch64_neon;
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub use aarch64_neon::*;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ mod x86_64_avx2;
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub use x86_64_avx2::*;
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ mod x86_64_avx512;
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub use x86_64_avx512::*;
+ 
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(target_arch = "x86_64", target_feature = "avx2",),
+-)))]
++))))]
+ mod no_packing;
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(target_arch = "x86_64", target_feature = "avx2",),
+-)))]
++))))]
+ pub use no_packing::*;
+diff --git a/mersenne-31/src/mersenne_31.rs b/mersenne-31/src/mersenne_31.rs
+index e37bf5f2..2d406df7 100644
+--- a/mersenne-31/src/mersenne_31.rs
++++ b/mersenne-31/src/mersenne_31.rs
+@@ -341,17 +341,18 @@ impl PermutationMonomial<5> for Mersenne31 {
+ }
+ 
+ impl Field for Mersenne31 {
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     type Packing = crate::PackedMersenne31Neon;
+     #[cfg(all(
+         target_arch = "x86_64",
+         target_feature = "avx2",
+-        not(target_feature = "avx512f")
++        not(target_feature = "avx512f"),
++        not(hax)
+     ))]
+     type Packing = crate::PackedMersenne31AVX2;
+-    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++    #[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+     type Packing = crate::PackedMersenne31AVX512;
+-    #[cfg(not(any(
++    #[cfg(any(hax, not(any(
+         all(target_arch = "aarch64", target_feature = "neon"),
+         all(
+             target_arch = "x86_64",
+@@ -359,7 +360,7 @@ impl Field for Mersenne31 {
+             not(target_feature = "avx512f")
+         ),
+         all(target_arch = "x86_64", target_feature = "avx512f"),
+-    )))]
++    ))))]
+     type Packing = Self;
+ 
+     // Sage: GF(2^31 - 1).multiplicative_generator()
+@@ -396,7 +397,7 @@ impl Field for Mersenne31 {
+         (candidate.square() == *self).then_some(candidate)
+     }
+ 
+-    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++    #[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+     #[inline]
+     fn batched_columnwise_dot_product<EF, R, I, const N: usize>(
+         acc: &mut [EF::ExtensionPacking],
+diff --git a/mersenne-31/src/poseidon1.rs b/mersenne-31/src/poseidon1.rs
+index 708ea5bc..186ef516 100644
+--- a/mersenne-31/src/poseidon1.rs
++++ b/mersenne-31/src/poseidon1.rs
+@@ -76,7 +76,7 @@ pub type Poseidon1Mersenne31Generic<const WIDTH: usize> = Poseidon1<
+ /// constants and fused AddRC+S-box. On x86_64 with AVX2/AVX512, uses
+ /// negative-form packed constants with fused AddRC+S-box. On other platforms,
+ /// falls back to the generic Karatsuba-based implementation.
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+     Mersenne31,
+     crate::Poseidon1ExternalLayerMersenne31<WIDTH>,
+@@ -92,7 +92,8 @@ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+     Mersenne31,
+@@ -106,7 +107,7 @@ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+ ///
+ /// Uses AVX512-optimized layers with negative-form packed round constants
+ /// and fused AddRC+S-box in full rounds.
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+     Mersenne31,
+     crate::Poseidon1ExternalLayerMersenne31<WIDTH>,
+@@ -118,10 +119,10 @@ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1<
+ /// Poseidon1 permutation for Mersenne31 (generic fallback).
+ ///
+ /// Used on platforms without NEON or AVX2/AVX512 SIMD support.
+-#[cfg(not(any(
++#[cfg(any(hax, not(any(
+     all(target_arch = "aarch64", target_feature = "neon"),
+     all(target_arch = "x86_64", target_feature = "avx2"),
+-)))]
++))))]
+ pub type Poseidon1Mersenne31<const WIDTH: usize> = Poseidon1Mersenne31Generic<WIDTH>;
+ 
+ /// Round constants for width-16 Poseidon1 on Mersenne31.

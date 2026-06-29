@@ -1,0 +1,12 @@
+name = "p3_mersenne_31"
+version = "0.1.0"
+defaultTargets = ["p3_mersenne_31"]
+
+[[lean_lib]]
+name = "p3_mersenne_31"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
