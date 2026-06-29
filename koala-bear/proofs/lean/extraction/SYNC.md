@@ -1,91 +1,37 @@
-# Sync this fork with upstream Plonky3
+# Sync: re-extract & reconcile `p3-koala-bear`
 
-This repository is a fork of [`Plonky3/Plonky3`](https://github.com/Plonky3/Plonky3)
-(the **upstream**) that adds a Lean proof infrastructure under `koala-bear/proofs/`.
-All fork-only commits live inside `koala-bear/proofs/`, a directory upstream does
-not have, so syncing is *expected* to be conflict-free.
+Crate-specific runbook, **invoked by the repo-root [`SYNC.md`](../../../../SYNC.md)**
+after it has fetched + merged upstream and determined `koala-bear` is affected.
+This file assumes the merge is already done; it only re-extracts and reconciles
+this one crate. (You can also run it standalone to re-sync just `koala-bear` after
+a merge.) `koala-bear` is independent of the other official crates.
 
-This document is the canonical end-to-end procedure. If you (Claude) are asked to
-"sync the fork", "follow SYNC.md", or "pull in upstream changes", run through this
-file top to bottom.
+Unlike the post-processed crates (`keccak`/`blake3`/`symmetric`), `koala-bear`
+keeps a committed **Lean patch** (`patches/p3_koala_bear.patch`) and hand-written
+**proofs** (`p3_koala_bear_proofs/`), so reconciliation here can mean fixing
+patch hunks and proofs — detailed below.
 
----
+## Step 1 — Re-run the extraction
 
-## Step 1 — Make sure the `upstream` remote exists
-
-```sh
-git remote -v
-```
-
-If `upstream` is not listed, add it:
-
-```sh
-git remote add upstream https://github.com/Plonky3/Plonky3.git
-```
-
-Then fetch:
-
-```sh
-git fetch upstream
-```
-
-## Step 2 — Inspect the gap before merging
-
-```sh
-# Commits we are about to bring in
-git log --oneline ..upstream/main
-
-# Of those, the ones that touch koala-bear (relevant to extraction)
-git log --oneline ..upstream/main -- koala-bear/
-
-# Sanity: our fork-only commits (should all be inside koala-bear/proofs/)
-git log --oneline upstream/main..HEAD
-```
-
-Look at the second list specifically. If it is empty or only changes
-`#[cfg(test)]` blocks, comments, or doc-comments, expect zero hax drift. If it
-touches the actual Rust definitions in `koala-bear/src/`, expect re-extraction
-to produce a different `p3_koala_bear.lean`.
-
-## Step 3 — Merge upstream/main
-
-```sh
-git merge upstream/main -m "merge: sync with upstream Plonky3"
-```
-
-**Always merge, do not rebase.** The fork's history is published on
-`origin/main`, so rebasing would require a force-push and rewrite shared
-history.
-
-If a conflict appears anyway, **stop and surface it to the user** before
-resolving. Do not blindly take `--theirs`/`--ours`. (The expected case is no
-conflicts at all because all fork-only edits are isolated to a directory
-upstream does not have.)
-
-## Step 4 — Re-run the extraction
-
-From the `koala-bear/` crate root (or from any subdirectory using a relative or
-absolute path to the script):
+From the `koala-bear/` crate root:
 
 ```sh
 ./proofs/lean/extraction/build-proofs.sh
 ```
 
-The script:
+The script: (1) runs `cargo hax into lean` (overwrites only `p3_koala_bear.lean`),
+(2) snapshots the pristine output to `patches/pristine.snapshot.lean`, (3) applies
+`patches/p3_koala_bear.patch`, (4) runs `lake build` from
+`proofs/lean/extraction/`.
 
-1. runs `cargo hax into lean` (overwrites only `p3_koala_bear.lean`),
-2. snapshots the pristine output to `patches/pristine.snapshot.lean`,
-3. applies `patches/p3_koala_bear.patch`,
-4. runs `lake build` from `proofs/lean/extraction/`.
+**`cargo hax into lean` may print errors but still write a usable file.** Do not
+abort on hax errors as long as `p3_koala_bear.lean` was overwritten. Judge status
+from `lake build`, not hax.
 
-**`cargo hax into lean` may print errors but still write a usable file.** Do
-not abort on hax errors as long as `p3_koala_bear.lean` was overwritten.
-Inspect `lake build`'s output, not hax's, for the real status.
+## Step 2 — Reconcile drift, if any
 
-## Step 5 — Reconcile drift, if any
-
-Inside `proofs/lean/extraction/`, only one file is overwritten by hax:
-`p3_koala_bear.lean`. Everything else is hand-maintained:
+Inside `proofs/lean/extraction/`, only `p3_koala_bear.lean` is overwritten by hax.
+Everything else is hand-maintained:
 
 | Path | Role |
 |------|------|
@@ -94,97 +40,56 @@ Inside `proofs/lean/extraction/`, only one file is overwritten by hax:
 | `p3_koala_bear_proofs/` | Proof modules against the imported specs |
 | `p3_koala_bear_proofs.lean` | Root module for the proofs library |
 
-If Step 4 ended with **`Build completed successfully`** and only `sorry`
-warnings: nothing to reconcile. Skip to Step 6.
+If Step 1 ended with **`Build completed successfully`** and only `sorry`
+warnings: nothing to reconcile — go to Step 3.
 
 If `patch` rejected hunks **or** `lake build` failed:
 
 - Read any `.rej` files left next to `p3_koala_bear.lean`.
 - Hand-edit `p3_koala_bear.lean` until `lake build` is green. Conventions:
   - Mark every edit site with `-- PATCHED`.
-  - For `(by rfl)` → `(by sorry)` swaps, keep `    -- (by rfl)` on the
-    following line so the diff is self-documenting.
-  - **Preserve as much of the previous patch's intent as possible.**
-    - If a previous `sorry` is no longer needed (the new hax output reduces
-      cleanly), drop the swap — that shrinks the TCB.
-    - Keep imports the previous patch added.
-    - If the previous patch had to modify a function or definition body,
-      keep the spirit of that modification.
-- If a `p3_koala_bear/*.lean` stub or a `p3_koala_bear_proofs/*.lean` proof
-  breaks because upstream types or imports shifted, fix it minimally. **Avoid
-  introducing new `sorry`s.** If a proof breaks, fix the proof rather than
-  admit it. Do not change theorem statements unless absolutely forced; if
-  forced, preserve the original semantics as closely as possible.
-- Re-run `lake build` until green.
-- Regenerate the patch:
+  - For `(by rfl)` → `(by sorry)` swaps, keep `    -- (by rfl)` on the following
+    line so the diff is self-documenting.
+  - **Preserve as much of the previous patch's intent as possible.** Drop a `sorry`
+    swap if the new hax output no longer needs it (shrinks the TCB); keep imports
+    the previous patch added; keep the spirit of any body modifications.
+- If a `p3_koala_bear/*.lean` stub or a `p3_koala_bear_proofs/*.lean` proof breaks
+  because upstream types/imports shifted, fix it minimally. **Avoid new `sorry`s** —
+  fix the proof rather than admit it; don't change theorem statements unless
+  forced, and then preserve semantics as closely as possible.
+- Re-run `lake build` until green, then regenerate the patch:
   ```sh
   ./proofs/lean/extraction/patches/update-patch.sh
   ```
 
-## Step 6 — Refresh `TCB.md`
+## Step 3 — Refresh `TCB.md`
 
-`TCB.md` documents the trusted base. Update it if any of these moved:
-
+Update it if any of these moved:
 - patch line count (`wc -l patches/p3_koala_bear.patch`),
 - patch hunk count (`grep -c '^@@' patches/p3_koala_bear.patch`),
 - per-stub line counts in §3 (`wc -l p3_koala_bear/*.lean`),
 - the Hax `rev` pinned in `lake-manifest.json`,
 - any `opaque`/`sorry` added or removed from stubs.
 
-Walk the **Audit checklist** at the bottom of TCB.md and confirm every box
-still answers "yes".
-
-## Step 7 — Commit
-
-Stage and commit only the files this sync touched. **Do not** include the
-untracked `proofs/` directories under sibling crates (`challenger/proofs/`,
-`field/proofs/`, etc.) — those are separate WIP.
-
-```sh
-git add koala-bear/proofs/lean/extraction/p3_koala_bear.lean \
-        koala-bear/proofs/lean/extraction/patches/p3_koala_bear.patch \
-        koala-bear/proofs/lean/extraction/p3_koala_bear/ \
-        koala-bear/proofs/lean/extraction/p3_koala_bear_proofs/ \
-        koala-bear/proofs/lean/extraction/TCB.md \
-        koala-bear/proofs/lean/extraction/SYNC.md
-git commit -m "sync: update extraction after merging upstream Plonky3"
-```
-
-Do **not** push without explicit approval from the user.
+Walk the **Audit checklist** at the bottom of `TCB.md` and confirm every box still
+answers "yes". When done, hand back to the root SYNC.md (it commits).
 
 ---
 
 ## Maintenance: Lean toolchain bumps
 
-The Lean version lives in `proofs/lean/extraction/lean-toolchain`. A bump is
-independent of the upstream Plonky3 sync — keep it on its own commit.
-
-When to bump:
-
-- The Hax proof library (`cryspen/hax`) has moved to a newer Lean and our
-  build now fails.
-- A Lean fix or feature is needed by something in `p3_koala_bear_proofs/`.
-
-How to bump:
-
-1. Edit `proofs/lean/extraction/lean-toolchain` to the new tag (must be an
-   official `leanprover/lean4` release, e.g. `leanprover/lean4:v4.29.1`).
-2. From `proofs/lean/extraction/`, run `lake update && lake exe cache get` to refresh transitive
-   dependencies. Commit the resulting `lake-manifest.json` change alongside
-   the toolchain bump.
-3. Re-run `./proofs/lean/extraction/build-proofs.sh` and confirm the build
-   is green with only `sorry` warnings.
-4. If a proof in `p3_koala_bear_proofs/` broke due to Lean churn, fix the
-   proof rather than admit it. Do not change theorem statements unless
-   forced; if forced, preserve the original semantics as closely as
-   possible.
+The Lean version lives in `proofs/lean/extraction/lean-toolchain`. A toolchain /
+Hax-pin bump is independent of an upstream Plonky3 sync and is coordinated across
+all official crates by the root [`SYNC.md`](../../../../SYNC.md) "Maintenance"
+section. For `koala-bear` specifically, after a bump re-run
+`./proofs/lean/extraction/build-proofs.sh` and, if a proof in
+`p3_koala_bear_proofs/` broke due to Lean churn, **fix the proof rather than admit
+it** (don't change theorem statements unless forced; preserve semantics).
 
 ## What "good" looks like at the end
 
-- `git log --oneline upstream/main..HEAD -- koala-bear/proofs/` lists every
-  fork-only proof commit.
-- `git log --oneline HEAD..upstream/main` is empty.
-- `cd koala-bear/proofs/lean/extraction && lake build` exits 0 with only
-  `sorry` warnings (no errors, no `.rej` files).
-- TCB.md figures match `wc -l` of the actual files.
-- The next sync can be a one-liner from the user: *"follow SYNC.md"*.
+- `cd koala-bear/proofs/lean/extraction && lake build` exits 0 with only `sorry`
+  warnings (no errors, no `.rej` files).
+- `TCB.md` figures match `wc -l` of the actual files.
+- `git log --oneline upstream/main..HEAD -- koala-bear/proofs/` lists the
+  fork-only proof commits.

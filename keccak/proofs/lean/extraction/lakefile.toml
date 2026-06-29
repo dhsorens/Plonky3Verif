@@ -1,0 +1,17 @@
+name = "p3_keccak"
+version = "0.1.0"
+defaultTargets = ["p3_keccak"]
+
+[[lean_lib]]
+name = "p3_keccak"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
+
+# Real extracted p3_symmetric trait classes (replaces the old local stub).
+[[require]]
+name = "p3_symmetric"
+path = "../../../../symmetric/proofs/lean/extraction"
