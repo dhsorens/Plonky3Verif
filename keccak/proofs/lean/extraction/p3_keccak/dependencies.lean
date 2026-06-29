@@ -3,4 +3,6 @@
 -- ../build-lean.sh — see ../README.md.)
 import p3_keccak.core_shims
 import p3_keccak.tiny_keccak
-import p3_keccak.p3_symmetric
+-- p3_symmetric's trait classes now come from the real extracted package
+-- (see lakefile.toml's path require), not a local stub.
+import p3_symmetric

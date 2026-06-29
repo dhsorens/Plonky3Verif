@@ -1,19 +1,25 @@
-import Hax
 
-/-
-  Trait-class stubs for `p3_symmetric`, the only items the extracted
-  `p3_keccak.lean` needs from that crate. The class *signatures* are lifted
-  verbatim from p3_symmetric's own hax extraction (same hax version → identical
-  encoding); the default method *bodies* are dropped or replaced because they
-  reference iterator-model combinators (`Iterator.flatten`/`cloned`,
-  `sources.once.once`) and mutually-recursive projections that this Hax proof
-  library / Lean version does not support standalone. keccak's instances
-  override every method they actually use, so the stripped defaults are never
-  exercised by the extraction. Part of the trusted base — see ../README.md.
--/
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import p3_symmetric.dependencies
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
 
 namespace p3_symmetric.hasher
 
+--  A generic trait for cryptographic hashers that consume an arbitrary sequence of input items
+--  and produce a fixed-size output.
+-- 
+--  This trait abstracts over hash functions in a flexible way, supporting both field elements,
+--  scalars, or any other data type that implements `Clone`.
 class CryptographicHasher.AssociatedTypes
   (Self : Type)
   (Item : Type)
@@ -53,7 +59,10 @@ class CryptographicHasher (Self : Type) (Item : Type) (Out : Type)
       I]
     [trait_constr_hash_iter_slices_i1 :
       core_models.iter.traits.collect.IntoIterator
-      I] (self : Self) (input : I) : RustM Out
+      I] (self : Self) (input : I) :RustM Out := sorry
+  hash_slice (Self) (Item) (Out) (self : Self) (input : (RustSlice Item)) :RustM
+    Out := sorry
+  hash_item (Self) (Item) (Out) (self : Self) (input : Item) :RustM Out := sorry
 
 attribute [instance_reducible, instance]
   CryptographicHasher.trait_constr_CryptographicHasher_i0
@@ -62,9 +71,9 @@ attribute [instance_reducible, instance]
   CryptographicHasher.trait_constr_CryptographicHasher_i1
 
 end p3_symmetric.hasher
-
 namespace p3_symmetric.permutation
 
+--  A permutation in the mathematical sense.
 class Permutation.AssociatedTypes (Self : Type) (T : Type) where
   [trait_constr_Permutation_i0 : core_models.clone.Clone.AssociatedTypes Self]
   [trait_constr_Permutation_i1 : core_models.marker.Sync.AssociatedTypes Self]
@@ -86,12 +95,8 @@ class Permutation (Self : Type) (T : Type)
   [trait_constr_Permutation_i0 : core_models.clone.Clone Self]
   [trait_constr_Permutation_i1 : core_models.marker.Sync Self]
   [trait_constr_Permutation_i2 : core_models.clone.Clone T]
-  -- Rust's `Permutation` defines `permute`/`permute_mut` circularly (implement
-  -- either, get the other). The real defaults don't elaborate standalone here,
-  -- so these are placeholder identity defaults — UNUSED, because every keccak
-  -- instance overrides the one method it implements and never calls the other.
-  permute (Self) (T) (self : Self) (input : T) : RustM T := pure input
-  permute_mut (Self) (T) (self : Self) (input : T) : RustM T := pure input
+  permute (Self) (T) (self : Self) (input : T) :RustM T := sorry
+  permute_mut (Self) (T) (self : Self) (input : T) :RustM T := sorry
 
 attribute [instance_reducible, instance] Permutation.trait_constr_Permutation_i0
 
@@ -100,9 +105,10 @@ attribute [instance_reducible, instance] Permutation.trait_constr_Permutation_i1
 attribute [instance_reducible, instance] Permutation.trait_constr_Permutation_i2
 
 end p3_symmetric.permutation
-
 namespace p3_symmetric.permutation
 
+--  A permutation thought to be cryptographically secure, in the sense that it is thought to be
+--  difficult to distinguish (in a nontrivial way) from a random permutation.
 class CryptographicPermutation.AssociatedTypes (Self : Type) (T : Type) where
   [trait_constr_CryptographicPermutation_i0 :
   Permutation.AssociatedTypes
@@ -130,5 +136,32 @@ attribute [instance_reducible, instance]
 
 attribute [instance_reducible, instance]
   CryptographicPermutation.trait_constr_CryptographicPermutation_i1
+
+end p3_symmetric.permutation
+namespace p3_symmetric.permutation
+
+--  A derangement: a permutation with no fixed points (d(x) != x for all x).
+-- 
+--  The standard choice is d(x) = x + 1 (via `Increment`).
+class Derangement.AssociatedTypes (Self : Type) (T : Type) where
+  [trait_constr_Derangement_i0 : Permutation.AssociatedTypes Self T]
+  [trait_constr_Derangement_i1 : core_models.clone.Clone.AssociatedTypes T]
+
+attribute [instance_reducible, instance]
+  Derangement.AssociatedTypes.trait_constr_Derangement_i0
+
+attribute [instance_reducible, instance]
+  Derangement.AssociatedTypes.trait_constr_Derangement_i1
+
+class Derangement (Self : Type) (T : Type)
+  [associatedTypes : outParam (Derangement.AssociatedTypes (Self : Type) (T :
+      Type))]
+  where
+  [trait_constr_Derangement_i0 : Permutation Self T]
+  [trait_constr_Derangement_i1 : core_models.clone.Clone T]
+
+attribute [instance_reducible, instance] Derangement.trait_constr_Derangement_i0
+
+attribute [instance_reducible, instance] Derangement.trait_constr_Derangement_i1
 
 end p3_symmetric.permutation

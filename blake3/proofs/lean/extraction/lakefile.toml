@@ -10,3 +10,8 @@ name = "Hax"
 git.url = "https://github.com/cryspen/hax"
 git.subDir = "hax-lib/proof-libs/lean"
 rev = "main"
+
+# Real extracted p3_symmetric trait classes (replaces the old local stub).
+[[require]]
+name = "p3_symmetric"
+path = "../../../../symmetric/proofs/lean/extraction"

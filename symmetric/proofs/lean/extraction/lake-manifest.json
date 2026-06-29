@@ -1,14 +1,7 @@
 {"version": "1.2.0",
  "packagesDir": ".lake/packages",
  "packages":
- [{"type": "path",
-   "scope": "",
-   "name": "p3_symmetric",
-   "manifestFile": "lake-manifest.json",
-   "inherited": false,
-   "dir": "../../../../symmetric/proofs/lean/extraction",
-   "configFile": "lakefile.toml"},
-  {"url": "https://github.com/cryspen/hax",
+ [{"url": "https://github.com/cryspen/hax",
    "type": "git",
    "subDir": "hax-lib/proof-libs/lean",
    "scope": "",
@@ -28,6 +21,6 @@
    "inputRev": "v4.30.0-rc2",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "p3_blake3",
+ "name": "p3_symmetric",
  "lakeDir": ".lake",
  "fixedToolchain": false}
