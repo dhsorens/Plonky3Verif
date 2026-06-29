@@ -13,6 +13,10 @@ lake build            # compiles p3_keccak.lean against the stubs
 ./build-lean.sh
 ```
 
+**Syncing with upstream:** re-extraction after an upstream merge is governed by
+the repo-root [`SYNC.md`](../../../../SYNC.md); this crate's re-extract/reconcile
+steps are in [`SYNC.md`](SYNC.md).
+
 `lake build` currently **succeeds** (with `sorry` warnings — see TCB below).
 
 ## Layout
