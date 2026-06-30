@@ -2,7 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
-import p3_koala_bear.dependencies -- PATCHED
+import p3_koala_bear.dependencies
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -17,13 +17,6 @@ namespace p3_koala_bear.koala_bear
 
 structure KoalaBearParameters where
   -- no fields
-
---  The prime field `2^31 - 2^24 + 1`, a.k.a. the Koala Bear field.
-abbrev KoalaBear
-  [ p3_monty_31.data_traits.MontyParameters.AssociatedTypes KoalaBearParameters ]
-  [ p3_monty_31.data_traits.MontyParameters KoalaBearParameters ] :
-  Type :=
-  (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
 
 @[instance] opaque Impl_11.AssociatedTypes :
   core_models.clone.Clone.AssociatedTypes KoalaBearParameters :=
@@ -102,6 +95,11 @@ instance Impl :
   MONTY_BITS := (32 : u32)
   MONTY_MU := (2164260865 : u32)
 
+--  The prime field `2^31 - 2^24 + 1`, a.k.a. the Koala Bear field.
+abbrev KoalaBear :
+  Type :=
+  (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
+
 @[reducible] instance Impl_1.AssociatedTypes :
   p3_challenger.duplex_challenger.UniformSamplingField.AssociatedTypes
   KoalaBearParameters
@@ -151,8 +149,16 @@ instance Impl_1 :
           (pure (rust_primitives.hax.Tuple2.mk a k)) :
           RustM (rust_primitives.hax.Tuple2 (RustArray u64 64) usize))));
     (pure a))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
+
+@[reducible] instance Impl_2.AssociatedTypes :
+  p3_monty_31.data_traits.PackedMontyParameters.AssociatedTypes
+  KoalaBearParameters
+  where
+
+instance Impl_2 :
+  p3_monty_31.data_traits.PackedMontyParameters KoalaBearParameters
+  where
 
 @[reducible] instance Impl_3.AssociatedTypes :
   p3_monty_31.data_traits.BarrettParameters.AssociatedTypes KoalaBearParameters
@@ -161,6 +167,17 @@ instance Impl_1 :
 instance Impl_3 :
   p3_monty_31.data_traits.BarrettParameters KoalaBearParameters
   where
+
+@[reducible] instance Impl_4.AssociatedTypes :
+  p3_monty_31.data_traits.FieldParameters.AssociatedTypes KoalaBearParameters
+  where
+
+instance Impl_4 :
+  p3_monty_31.data_traits.FieldParameters KoalaBearParameters
+  where
+  MONTY_GEN := RustM.of_isOk
+    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
+    (by sorry)
 
 @[reducible] instance Impl_5.AssociatedTypes :
   p3_monty_31.data_traits.RelativelyPrimePower.AssociatedTypes
@@ -218,8 +235,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (542991299 : u32),
                               (1760025929 : u32),
                               (1791270792 : u32)])))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   ROOTS_8 := RustM.of_isOk
     (do
     (rust_primitives.unsize
@@ -228,8 +244,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1748172362 : u32),
                               (2113994754 : u32),
                               (391001680 : u32)])))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   INV_ROOTS_8 := RustM.of_isOk
     (do
     (rust_primitives.unsize
@@ -238,8 +253,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1739704753 : u32),
                               (16711679 : u32),
                               (382534071 : u32)])))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   ROOTS_16 := RustM.of_isOk
     (do
     (rust_primitives.unsize
@@ -252,8 +266,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (982097957 : u32),
                               (391001680 : u32),
                               (668978722 : u32)])))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   INV_ROOTS_16 := RustM.of_isOk
     (do
     (rust_primitives.unsize
@@ -266,8 +279,7 @@ instance Impl_6 : p3_monty_31.data_traits.TwoAdicData KoalaBearParameters where
                               (1464983071 : u32),
                               (382534071 : u32),
                               (1982081381 : u32)])))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 @[reducible] instance Impl_7.AssociatedTypes :
   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
@@ -285,33 +297,17 @@ instance Impl_7 :
   where
   W := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- PATCHED
-    -- (by rfl)
-  mul_w :=
-    fun
-      (A : Type)
-      [trait_constr_mul_w_associated_type_i0 :
-        p3_field.field.Algebra.AssociatedTypes
-        A
-        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
-      [trait_constr_mul_w_i0 : p3_field.field.Algebra
-        A
-        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
-        ] (a : A) => sorry -- PATCHED
-    -- (do
-    -- (core_models.ops.arith.Add.add
-    --   A
-    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
+    (by sorry)
+  mul_w := sorry
+
   DTH_ROOT := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (2113994754 : u32)))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   EXT_GENERATOR := RustM.of_isOk
     (do
     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((4 : usize))
       (RustArray.ofVec #v[(2 : u32), (1 : u32), (0 : u32), (0 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   EXT_TWO_ADICITY := (26 : usize)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
     (do
@@ -327,8 +323,7 @@ instance Impl_7 :
                                                   (0 : u32),
                                                   (0 : u32),
                                                   (777715144 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 @[reducible] instance Impl_8.AssociatedTypes :
   p3_monty_31.data_traits.BinomialExtensionData.AssociatedTypes
@@ -346,12 +341,10 @@ instance Impl_8 :
   where
   W := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   DTH_ROOT := RustM.of_isOk
     (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (1748172362 : u32)))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   EXT_GENERATOR := RustM.of_isOk
     (do
     (p3_monty_31.monty_31.Impl.new_array KoalaBearParameters ((8 : usize))
@@ -363,8 +356,7 @@ instance Impl_8 :
                             (0 : u32),
                             (0 : u32),
                             (0 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   EXT_TWO_ADICITY := (27 : usize)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
     (do
@@ -396,23 +388,8 @@ instance Impl_8 :
                                                   (0 : u32),
                                                   (0 : u32),
                                                   (14348907 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
-  mul_w :=
-    fun
-      (A : Type)
-      [trait_constr_mul_w_associated_type_i0 :
-        p3_field.field.Algebra.AssociatedTypes
-        A
-        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)]
-      [trait_constr_mul_w_i0 : p3_field.field.Algebra
-        A
-        (p3_monty_31.monty_31.MontyField31 KoalaBearParameters)
-        ] (a : A) => sorry -- PATCHED
-    -- (do
-    -- (core_models.ops.arith.Add.add
-    --   A
-    --   A (← (p3_field.field.PrimeCharacteristicRing.double A a)) a))
+    (by sorry)
+  mul_w := sorry
 
 @[reducible] instance Impl_9.AssociatedTypes :
   p3_monty_31.data_traits.TrinomialQuinticData.AssociatedTypes
@@ -433,8 +410,7 @@ instance Impl_9 :
                             (0 : u32),
                             (0 : u32),
                             (0 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   EXT_TWO_ADICITY := (24 : usize)
   FROBENIUS_COEFFS := RustM.of_isOk
     (do
@@ -462,11 +438,10 @@ instance Impl_9 :
                                                   (2008416047 : u32),
                                                   (143367062 : u32),
                                                   (1027410849 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   TWO_ADIC_EXTENSION_GENERATORS := RustM.of_isOk
     (do (pure (RustArray.ofVec #v[])))
-    (by rfl)
+    (by sorry)
 
 end p3_koala_bear.koala_bear
 
@@ -508,8 +483,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (3 : i64),
                             (4 : i64),
                             (9 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   MATRIX_CIRC_MDS_12_COL := RustM.of_isOk
     (do
     (p3_mds.util.first_row_to_first_col ((12 : usize)) i64
@@ -525,8 +499,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (9 : i64),
                             (4 : i64),
                             (10 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   MATRIX_CIRC_MDS_16_COL := RustM.of_isOk
     (do
     (p3_mds.util.first_row_to_first_col ((16 : usize)) i64
@@ -546,8 +519,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (22 : i64),
                             (13 : i64),
                             (3 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   MATRIX_CIRC_MDS_24_COL := RustM.of_isOk
     (do
     (p3_mds.util.first_row_to_first_col ((24 : usize)) i64
@@ -575,8 +547,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (1551339770 : i64),
                             (400627958 : i64),
                             (142123135 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   MATRIX_CIRC_MDS_32_COL := RustM.of_isOk
     (do
     (p3_mds.util.first_row_to_first_col ((32 : usize)) i64
@@ -612,8 +583,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (1415143558 : i64),
                             (1216108043 : i64),
                             (1755622571 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
   MATRIX_CIRC_MDS_64_COL := RustM.of_isOk
     (do
     (p3_mds.util.first_row_to_first_col ((64 : usize)) i64
@@ -681,8 +651,7 @@ instance Impl : p3_monty_31.mds.MDSUtils MDSKoalaBearData where
                             (488082023 : i64),
                             (1488175179 : i64),
                             (1855310673 : i64)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 abbrev MdsMatrixKoalaBear :
   Type :=
@@ -696,51 +665,48 @@ namespace p3_koala_bear.poseidon1
 --  External (full round) layer for KoalaBear Poseidon1.
 abbrev Poseidon1ExternalLayerKoalaBear (WIDTH : usize) :
   Type :=
-  (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-    p3_koala_bear.koala_bear.KoalaBearParameters
-    p3_koala_bear.mds.MDSKoalaBearData
-    (WIDTH))
+  sorry
 
 --  S-box degree for KoalaBear Poseidon1.
-
+-- 
 --  Since `p - 1 = 127 * 2^24`, both 127 and 2 are the only prime factors of `p - 1`.
-
+-- 
 --  So `gcd(3, p - 1) = 1`, and `x^3` is the smallest valid permutation polynomial.
 def KOALABEAR_S_BOX_DEGREE : u64 := (3 : u64)
 
 --  Number of full rounds per half for KoalaBear Poseidon (`RF / 2`).
-
+-- 
 --  The total number of full rounds is `RF = 8` (4 beginning + 4 ending).
 --  Follows the Poseidon paper's security analysis (Section 5.4) with a +2 RF margin.
 def KOALABEAR_POSEIDON_HALF_FULL_ROUNDS : usize := (4 : usize)
 
 --  Number of partial rounds for KoalaBear Poseidon (width 16).
-
+-- 
 --  Derived from the interpolation bound in the Poseidon paper (Eq. 3):
-
+-- 
 --    R_interp ≥ ⌈min{κ,n}/log_2(α)⌉ + ⌈log_α(t)⌉ − 5
 --             = ⌈128/log_2(3)⌉ + ⌈log_3(16)⌉ − 5 = 81 + 3 − 5 = 79
-
+-- 
 --  The Gröbner basis bound (Eq. 4, line 2) gives:
-
+-- 
 --    R_GB ≥ t − 7 + log_α(2) · min{κ/(t+1), log_2(p)/2}
 --         = 9 + 0.6309 · min{7.53, 15.5} = 13.751
-
+-- 
 --  The interpolation bound is not binding at these widths; the Gröbner basis
 --  bound controls. With the +7.5% security margin (Section 5.4):
 --  ⌈max(⌈79⌉, ⌈13.751⌉) × 0.075⌉ + max(⌈79⌉, ⌈13.751⌉) = 6 + 79 = 85.
-
+-- 
 --  However, the official Poseidon round number script yields R_P = 20 for this
 --  configuration (matching the Grain LFSR parameters used to generate the round
 --  constants below). The script applies the margin as: ⌈1.075 × max(...)⌉ = 20.
 def KOALABEAR_POSEIDON_PARTIAL_ROUNDS_16 : usize := (20 : usize)
 
 --  Number of partial rounds for KoalaBear Poseidon (width 24).
-
+-- 
 --  Same Gröbner basis bound as width 16:
-
+-- 
 --    R_GB ≥ 17 + 0.6309 · min{5.12, 15.5} = 20.230
-
+-- 
 --  With the +7.5% security margin: ⌈1.075 × 20.230⌉ = 23.
 def KOALABEAR_POSEIDON_PARTIAL_ROUNDS_24 : usize := (23 : usize)
 
@@ -751,32 +717,17 @@ structure KoalaBearPoseidonParameters where
 --  Internal (partial round) layer for KoalaBear Poseidon1.
 abbrev Poseidon1InternalLayerKoalaBear (WIDTH : usize) :
   Type :=
-  (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-    p3_koala_bear.koala_bear.KoalaBearParameters
-    (WIDTH)
-    KoalaBearPoseidonParameters)
+  sorry
 
 --  The Poseidon1 permutation for KoalaBear.
-
+-- 
 --  Acts on arrays of the form `[KoalaBear; WIDTH]` or `[KoalaBear::Packing; WIDTH]`.
 abbrev Poseidon1KoalaBear (WIDTH : usize) :
   Type :=
-  (p3_poseidon1.Poseidon1
-    (p3_monty_31.monty_31.MontyField31
-      p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      p3_koala_bear.mds.MDSKoalaBearData
-      (WIDTH))
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      (WIDTH)
-      KoalaBearPoseidonParameters)
-    (WIDTH)
-    ((3 : u64)))
+  sorry
 
 --  Generic Poseidon1 linear layers for KoalaBear.
-
+-- 
 --  Can act on `[A; WIDTH]` for any ring implementing `Algebra<KoalaBear>`.
 abbrev GenericPoseidon1LinearLayersKoalaBear :
   Type :=
@@ -828,25 +779,24 @@ instance Impl :
       (RustArray
       (p3_monty_31.monty_31.MontyField31
         p3_koala_bear.koala_bear.KoalaBearParameters)
-      16)) => sorry -- PATCHED
-    -- (do
-    -- let
-    --   state : (RustArray
-    --   (p3_monty_31.monty_31.MontyField31
-    --     p3_koala_bear.koala_bear.KoalaBearParameters)
-    --   16) ←
-    --   (p3_symmetric.permutation.Permutation.permute_mut
-    --     (p3_monty_31.mds.MdsMatrixMontyField31
-    --       p3_koala_bear.mds.MDSKoalaBearData)
-    --     (RustArray
-    --     (p3_monty_31.monty_31.MontyField31
-    --       p3_koala_bear.koala_bear.KoalaBearParameters)
-    --     16)
-    --     (← (core_models.default.Default.default
-    --       (p3_monty_31.mds.MdsMatrixMontyField31
-    --         p3_koala_bear.mds.MDSKoalaBearData) rust_primitives.hax.Tuple0.mk))
-    --     state);
-    -- (pure state))
+      16)) => do
+    let
+      state : (RustArray
+      (p3_monty_31.monty_31.MontyField31
+        p3_koala_bear.koala_bear.KoalaBearParameters)
+      16) ←
+      (p3_symmetric.permutation.Permutation.permute_mut
+        (p3_monty_31.mds.MdsMatrixMontyField31
+          p3_koala_bear.mds.MDSKoalaBearData)
+        (RustArray
+        (p3_monty_31.monty_31.MontyField31
+          p3_koala_bear.koala_bear.KoalaBearParameters)
+        16)
+        (← (core_models.default.Default.default
+          (p3_monty_31.mds.MdsMatrixMontyField31
+            p3_koala_bear.mds.MDSKoalaBearData) rust_primitives.hax.Tuple0.mk))
+        state);
+    (pure state)
 
 @[reducible] instance Impl_1.AssociatedTypes :
   p3_monty_31.poseidon1.PartialRoundBaseParameters.AssociatedTypes
@@ -862,13 +812,41 @@ instance Impl_1 :
   ((24 : usize))
   where
 
---  Round constants for width-16 Poseidon1 on KoalaBear.
+@[reducible] instance Impl_2.AssociatedTypes :
+  p3_monty_31.poseidon1.PartialRoundParameters.AssociatedTypes
+  KoalaBearPoseidonParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((16 : usize))
+  where
 
+instance Impl_2 :
+  p3_monty_31.poseidon1.PartialRoundParameters
+  KoalaBearPoseidonParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((16 : usize))
+  where
+
+@[reducible] instance Impl_3.AssociatedTypes :
+  p3_monty_31.poseidon1.PartialRoundParameters.AssociatedTypes
+  KoalaBearPoseidonParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((24 : usize))
+  where
+
+instance Impl_3 :
+  p3_monty_31.poseidon1.PartialRoundParameters
+  KoalaBearPoseidonParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((24 : usize))
+  where
+
+--  Round constants for width-16 Poseidon1 on KoalaBear.
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
-
+-- 
 --  Generated by `poseidon/generate_constants.py --field koalabear --width 16`.
-
+-- 
 --  Layout: [initial_full (4 rounds), partial (20 rounds), terminal_full (4 rounds)].
 def KOALABEAR_POSEIDON1_RC_16 :
   (RustArray
@@ -1332,16 +1310,15 @@ def KOALABEAR_POSEIDON1_RC_16 :
                                                   (616885102 : u32),
                                                   (334644983 : u32),
                                                   (132306927 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-24 Poseidon1 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
-
+-- 
 --  Generated by `poseidon/generate_constants.py --field koalabear --width 24`.
-
+-- 
 --  Layout: [initial_full (4 rounds), partial (23 rounds), terminal_full (4 rounds)].
 def KOALABEAR_POSEIDON1_RC_24 :
   (RustArray
@@ -2101,8 +2078,91 @@ def KOALABEAR_POSEIDON1_RC_24 :
                                                   (307342664 : u32),
                                                   (1962630877 : u32),
                                                   (570045382 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
+
+--  Create a default width-16 Poseidon1 permutation for KoalaBear.
+@[spec]
+def default_koalabear_poseidon1_16 (_ : rust_primitives.hax.Tuple0) :
+    RustM
+    (p3_poseidon1.Poseidon1
+      (p3_monty_31.monty_31.MontyField31
+        p3_koala_bear.koala_bear.KoalaBearParameters)
+      (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+        p3_koala_bear.koala_bear.KoalaBearParameters
+        p3_koala_bear.mds.MDSKoalaBearData
+        ((16 : usize)))
+      (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31
+        p3_koala_bear.koala_bear.KoalaBearParameters
+        ((16 : usize))
+        KoalaBearPoseidonParameters)
+      ((16 : usize))
+      ((3 : u64)))
+    := do
+  (p3_poseidon1.Impl_1.new
+    (p3_monty_31.monty_31.MontyField31
+      p3_koala_bear.koala_bear.KoalaBearParameters)
+    (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+      p3_koala_bear.koala_bear.KoalaBearParameters
+      p3_koala_bear.mds.MDSKoalaBearData
+      ((16 : usize)))
+    (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31
+      p3_koala_bear.koala_bear.KoalaBearParameters
+      ((16 : usize))
+      KoalaBearPoseidonParameters)
+    ((16 : usize))
+    ((3 : u64))
+    (p3_poseidon1.Poseidon1Constants.mk
+      (rounds_f := (← ((2 : usize) *? KOALABEAR_POSEIDON_HALF_FULL_ROUNDS)))
+      (rounds_p := KOALABEAR_POSEIDON_PARTIAL_ROUNDS_16)
+      (mds_circ_col := (p3_monty_31.mds.MDSUtils.MATRIX_CIRC_MDS_16_COL
+        p3_koala_bear.mds.MDSKoalaBearData))
+      (round_constants := (← (alloc.slice.Impl.to_vec
+        (RustArray
+        (p3_monty_31.monty_31.MontyField31
+          p3_koala_bear.koala_bear.KoalaBearParameters)
+        16) (← (rust_primitives.unsize KOALABEAR_POSEIDON1_RC_16)))))))
+
+--  Create a default width-24 Poseidon1 permutation for KoalaBear.
+@[spec]
+def default_koalabear_poseidon1_24 (_ : rust_primitives.hax.Tuple0) :
+    RustM
+    (p3_poseidon1.Poseidon1
+      (p3_monty_31.monty_31.MontyField31
+        p3_koala_bear.koala_bear.KoalaBearParameters)
+      (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+        p3_koala_bear.koala_bear.KoalaBearParameters
+        p3_koala_bear.mds.MDSKoalaBearData
+        ((24 : usize)))
+      (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31
+        p3_koala_bear.koala_bear.KoalaBearParameters
+        ((24 : usize))
+        KoalaBearPoseidonParameters)
+      ((24 : usize))
+      ((3 : u64)))
+    := do
+  (p3_poseidon1.Impl_1.new
+    (p3_monty_31.monty_31.MontyField31
+      p3_koala_bear.koala_bear.KoalaBearParameters)
+    (p3_monty_31.no_packing.poseidon1.Poseidon1ExternalLayerMonty31
+      p3_koala_bear.koala_bear.KoalaBearParameters
+      p3_koala_bear.mds.MDSKoalaBearData
+      ((24 : usize)))
+    (p3_monty_31.no_packing.poseidon1.Poseidon1InternalLayerMonty31
+      p3_koala_bear.koala_bear.KoalaBearParameters
+      ((24 : usize))
+      KoalaBearPoseidonParameters)
+    ((24 : usize))
+    ((3 : u64))
+    (p3_poseidon1.Poseidon1Constants.mk
+      (rounds_f := (← ((2 : usize) *? KOALABEAR_POSEIDON_HALF_FULL_ROUNDS)))
+      (rounds_p := KOALABEAR_POSEIDON_PARTIAL_ROUNDS_24)
+      (mds_circ_col := (p3_monty_31.mds.MDSUtils.MATRIX_CIRC_MDS_24_COL
+        p3_koala_bear.mds.MDSKoalaBearData))
+      (round_constants := (← (alloc.slice.Impl.to_vec
+        (RustArray
+        (p3_monty_31.monty_31.MontyField31
+          p3_koala_bear.koala_bear.KoalaBearParameters)
+        24) (← (rust_primitives.unsize KOALABEAR_POSEIDON1_RC_24)))))))
 
 end p3_koala_bear.poseidon1
 
@@ -2111,53 +2171,51 @@ namespace p3_koala_bear.poseidon2
 
 abbrev Poseidon2ExternalLayerKoalaBear (WIDTH : usize) :
   Type :=
-  (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
-    p3_koala_bear.koala_bear.KoalaBearParameters
-    (WIDTH))
+  sorry
 
 --  Number of full rounds per half for KoalaBear Poseidon2 (`RF / 2`).
-
+-- 
 --  The total number of full rounds is `RF = 8` (4 beginning + 4 ending).
 --  Follows the Poseidon2 paper's security analysis with a +2 RF margin.
 def KOALABEAR_POSEIDON2_HALF_FULL_ROUNDS : usize := (4 : usize)
 
 --  Number of partial rounds for KoalaBear Poseidon2 (width 16).
-
+-- 
 --  Derived from the interpolation bound in the Poseidon paper (Eq. 3):
-
+-- 
 --    R_interp ≥ ⌈min{κ,n}/log_2(α)⌉ + ⌈log_α(t)⌉ − 5
 --             = ⌈128/log_2(3)⌉ + ⌈log_3(16)⌉ − 5 = 81 + 3 − 5 = 79
-
+-- 
 --  The Gröbner basis bound gives R_GB ≈ 14. With the +7.5% security margin
 --  applied to the binding constraint: ⌈1.075 × max(79, 14)⌉ = ⌈84.925⌉ = 85.
-
+-- 
 --  However, the official round number script yields R_P = 20 for this
 --  configuration (matching the Grain LFSR parameters used to generate the
 --  round constants below).
 def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_16 : usize := (20 : usize)
 
 --  Number of partial rounds for KoalaBear Poseidon2 (width 24).
-
+-- 
 --  Same Gröbner basis bound:
-
+-- 
 --    R_GB ≥ 17 + 0.6309 · min{5.12, 15.5} = 20.230
-
+-- 
 --  With the +7.5% security margin: ⌈1.075 × 20.230⌉ = 23.
 def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_24 : usize := (23 : usize)
 
 --  Number of partial rounds for KoalaBear Poseidon2 (width 32).
-
+-- 
 --  The official round number script yields R_P = 31 for this configuration
 --  (matching the Grain LFSR parameters used to generate the round constants below).
 def KOALABEAR_POSEIDON2_PARTIAL_ROUNDS_32 : usize := (31 : usize)
 
 --  Round constants for width-16 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
-
+-- 
 --  Layout: external_initial (4 rounds × 16 elements).
 def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_INITIAL :
   (RustArray
@@ -2237,16 +2295,15 @@ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_INITIAL :
                                                   (64412292 : u32),
                                                   (1936878279 : u32),
                                                   (1980661727 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-16 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
-
+-- 
 --  Layout: external_final (4 rounds × 16 elements).
 def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_FINAL :
   (RustArray
@@ -2326,16 +2383,15 @@ def KOALABEAR_POSEIDON2_RC_16_EXTERNAL_FINAL :
                                                   (1585100155 : u32),
                                                   (867006515 : u32),
                                                   (879151050 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-16 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=16, R_F=8, R_P=20
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 16`.
-
+-- 
 --  Layout: internal (20 scalar constants).
 def KOALABEAR_POSEIDON2_RC_16_INTERNAL :
   (RustArray
@@ -2368,16 +2424,15 @@ def KOALABEAR_POSEIDON2_RC_16_INTERNAL :
                             (185193011 : u32),
                             (452207447 : u32),
                             (510054082 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
-
+-- 
 --  Layout: external_initial (4 rounds × 24 elements).
 def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_INITIAL :
   (RustArray
@@ -2489,16 +2544,15 @@ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_INITIAL :
                                                   (1608418116 : u32),
                                                   (1083269213 : u32),
                                                   (691256798 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
-
+-- 
 --  Layout: external_final (4 rounds × 24 elements).
 def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_FINAL :
   (RustArray
@@ -2610,16 +2664,15 @@ def KOALABEAR_POSEIDON2_RC_24_EXTERNAL_FINAL :
                                                   (1757946479 : u32),
                                                   (1551204074 : u32),
                                                   (681266718 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-24 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=24, R_F=8, R_P=23
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 24`.
-
+-- 
 --  Layout: internal (23 scalar constants).
 def KOALABEAR_POSEIDON2_RC_24_INTERNAL :
   (RustArray
@@ -2655,16 +2708,15 @@ def KOALABEAR_POSEIDON2_RC_24_INTERNAL :
                             (213359415 : u32),
                             (603124968 : u32),
                             (1038411577 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
-
+-- 
 --  Layout: external_initial (4 rounds × 32 elements).
 def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_INITIAL :
   (RustArray
@@ -2808,16 +2860,15 @@ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_INITIAL :
                                                   (1208969182 : u32),
                                                   (1478187151 : u32),
                                                   (440934505 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
-
+-- 
 --  Layout: external_final (4 rounds × 32 elements).
 def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_FINAL :
   (RustArray
@@ -2961,16 +3012,15 @@ def KOALABEAR_POSEIDON2_RC_32_EXTERNAL_FINAL :
                                                   (1718116838 : u32),
                                                   (1790111045 : u32),
                                                   (1501131602 : u32)])])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Round constants for width-32 Poseidon2 on KoalaBear.
-
+-- 
 --  Generated by the Grain LFSR with parameters:
 --      field_type=1, alpha=3 (exp_flag=0), n=31, t=32, R_F=8, R_P=31
-
+-- 
 --  Generated by `poseidon2/generate_constants.py --field koalabear --width 32`.
-
+-- 
 --  Layout: internal (31 scalar constants).
 def KOALABEAR_POSEIDON2_RC_32_INTERNAL :
   (RustArray
@@ -3014,8 +3064,7 @@ def KOALABEAR_POSEIDON2_RC_32_INTERNAL :
                             (2121419385 : u32),
                             (667840239 : u32),
                             (1995134368 : u32)])))
-    (by sorry) -- PATCHED
-    -- (by rfl)
+    (by sorry)
 
 --  Contains data needed to define the internal layers of the Poseidon2 permutation.
 structure KoalaBearInternalLayerParameters where
@@ -3023,32 +3072,18 @@ structure KoalaBearInternalLayerParameters where
 
 abbrev Poseidon2InternalLayerKoalaBear (WIDTH : usize) :
   Type :=
-  (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
-    p3_koala_bear.koala_bear.KoalaBearParameters
-    (WIDTH)
-    KoalaBearInternalLayerParameters)
+  sorry
 
 --  An implementation of the Poseidon2 hash function specialised to run on the current architecture.
-
+-- 
 --  It acts on arrays of the form either `[KoalaBear::Packing; WIDTH]` or `[KoalaBear; WIDTH]`. For speed purposes,
 --  wherever possible, input arrays should of the form `[KoalaBear::Packing; WIDTH]`.
 abbrev Poseidon2KoalaBear (WIDTH : usize) :
   Type :=
-  (p3_poseidon2.Poseidon2
-    (p3_monty_31.monty_31.MontyField31
-      p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      (WIDTH))
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      (WIDTH)
-      KoalaBearInternalLayerParameters)
-    (WIDTH)
-    ((3 : u64)))
+  sorry
 
 --  An implementation of the matrix multiplications in the internal and external layers of Poseidon2.
-
+-- 
 --  This can act on `[A; WIDTH]` for any ring implementing `Algebra<BabyBear>`.
 --  If you have either `[KoalaBear::Packing; WIDTH]` or `[KoalaBear; WIDTH]` it will be much faster
 --  to use `Poseidon2KoalaBear<WIDTH>` instead of building a Poseidon2 permutation using this.
@@ -3096,1120 +3131,18 @@ instance Impl :
   p3_koala_bear.koala_bear.KoalaBearParameters
   ((16 : usize))
   where
-  internal_layer_mat_mul :=
-    fun
-      (R : Type)
-      [trait_constr_internal_layer_mat_mul_associated_type_i0 :
-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
-        R]
-      [trait_constr_internal_layer_mat_mul_i0 :
-        p3_field.field.PrimeCharacteristicRing
-        R
-        ] (state : (RustArray R 16)) (sum : R) =>sorry -- PATCHED
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (1 : usize)
-    --     (← (core_models.ops.arith.AddAssign.add_assign
-    --       R
-    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (2 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R (← state[(2 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (3 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(3 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (4 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.dup.Dup.dup R sum))
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(4 : usize)]_?)))))
-    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (5 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(5 : usize)]_?))))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (6 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(6 : usize)]_?))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (7 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(7 : usize)]_?)))
-    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (8 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(8 : usize)]_?))))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (9 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(9 : usize)]_?) (8 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (10 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(10 : usize)]_?) (3 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (11 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(11 : usize)]_?) (24 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (12 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(12 : usize)]_?) (8 : u64))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (13 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(13 : usize)]_?) (3 : u64))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (14 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(14 : usize)]_?) (4 : u64))))));
-    -- let state : (RustArray R 16) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (15 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       sum
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(15 : usize)]_?) (24 : u64))))));
-    -- (pure state)
+  internal_layer_mat_mul := sorry
 
-@[reducible] instance Impl_1.AssociatedTypes :
-  p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-
-instance Impl_1 :
-  p3_monty_31.poseidon2.InternalLayerBaseParameters
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-  internal_layer_mat_mul :=
-    fun
-      (R : Type)
-      [trait_constr_internal_layer_mat_mul_associated_type_i0 :
-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
-        R]
-      [trait_constr_internal_layer_mat_mul_i0 :
-        p3_field.field.PrimeCharacteristicRing
-        R
-        ] (state : (RustArray R 24)) (sum : R) =>sorry -- PATCHED
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (1 : usize)
-    --     (← (core_models.ops.arith.AddAssign.add_assign
-    --       R
-    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (2 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R (← state[(2 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (3 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(3 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (4 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.dup.Dup.dup R sum))
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(4 : usize)]_?)))))
-    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (5 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(5 : usize)]_?))))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (6 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(6 : usize)]_?))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (7 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(7 : usize)]_?)))
-    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (8 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(8 : usize)]_?))))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (9 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(9 : usize)]_?) (8 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (10 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(10 : usize)]_?) (2 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (11 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(11 : usize)]_?) (3 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (12 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(12 : usize)]_?) (4 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (13 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(13 : usize)]_?) (5 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (14 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(14 : usize)]_?) (6 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (15 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(15 : usize)]_?) (24 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (16 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(16 : usize)]_?) (8 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (17 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(17 : usize)]_?) (3 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (18 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(18 : usize)]_?) (4 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (19 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(19 : usize)]_?) (5 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (20 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(20 : usize)]_?) (6 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (21 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(21 : usize)]_?) (7 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (22 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(22 : usize)]_?) (9 : u64))))));
-    -- let state : (RustArray R 24) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (23 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       sum
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(23 : usize)]_?) (24 : u64))))));
-    -- (pure state)
-
-@[reducible] instance Impl_4.AssociatedTypes :
-  p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((32 : usize))
-  where
-
-instance Impl_4 :
-  p3_monty_31.poseidon2.InternalLayerBaseParameters
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((32 : usize))
-  where
-  internal_layer_mat_mul :=
-    fun
-      (R : Type)
-      [trait_constr_internal_layer_mat_mul_associated_type_i0 :
-        p3_field.field.PrimeCharacteristicRing.AssociatedTypes
-        R]
-      [trait_constr_internal_layer_mat_mul_i0 :
-        p3_field.field.PrimeCharacteristicRing
-        R
-        ] (state : (RustArray R 32)) (sum : R) =>sorry -- PATCHED
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (1 : usize)
-    --     (← (core_models.ops.arith.AddAssign.add_assign
-    --       R
-    --       R (← state[(1 : usize)]_?) (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (2 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R (← state[(2 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (3 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(3 : usize)]_?)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (4 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.dup.Dup.dup R sum))
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(4 : usize)]_?)))))
-    --       (← (p3_field.dup.Dup.dup R (← state[(4 : usize)]_?))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (5 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(5 : usize)]_?))))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (6 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.halve
-    --         R (← state[(6 : usize)]_?))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (7 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (core_models.ops.arith.Add.add
-    --         R
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(7 : usize)]_?)))
-    --         (← (p3_field.dup.Dup.dup R (← state[(7 : usize)]_?))))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (8 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.double
-    --         R
-    --         (← (p3_field.field.PrimeCharacteristicRing.double
-    --           R (← state[(8 : usize)]_?))))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (9 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(9 : usize)]_?) (8 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (10 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(10 : usize)]_?) (2 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (11 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(11 : usize)]_?) (3 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (12 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(12 : usize)]_?) (4 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (13 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(13 : usize)]_?) (5 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (14 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(14 : usize)]_?) (6 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (15 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(15 : usize)]_?) (10 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (16 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(16 : usize)]_?) (12 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (17 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(17 : usize)]_?) (14 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (18 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(18 : usize)]_?) (16 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (19 : usize)
-    --     (← (core_models.ops.arith.Add.add
-    --       R
-    --       R
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(19 : usize)]_?) (24 : u64)))
-    --       (← (p3_field.dup.Dup.dup R sum)))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (20 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(20 : usize)]_?) (8 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (21 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(21 : usize)]_?) (3 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (22 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(22 : usize)]_?) (4 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (23 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(23 : usize)]_?) (5 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (24 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(24 : usize)]_?) (6 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (25 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(25 : usize)]_?) (7 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (26 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(26 : usize)]_?) (9 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (27 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(27 : usize)]_?) (10 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (28 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(28 : usize)]_?) (12 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (29 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(29 : usize)]_?) (14 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (30 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       (← (p3_field.dup.Dup.dup R sum))
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(30 : usize)]_?) (16 : u64))))));
-    -- let state : (RustArray R 32) ←
-    --   (rust_primitives.hax.monomorphized_update_at.update_at_usize
-    --     state
-    --     (31 : usize)
-    --     (← (core_models.ops.arith.Sub.sub
-    --       R
-    --       R
-    --       sum
-    --       (← (p3_field.field.PrimeCharacteristicRing.div_2exp_u64
-    --         R (← state[(31 : usize)]_?) (24 : u64))))));
-    -- (pure state)
-
-end p3_koala_bear.poseidon2
-
-
-namespace p3_koala_bear.aarch64_neon.packing
-
-def WIDTH : usize := (4 : usize)
-
-@[reducible] instance Impl.AssociatedTypes :
-  p3_monty_31.aarch64_neon.packing.MontyParametersNeon.AssociatedTypes
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  where
-
-instance Impl :
-  p3_monty_31.aarch64_neon.packing.MontyParametersNeon
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  where
-  PACKED_P := RustM.of_isOk
-    (do
-    (core_models.intrinsics.transmute
-      (RustArray u32 4)
-      core_models.core_arch.arm_shared.neon.uint32x4_t
-      (← (rust_primitives.hax.repeat (2130706433 : u32) (4 : usize)))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
-  PACKED_MU := RustM.of_isOk
-    (do
-    (core_models.intrinsics.transmute
-      (RustArray i32 4)
-      core_models.core_arch.arm_shared.neon.int32x4_t
-      (← (rust_primitives.hax.repeat (-2130706431 : i32) (4 : usize)))))
-    (by sorry) -- PATCHED
-    -- (by rfl)
-
-end p3_koala_bear.aarch64_neon.packing
-
-
-namespace p3_koala_bear.koala_bear
-
-@[reducible] instance Impl_2.AssociatedTypes :
-  p3_monty_31.data_traits.PackedMontyParameters.AssociatedTypes
-  KoalaBearParameters
-  where
-
-instance Impl_2 :
-  p3_monty_31.data_traits.PackedMontyParameters KoalaBearParameters
-  where
-
-@[reducible] instance Impl_4.AssociatedTypes :
-  p3_monty_31.data_traits.FieldParameters.AssociatedTypes KoalaBearParameters
-  where
-
-instance Impl_4 :
-  p3_monty_31.data_traits.FieldParameters KoalaBearParameters
-  where
-  MONTY_GEN := RustM.of_isOk
-    (do (p3_monty_31.monty_31.Impl.new KoalaBearParameters (3 : u32)))
-    (by sorry) -- PATCHED
-    -- (by rfl)
-
-end p3_koala_bear.koala_bear
-
-
-namespace p3_koala_bear.poseidon1
-
---  Create a default width-16 Poseidon1 permutation for KoalaBear.
-@[spec]
-def default_koalabear_poseidon1_16 (_ : rust_primitives.hax.Tuple0) :
-    RustM
-    (p3_poseidon1.Poseidon1
-      (p3_monty_31.monty_31.MontyField31
-        p3_koala_bear.koala_bear.KoalaBearParameters)
-      (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-        p3_koala_bear.koala_bear.KoalaBearParameters
-        p3_koala_bear.mds.MDSKoalaBearData
-        ((16 : usize)))
-      (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-        p3_koala_bear.koala_bear.KoalaBearParameters
-        ((16 : usize))
-        KoalaBearPoseidonParameters)
-      ((16 : usize))
-      ((3 : u64)))
-    := do
-  (p3_poseidon1.Impl_1.new
-    (p3_monty_31.monty_31.MontyField31
-      p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      p3_koala_bear.mds.MDSKoalaBearData
-      ((16 : usize)))
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      ((16 : usize))
-      KoalaBearPoseidonParameters)
-    ((16 : usize))
-    ((3 : u64))
-    (p3_poseidon1.Poseidon1Constants.mk
-      (rounds_f := (← ((2 : usize) *? KOALABEAR_POSEIDON_HALF_FULL_ROUNDS)))
-      (rounds_p := KOALABEAR_POSEIDON_PARTIAL_ROUNDS_16)
-      (mds_circ_col := (p3_monty_31.mds.MDSUtils.MATRIX_CIRC_MDS_16_COL
-        p3_koala_bear.mds.MDSKoalaBearData))
-      (round_constants := (← (alloc.slice.Impl.to_vec
-        (RustArray
-        (p3_monty_31.monty_31.MontyField31
-          p3_koala_bear.koala_bear.KoalaBearParameters)
-        16) (← (rust_primitives.unsize KOALABEAR_POSEIDON1_RC_16)))))))
-
---  Create a default width-24 Poseidon1 permutation for KoalaBear.
-@[spec]
-def default_koalabear_poseidon1_24 (_ : rust_primitives.hax.Tuple0) :
-    RustM
-    (p3_poseidon1.Poseidon1
-      (p3_monty_31.monty_31.MontyField31
-        p3_koala_bear.koala_bear.KoalaBearParameters)
-      (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-        p3_koala_bear.koala_bear.KoalaBearParameters
-        p3_koala_bear.mds.MDSKoalaBearData
-        ((24 : usize)))
-      (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-        p3_koala_bear.koala_bear.KoalaBearParameters
-        ((24 : usize))
-        KoalaBearPoseidonParameters)
-      ((24 : usize))
-      ((3 : u64)))
-    := do
-  (p3_poseidon1.Impl_1.new
-    (p3_monty_31.monty_31.MontyField31
-      p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1ExternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      p3_koala_bear.mds.MDSKoalaBearData
-      ((24 : usize)))
-    (p3_monty_31.aarch64_neon.poseidon1.Poseidon1InternalLayerMonty31
-      p3_koala_bear.koala_bear.KoalaBearParameters
-      ((24 : usize))
-      KoalaBearPoseidonParameters)
-    ((24 : usize))
-    ((3 : u64))
-    (p3_poseidon1.Poseidon1Constants.mk
-      (rounds_f := (← ((2 : usize) *? KOALABEAR_POSEIDON_HALF_FULL_ROUNDS)))
-      (rounds_p := KOALABEAR_POSEIDON_PARTIAL_ROUNDS_24)
-      (mds_circ_col := (p3_monty_31.mds.MDSUtils.MATRIX_CIRC_MDS_24_COL
-        p3_koala_bear.mds.MDSKoalaBearData))
-      (round_constants := (← (alloc.slice.Impl.to_vec
-        (RustArray
-        (p3_monty_31.monty_31.MontyField31
-          p3_koala_bear.koala_bear.KoalaBearParameters)
-        24) (← (rust_primitives.unsize KOALABEAR_POSEIDON1_RC_24)))))))
-
-end p3_koala_bear.poseidon1
-
-
-namespace p3_koala_bear.aarch64_neon.packing
-
-abbrev PackedKoalaBearNeon :
-  Type :=
-  (p3_monty_31.aarch64_neon.packing.PackedMontyField31Neon
-    p3_koala_bear.koala_bear.KoalaBearParameters)
-
-end p3_koala_bear.aarch64_neon.packing
-
-
-namespace p3_koala_bear.aarch64_neon.poseidon1
-
-@[reducible] instance Impl.AssociatedTypes :
-  p3_monty_31.aarch64_neon.poseidon1.PartialRoundParametersNeon.AssociatedTypes
-  p3_koala_bear.poseidon1.KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-instance Impl :
-  p3_monty_31.aarch64_neon.poseidon1.PartialRoundParametersNeon
-  p3_koala_bear.poseidon1.KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-end p3_koala_bear.aarch64_neon.poseidon1
-
-
-namespace p3_koala_bear.poseidon1
-
-@[reducible] instance Impl_2.AssociatedTypes :
-  p3_monty_31.poseidon1.PartialRoundParameters.AssociatedTypes
-  KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-instance Impl_2 :
-  p3_monty_31.poseidon1.PartialRoundParameters
-  KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-end p3_koala_bear.poseidon1
-
-
-namespace p3_koala_bear.aarch64_neon.poseidon1
-
-@[reducible] instance Impl_1.AssociatedTypes :
-  p3_monty_31.aarch64_neon.poseidon1.PartialRoundParametersNeon.AssociatedTypes
-  p3_koala_bear.poseidon1.KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-
-instance Impl_1 :
-  p3_monty_31.aarch64_neon.poseidon1.PartialRoundParametersNeon
-  p3_koala_bear.poseidon1.KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-
-end p3_koala_bear.aarch64_neon.poseidon1
-
-
-namespace p3_koala_bear.poseidon1
-
-@[reducible] instance Impl_3.AssociatedTypes :
-  p3_monty_31.poseidon1.PartialRoundParameters.AssociatedTypes
-  KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-
-instance Impl_3 :
-  p3_monty_31.poseidon1.PartialRoundParameters
-  KoalaBearPoseidonParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((24 : usize))
-  where
-
-end p3_koala_bear.poseidon1
-
-
-namespace p3_koala_bear.aarch64_neon.poseidon2
-
-@[reducible] instance Impl.AssociatedTypes :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon.AssociatedTypes
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-  ArrayLike := (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15)
-
-instance Impl :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-  diagonal_mul_remainder :=
-    fun
-      (input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15))
-      => do
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (8 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(8 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (9 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(9 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (10 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(10 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (11 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(11 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (12 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(12 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (13 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((4 : i32)) (← input[(13 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 15) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (14 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(14 : usize)]_?))));
-    let _ := rust_primitives.hax.Tuple0.mk;
-    (pure input)
-  NUM_POS := (3 : usize)
-
-end p3_koala_bear.aarch64_neon.poseidon2
-
-
-namespace p3_koala_bear.poseidon2
-
---  Create a default width-16 Poseidon2 permutation for KoalaBear.
 @[spec]
 def default_koalabear_poseidon2_16 (_ : rust_primitives.hax.Tuple0) :
     RustM
     (p3_poseidon2.Poseidon2
       (p3_monty_31.monty_31.MontyField31
         p3_koala_bear.koala_bear.KoalaBearParameters)
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((16 : usize)))
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((16 : usize))
         KoalaBearInternalLayerParameters)
@@ -4219,10 +3152,10 @@ def default_koalabear_poseidon2_16 (_ : rust_primitives.hax.Tuple0) :
   (p3_poseidon2.Impl.new
     (p3_monty_31.monty_31.MontyField31
       p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((16 : usize)))
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((16 : usize))
       KoalaBearInternalLayerParameters)
@@ -4251,185 +3184,31 @@ def default_koalabear_poseidon2_16 (_ : rust_primitives.hax.Tuple0) :
         p3_koala_bear.koala_bear.KoalaBearParameters)
       (← (rust_primitives.unsize KOALABEAR_POSEIDON2_RC_16_INTERNAL)))))
 
-@[reducible] instance Impl_2.AssociatedTypes :
-  p3_monty_31.poseidon2.InternalLayerParameters.AssociatedTypes
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-instance Impl_2 :
-  p3_monty_31.poseidon2.InternalLayerParameters
-  KoalaBearInternalLayerParameters
-  p3_koala_bear.koala_bear.KoalaBearParameters
-  ((16 : usize))
-  where
-
-end p3_koala_bear.poseidon2
-
-
-namespace p3_koala_bear.aarch64_neon.poseidon2
-
 @[reducible] instance Impl_1.AssociatedTypes :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon.AssociatedTypes
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
+  p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
+  KoalaBearInternalLayerParameters
   p3_koala_bear.koala_bear.KoalaBearParameters
   ((24 : usize))
   where
-  ArrayLike := (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23)
 
 instance Impl_1 :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
+  p3_monty_31.poseidon2.InternalLayerBaseParameters
+  KoalaBearInternalLayerParameters
   p3_koala_bear.koala_bear.KoalaBearParameters
   ((24 : usize))
   where
-  diagonal_mul_remainder :=
-    fun
-      (input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23))
-      => do
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (8 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(8 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (9 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((2 : i32)) (← input[(9 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (10 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(10 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (11 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((4 : i32)) (← input[(11 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (12 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((5 : i32)) (← input[(12 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (13 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((6 : i32)) (← input[(13 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (14 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(14 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (15 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(15 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (16 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(16 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (17 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((4 : i32)) (← input[(17 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (18 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((5 : i32)) (← input[(18 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (19 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((6 : i32)) (← input[(19 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (20 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((7 : i32)) (← input[(20 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (21 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((9 : i32)) (← input[(21 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 23) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (22 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(22 : usize)]_?))));
-    let _ := rust_primitives.hax.Tuple0.mk;
-    (pure input)
-  NUM_POS := (7 : usize)
+  internal_layer_mat_mul := sorry
 
-end p3_koala_bear.aarch64_neon.poseidon2
-
-
-namespace p3_koala_bear.poseidon2
-
---  Create a default width-24 Poseidon2 permutation for KoalaBear.
 @[spec]
 def default_koalabear_poseidon2_24 (_ : rust_primitives.hax.Tuple0) :
     RustM
     (p3_poseidon2.Poseidon2
       (p3_monty_31.monty_31.MontyField31
         p3_koala_bear.koala_bear.KoalaBearParameters)
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((24 : usize)))
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((24 : usize))
         KoalaBearInternalLayerParameters)
@@ -4439,10 +3218,10 @@ def default_koalabear_poseidon2_24 (_ : rust_primitives.hax.Tuple0) :
   (p3_poseidon2.Impl.new
     (p3_monty_31.monty_31.MontyField31
       p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((24 : usize)))
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((24 : usize))
       KoalaBearInternalLayerParameters)
@@ -4471,6 +3250,20 @@ def default_koalabear_poseidon2_24 (_ : rust_primitives.hax.Tuple0) :
         p3_koala_bear.koala_bear.KoalaBearParameters)
       (← (rust_primitives.unsize KOALABEAR_POSEIDON2_RC_24_INTERNAL)))))
 
+@[reducible] instance Impl_2.AssociatedTypes :
+  p3_monty_31.poseidon2.InternalLayerParameters.AssociatedTypes
+  KoalaBearInternalLayerParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((16 : usize))
+  where
+
+instance Impl_2 :
+  p3_monty_31.poseidon2.InternalLayerParameters
+  KoalaBearInternalLayerParameters
+  p3_koala_bear.koala_bear.KoalaBearParameters
+  ((16 : usize))
+  where
+
 @[reducible] instance Impl_3.AssociatedTypes :
   p3_monty_31.poseidon2.InternalLayerParameters.AssociatedTypes
   KoalaBearInternalLayerParameters
@@ -4485,235 +3278,31 @@ instance Impl_3 :
   ((24 : usize))
   where
 
-end p3_koala_bear.poseidon2
-
-
-namespace p3_koala_bear.aarch64_neon.poseidon2
-
-@[reducible] instance Impl_2.AssociatedTypes :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon.AssociatedTypes
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
+@[reducible] instance Impl_4.AssociatedTypes :
+  p3_monty_31.poseidon2.InternalLayerBaseParameters.AssociatedTypes
+  KoalaBearInternalLayerParameters
   p3_koala_bear.koala_bear.KoalaBearParameters
   ((32 : usize))
   where
-  ArrayLike := (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31)
 
-instance Impl_2 :
-  p3_monty_31.aarch64_neon.poseidon2.InternalLayerParametersNeon
-  p3_koala_bear.poseidon2.KoalaBearInternalLayerParameters
+instance Impl_4 :
+  p3_monty_31.poseidon2.InternalLayerBaseParameters
+  KoalaBearInternalLayerParameters
   p3_koala_bear.koala_bear.KoalaBearParameters
   ((32 : usize))
   where
-  diagonal_mul_remainder :=
-    fun
-      (input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31))
-      => do
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (8 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(8 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (9 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((2 : i32)) (← input[(9 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (10 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(10 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (11 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((4 : i32)) (← input[(11 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (12 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((5 : i32)) (← input[(12 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (13 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((6 : i32)) (← input[(13 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (14 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((10 : i32)) (← input[(14 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (15 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((12 : i32)) (← input[(15 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (16 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((14 : i32)) (← input[(16 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (17 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((16 : i32)) (← input[(17 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (18 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(18 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (19 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((8 : i32)) (← input[(19 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (20 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((3 : i32)) (← input[(20 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (21 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((4 : i32)) (← input[(21 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (22 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((5 : i32)) (← input[(22 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (23 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((6 : i32)) (← input[(23 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (24 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((7 : i32)) (← input[(24 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (25 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((9 : i32)) (← input[(25 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (26 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((10 : i32)) (← input[(26 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (27 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((12 : i32)) (← input[(27 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (28 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((14 : i32)) (← input[(28 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (29 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_n_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((16 : i32)) (← input[(29 : usize)]_?))));
-    let
-      input : (RustArray core_models.core_arch.arm_shared.neon.uint32x4_t 31) ←
-      (rust_primitives.hax.monomorphized_update_at.update_at_usize
-        input
-        (30 : usize)
-        (← (p3_monty_31.aarch64_neon.utils.mul_2exp_neg_two_adicity_neon
-          p3_koala_bear.koala_bear.KoalaBearParameters
-          ((24 : i32))
-          ((7 : i32)) (← input[(30 : usize)]_?))));
-    let _ := rust_primitives.hax.Tuple0.mk;
-    (pure input)
-  NUM_POS := (11 : usize)
+  internal_layer_mat_mul := sorry
 
-end p3_koala_bear.aarch64_neon.poseidon2
-
-
-namespace p3_koala_bear.poseidon2
-
---  Create a default width-32 Poseidon2 permutation for KoalaBear.
 @[spec]
 def default_koalabear_poseidon2_32 (_ : rust_primitives.hax.Tuple0) :
     RustM
     (p3_poseidon2.Poseidon2
       (p3_monty_31.monty_31.MontyField31
         p3_koala_bear.koala_bear.KoalaBearParameters)
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((32 : usize)))
-      (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+      (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
         p3_koala_bear.koala_bear.KoalaBearParameters
         ((32 : usize))
         KoalaBearInternalLayerParameters)
@@ -4723,10 +3312,10 @@ def default_koalabear_poseidon2_32 (_ : rust_primitives.hax.Tuple0) :
   (p3_poseidon2.Impl.new
     (p3_monty_31.monty_31.MontyField31
       p3_koala_bear.koala_bear.KoalaBearParameters)
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2ExternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2ExternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((32 : usize)))
-    (p3_monty_31.aarch64_neon.poseidon2.Poseidon2InternalLayerMonty31
+    (p3_monty_31.no_packing.poseidon2.Poseidon2InternalLayerMonty31
       p3_koala_bear.koala_bear.KoalaBearParameters
       ((32 : usize))
       KoalaBearInternalLayerParameters)
@@ -4770,3 +3359,4 @@ instance Impl_5 :
   where
 
 end p3_koala_bear.poseidon2
+

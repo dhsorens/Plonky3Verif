@@ -18,6 +18,9 @@ class PrimeCharacteristicRing (R : Type)
   where
   ZERO (R) : RustM R
   ONE (R) : RustM R
+  double (R) (self : R) : RustM R := pure self
+  halve (R) (self : R) : RustM R := pure self
+  div_2exp_u64 (R) (self : R) (exp : u64) : RustM R := pure self
 
 class Field.AssociatedTypes (Self : Type) where
   Packing : Type

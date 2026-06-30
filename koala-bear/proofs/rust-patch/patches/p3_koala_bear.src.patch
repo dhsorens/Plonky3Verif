@@ -1,0 +1,38 @@
+diff --git a/koala-bear/src/lib.rs b/koala-bear/src/lib.rs
+index c7a22eff..83d7af3f 100644
+--- a/koala-bear/src/lib.rs
++++ b/koala-bear/src/lib.rs
+@@ -15,25 +15,27 @@ pub use mds::*;
+ pub use poseidon1::*;
+ pub use poseidon2::*;
+ 
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ mod aarch64_neon;
+-#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
++#[cfg(all(target_arch = "aarch64", target_feature = "neon", not(hax)))]
+ pub use aarch64_neon::*;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ mod x86_64_avx2;
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub use x86_64_avx2::*;
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ mod x86_64_avx512;
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub use x86_64_avx512::*;
