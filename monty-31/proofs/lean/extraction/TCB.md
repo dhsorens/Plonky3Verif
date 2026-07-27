@@ -70,3 +70,20 @@ Likewise `num_bigint`, `rand`, `serde` are minimal stubs of referenced items.
 Everything else in `p3_monty_31.lean` (Montgomery field structure, `data_traits`,
 the Poseidon layer parameter types, and the bulk of the arithmetic) is the real
 hax extraction, trusted only as far as the hax toolchain itself.
+
+## Shared dependency stubs (consumed by baby-bear / koala-bear)
+
+`p3_monty_31/*.lean` is also the **shared lower-dep stub layer** for the field crates
+that `require` this package (baby-bear; koala-bear). It is maintained as the *union*
+of consumer needs, so it carries a few symbols monty-31's own extraction does not use
+(additive; monty-31 still builds green):
+- `p3_field.field.PrimeCharacteristicRing.{double, halve, div_2exp_u64}` — declared
+  with `:= sorry`/identity **defaults** so monty-31's own instances are unaffected.
+- `p3_symmetric.permutation.Permutation.permute_mut` (default body).
+- `p3_mds.util.first_row_to_first_col`.
+- `p3_poseidon1.{Poseidon1, Poseidon1Constants, Impl_1.new, generic.*}` and
+  `p3_poseidon2.{Poseidon2, Impl.new, external.Impl_4.new}` (struct + constructor stubs).
+
+Consumer-/field-specific items (e.g. a per-field `exp_<n>` constant, a blanket
+`AsRef (RustArray T N) (RustSlice T)`) live in the consumer's own supplementary stub,
+not here.

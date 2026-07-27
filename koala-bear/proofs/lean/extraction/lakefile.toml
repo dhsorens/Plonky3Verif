@@ -17,3 +17,11 @@ rev = "main"
 [[require]]
 name = "CompPoly"
 git = "https://github.com/Verified-zkEVM/CompPoly"
+rev = "v4.30.0"
+
+# Real extracted monty-31 (MontyField31 + data_traits + mds/poseidon), replacing
+# koala-bear's former local p3_monty_31 + lower-dep stubs. KoalaBear is
+# MontyField31<KoalaBearParameters>.
+[[require]]
+name = "p3_monty_31"
+path = "../../../../monty-31/proofs/lean/extraction"

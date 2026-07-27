@@ -1,64 +1,99 @@
 #!/usr/bin/env bash
 # Regenerate the koala-bear Lean extraction from Rust source.
 #
-#   1. Run `cargo hax into lean` (overwrites proofs/lean/extraction/p3_koala_bear.lean).
-#   2. Snapshot that pristine output (so update-patch.sh can diff against it later).
-#   3. Apply proofs/lean/extraction/patches/p3_koala_bear.patch.
-#   4. Run `lake build`. Failure here is reported but does not abort, so you can
-#      still inspect the file.
+# koala-bear is a *field* crate (the KoalaBear field (MontyField31<KoalaBearParameters>), depending on the extracted monty-31.
+# koala-bear). It carries hand-written SIMD packings (aarch64 NEON, x86_64
+# AVX2/AVX512) that hax cannot model — the intrinsics have no proof-lib mapping.
+# Rather than emit ~500 unbuildable NEON references and sorry them in the Lean
+# patch, we drop the SIMD modules *before* extraction with a small, behaviour-
+# preserving Rust source patch that gates them on `not(hax)` and forces the
+# portable `no_packing` path under `--cfg hax` (hax always sets `--cfg hax`).
+# A normal `cargo build` is unaffected (no `hax` cfg → original behaviour).
 #
-# When hax output drifts and the patch no longer applies cleanly, hand-edit
-# p3_koala_bear.lean until it compiles, then run patches/update-patch.sh to
-# regenerate the patch.
+# Flow (mirrors koala-bear's build-proofs.sh, plus the source-patch step):
+#   0. clean-tree guard on src/; trap-revert; `git apply` the source patch.
+#   1. `cargo hax into lean` in an ISOLATED CARGO_TARGET_DIR (REQUIRED — the
+#      shared target/hax serves stale cached Lean that ignores the patch).
+#   2. trap fires → src/ restored to pristine.
+#   3. snapshot the pristine Lean output (for update-patch.sh).
+#   4. apply patches/p3_koala_bear.patch (the Lean patch).
+#   5. `lake build`. Failure is reported, not fatal, so you can inspect.
+#
+# When hax output drifts and the patch no longer applies, hand-edit
+# p3_koala_bear.lean until it compiles, then run patches/update-patch.sh.
 
 set -eu
 
-# This script lives in proofs/lean/extraction/; the Rust crate root is three levels up.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CRATE_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+REPO_ROOT="$(cd "$CRATE_ROOT/.." && pwd)"
 EXTRACT_DIR="$SCRIPT_DIR"
 PATCH_DIR="$EXTRACT_DIR/patches"
 TARGET="$EXTRACT_DIR/p3_koala_bear.lean"
 PRISTINE="$PATCH_DIR/pristine.snapshot.lean"
 PATCH_FILE="$PATCH_DIR/p3_koala_bear.patch"
+SRC_PATCH="$CRATE_ROOT/proofs/rust-patch/patches/p3_koala_bear.src.patch"
 
-cd "$CRATE_ROOT"
+# ---- 0. source patches: clean-tree guard + guaranteed revert + apply ---------
+# `cargo hax` only sets `--cfg hax` on the PRIMARY crate (koala-bear), so the
+# monty-31 DEPENDENCY would compile with its SIMD packings enabled — and its
+# `data_traits` would then demand the `MontyParametersNeon` supertrait that
+# koala-bear's (now-gated) aarch64_neon module used to satisfy. So we apply BOTH
+# the koala-bear source patch AND monty-31's, gating SIMD off across the whole
+# build, so koala-bear extracts against monty-31's PORTABLE path (matching the
+# monty-31 Lean package this crate `require`s).
+SRC_REL="koala-bear/src"
+MONTY_SRC_REL="monty-31/src"
+MONTY_SRC_PATCH="$REPO_ROOT/monty-31/proofs/rust-patch/patches/p3_monty_31.src.patch"
+for p in "$SRC_REL" "$MONTY_SRC_REL"; do
+    if ! git -C "$REPO_ROOT" diff --quiet -- "$p" \
+       || ! git -C "$REPO_ROOT" diff --cached --quiet -- "$p"; then
+        echo "error: $p has uncommitted changes; aborting so we never overwrite" >&2
+        echo "       your work. Commit/stash first, then re-run." >&2
+        exit 1
+    fi
+done
+revert() { git -C "$REPO_ROOT" checkout -- "$SRC_REL" "$MONTY_SRC_REL" 2>/dev/null || true; }
+trap revert EXIT
+[ -f "$SRC_PATCH" ]       && { echo "==> applying $SRC_PATCH";       git -C "$REPO_ROOT" apply "$SRC_PATCH"; }
+[ -f "$MONTY_SRC_PATCH" ] && { echo "==> applying $MONTY_SRC_PATCH"; git -C "$REPO_ROOT" apply "$MONTY_SRC_PATCH"; }
 
+# ---- 1. extract (isolated target dir is REQUIRED for the patch to take) ------
 echo "==> cargo hax into lean"
-# p3-util (and possibly other deps) call the stdlib `maybe_uninit_slice` method
-# `<[MaybeUninit<T>]>::assume_init_ref`, which is stable on current stable Rust
-# but still feature-gated on hax's pinned nightly (nightly-2025-11-08). The hax
-# driver compiles with that nightly, so we enable the feature crate-wide for the
-# extraction build ONLY, via `-Zcrate-attr`. We also force the whole invocation
-# (including cargo's metadata probe, which otherwise runs on the stable default)
-# onto the nightly so `-Z` is accepted. Neither setting touches any source file
-# nor affects a normal `cargo build`. If hax bumps its rust-toolchain.toml pin,
-# update HAX_TOOLCHAIN to match (override via env without editing this script).
-HAX_TOOLCHAIN="${HAX_TOOLCHAIN:-nightly-2025-11-08}"
-# The new hax splits into a Rust driver that spawns the OCaml `hax-engine`; if it
-# isn't on PATH (no active opam env) the driver panics with a NotFound at
-# ocaml_engine.rs. Point at the opam-installed engine by default (override via env).
-RUSTUP_TOOLCHAIN="$HAX_TOOLCHAIN" \
+isolated="${HAX_ISOLATED_TARGET:-/tmp/hax-extract/target-koala-bear-lean}"
+rm -rf "$isolated"
+( cd "$CRATE_ROOT" && \
+  CARGO_TARGET_DIR="$isolated" \
   HAX_ENGINE_BINARY="${HAX_ENGINE_BINARY:-$HOME/.opam/default/bin/hax-engine}" \
+  RUSTUP_TOOLCHAIN="${HAX_TOOLCHAIN:-nightly-2025-11-08}" \
   RUSTFLAGS="${RUSTFLAGS:-} -Zcrate-attr=feature(maybe_uninit_slice)" \
-  cargo hax into lean
+  cargo hax into lean )
 
+# ---- 2. revert source patches (also fires on any earlier exit via trap) -----
+revert
+trap - EXIT
+if git -C "$REPO_ROOT" diff --quiet -- "$SRC_REL" "$MONTY_SRC_REL"; then
+    echo "==> sources reverted (koala-bear/src + monty-31/src clean)"
+else
+    echo "WARNING: koala-bear/src or monty-31/src still dirty after revert" >&2
+fi
+
+# ---- 3. snapshot pristine ----------------------------------------------------
 echo "==> snapshotting pristine output"
+mkdir -p "$PATCH_DIR"
 cp "$TARGET" "$PRISTINE"
 
+# ---- 4. apply Lean patch -----------------------------------------------------
 if [ -f "$PATCH_FILE" ]; then
     echo "==> applying $PATCH_FILE"
     patch "$TARGET" < "$PATCH_FILE"
 else
-    echo "==> no patch file found; skipping (run patches/update-patch.sh after hand-editing)" >&2
+    echo "==> no Lean patch yet; skipping (hand-edit, then run patches/update-patch.sh)" >&2
 fi
 
+# ---- 5. lake build (committed manifest pins; no `lake update`) ---------------
+# koala uses CompPoly/mathlib, so `lake exe cache get` fetches the olean cache.
 echo "==> lake build"
-# Build against the COMMITTED lake-manifest.json pins (reproducible). Do NOT run
-# `lake update` here — koala's lakefile floats Hax/CompPoly at `rev = "main"`, and
-# updating would re-resolve them on every sync, incidentally bumping the manifest
-# and lean-toolchain. Bumping deps/toolchain is a deliberate, cross-crate action
-# (see the repo-root SYNC.md "Maintenance" section: run `lake update` there).
 if (cd "$EXTRACT_DIR" && lake exe cache get && lake build); then
     echo "==> done; build succeeded."
 else

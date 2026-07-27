@@ -18,3 +18,15 @@ class Convolve (Self : Type) (T : Type) (U : Type) (V : Type)
   [associatedTypes : outParam (Convolve.AssociatedTypes Self T U V)] where
 
 end p3_mds.karatsuba_convolution
+
+namespace p3_mds.util
+
+def first_row_to_first_col
+    (N : usize) (T : Type)
+    [trait_constr_first_row_to_first_col_associated_type_i0 :
+      core_models.marker.Copy.AssociatedTypes T]
+    [trait_constr_first_row_to_first_col_i0 : core_models.marker.Copy T ]
+    (v : (RustArray T N)) :
+    RustM (RustArray T N) := pure v
+
+end p3_mds.util

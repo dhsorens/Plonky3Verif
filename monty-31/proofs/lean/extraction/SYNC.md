@@ -3,8 +3,13 @@
 Crate-specific runbook, **invoked by the repo-root [`SYNC.md`](../../../../SYNC.md)**
 after it has fetched + merged upstream and determined `monty-31` is affected. This
 file assumes the merge is already done; it only re-extracts and reconciles this one
-crate. (You can also run it standalone after a merge.) `monty-31` is independent of
-the other official crates; its field dependencies are **stubbed, not extracted**.
+crate. (You can also run it standalone after a merge.) monty-31's own field
+dependencies are **stubbed, not extracted**, so it has no upstream official deps to
+re-extract first. But monty-31 **has reverse-dependents**: `baby-bear` and
+`koala-bear` consume this extracted `p3_monty_31` (Lake path `require`), so whenever
+monty-31 changes — including any edit to its shared dependency stubs
+(`p3_monty_31/*.lean`) — **re-extract/re-check baby-bear and koala-bear afterward**
+(the repo-root `SYNC.md` closes this reverse-dep edge automatically).
 
 monty-31 has **two** committed patches (see [`TCB.md`](TCB.md), [`README.md`](README.md)):
 a pre-extraction **Rust source patch** (`../rust-patch/patches/p3_monty_31.src.patch`,

@@ -25,6 +25,7 @@ class Permutation (Self : Type) (T : Type)
   [trait_constr_Permutation_i1 : core_models.marker.Sync Self]
   [trait_constr_Permutation_i2 : core_models.clone.Clone T]
   permute (Self) (T) (self : Self) (input : T) : RustM T
+  permute_mut (Self) (T) (self : Self) (input : T) : RustM T := pure input
 
 attribute [instance_reducible, instance] Permutation.trait_constr_Permutation_i0
 
