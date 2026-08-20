@@ -20,6 +20,16 @@ writes `TyKind::Error` → Aeneas failures / field-trait lookup cascades at scal
 **Workarounds:**
 
 1. **`--exclude`** flagged traits (start with `p3_field::field::RawDataSerializable`).
+   ⚠️ **Partial as of 2026-08-06.** charon
+   [#1339](https://github.com/AeneasVerif/charon/issues/1339) reports that
+   `--opaque`/`--exclude` name patterns **cannot target closure sub-items**. This
+   excludes the trait itself but will not reach
+   `RawDataSerializable::into_byte_stream::closure` or
+   `PackedValue::unpack_iter::closure` — which are the actual triggers for the
+   mixed-recursive-group cascade (report Issue #6) and the closure failures
+   (Issue #8). The suggested substitute is a source-level
+   `#[cfg_attr(charon, charon::opaque)]` on the *containing function*. Untested
+   on Plonky3 — verify before relying on it.
 2. **Smaller surface** — `-include` / `-start-from`; leaf crates first (`keccak`).
 3. **Verification fork** — replace RPITIT with plain assoc type + named iterator type.
 4. **Hax Lean workspaces** (`*/proofs/lean/extraction/`) — separate from whole-crate Aeneas.

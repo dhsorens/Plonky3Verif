@@ -83,7 +83,16 @@ else
 fi
 
 # ---- quick tallies ----------------------------------------------------------
-errs=0; warns=0; lines=0; files=0
+# NOTE: charon can report `error: Type error after transformations: …` (its own
+# post-transformation type check failing) and STILL exit 0, writing a
+# usable-looking .llbc that aeneas then chokes on. The exit code alone therefore
+# under-reports charon failures — count charon's error lines too. See the
+# 2026-08-06 report, Issue #16.
+errs=0; warns=0; lines=0; files=0; cerrs=0; cwarns=0
+if [[ -f "$out/charon.log" ]]; then
+  cerrs=$(grep -c '^error' "$out/charon.log" || true)
+  cwarns=$(grep -c '^warning' "$out/charon.log" || true)
+fi
 if [[ -f "$out/aeneas.log.clean" ]]; then
   errs=$(grep -c '\[Error\]'  "$out/aeneas.log.clean" || true)
   warns=$(grep -c '\[Warn \]' "$out/aeneas.log.clean" || true)
@@ -96,6 +105,8 @@ fi
 echo
 echo "==> SUMMARY [$crate]"
 echo "    charon exit : $charon_rc"
+echo "    charon errs : $cerrs   (nonzero with exit 0 = ill-typed llbc, see Issue #16)"
+echo "    charon warns: $cwarns"
 echo "    aeneas exit : $aeneas_rc"
 echo "    aeneas errs : $errs"
 echo "    aeneas warns: $warns"

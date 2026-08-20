@@ -1,0 +1,64 @@
+diff --git a/symmetric/src/serializing_hasher.rs b/symmetric/src/serializing_hasher.rs
+index 70925ecb..93dd6a3c 100644
+--- a/symmetric/src/serializing_hasher.rs
++++ b/symmetric/src/serializing_hasher.rs
+@@ -19,6 +19,9 @@ impl<Inner> SerializingHasher<Inner> {
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize> CryptographicHasher<F, [u8; N]> for SerializingHasher<Inner>
+ where
+     F: Field,
+@@ -32,6 +35,9 @@ where
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize> CryptographicHasher<F, [u32; N]> for SerializingHasher<Inner>
+ where
+     F: Field,
+@@ -45,6 +51,9 @@ where
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize> CryptographicHasher<F, [u64; N]> for SerializingHasher<Inner>
+ where
+     F: Field,
+@@ -58,6 +67,9 @@ where
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize, const M: usize> CryptographicHasher<[F; M], [[u8; M]; N]>
+     for SerializingHasher<Inner>
+ where
+@@ -72,6 +84,9 @@ where
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize, const M: usize> CryptographicHasher<[F; M], [[u32; M]; N]>
+     for SerializingHasher<Inner>
+ where
+@@ -86,6 +101,9 @@ where
+     }
+ }
+ 
++// Gated under `--cfg hax`: calls the RawDataSerializable stream methods that the
++// p3-field hax source patch removes (charon mistranslates their lifted assoc types).
++#[cfg(not(hax))]
+ impl<F, Inner, const N: usize, const M: usize> CryptographicHasher<[F; M], [[u64; M]; N]>
+     for SerializingHasher<Inner>
+ where
