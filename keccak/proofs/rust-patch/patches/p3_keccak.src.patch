@@ -1,0 +1,99 @@
+diff --git a/keccak/src/lib.rs b/keccak/src/lib.rs
+index 5903778a..7926565b 100644
+--- a/keccak/src/lib.rs
++++ b/keccak/src/lib.rs
+@@ -5,64 +5,76 @@
+ use p3_symmetric::{CryptographicHasher, CryptographicPermutation, Permutation};
+ use tiny_keccak::{Hasher, Keccak, keccakf};
+ 
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub mod avx512;
+-#[cfg(all(target_arch = "x86_64", target_feature = "avx512f"))]
++#[cfg(all(target_arch = "x86_64", target_feature = "avx512f", not(hax)))]
+ pub use avx512::*;
+ 
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub mod avx2;
+ #[cfg(all(
+     target_arch = "x86_64",
+     target_feature = "avx2",
+-    not(target_feature = "avx512f")
++    not(target_feature = "avx512f"),
++    not(hax)
+ ))]
+ pub use avx2::*;
+ 
+-#[cfg(all(target_arch = "x86_64", not(target_feature = "avx2")))]
++#[cfg(all(target_arch = "x86_64", not(target_feature = "avx2"), not(hax)))]
+ pub mod sse2;
+-#[cfg(all(target_arch = "x86_64", not(target_feature = "avx2")))]
++#[cfg(all(target_arch = "x86_64", not(target_feature = "avx2"), not(hax)))]
+ pub use sse2::*;
+ 
+ #[cfg(all(
+     target_arch = "aarch64",
+     target_feature = "neon",
+-    target_feature = "sha3"
++    target_feature = "sha3",
++    not(hax)
+ ))]
+ pub mod neon_sha3;
+ #[cfg(all(
+     target_arch = "aarch64",
+     target_feature = "neon",
+-    target_feature = "sha3"
++    target_feature = "sha3",
++    not(hax)
+ ))]
+ pub use neon_sha3::*;
+ 
+ #[cfg(all(
+     target_arch = "aarch64",
+     target_feature = "neon",
+-    not(target_feature = "sha3")
++    not(target_feature = "sha3"),
++    not(hax)
+ ))]
+ pub mod neon;
+ #[cfg(all(
+     target_arch = "aarch64",
+     target_feature = "neon",
+-    not(target_feature = "sha3")
++    not(target_feature = "sha3"),
++    not(hax)
+ ))]
+ pub use neon::*;
+ 
+-#[cfg(not(any(
+-    all(target_arch = "aarch64", target_feature = "neon"),
+-    target_arch = "x86_64"
+-)))]
++#[cfg(any(
++    hax,
++    not(any(
++        all(target_arch = "aarch64", target_feature = "neon"),
++        target_arch = "x86_64"
++    ))
++))]
+ mod fallback;
+-#[cfg(not(any(
+-    all(target_arch = "aarch64", target_feature = "neon"),
+-    target_arch = "x86_64"
+-)))]
++#[cfg(any(
++    hax,
++    not(any(
++        all(target_arch = "aarch64", target_feature = "neon"),
++        target_arch = "x86_64"
++    ))
++))]
+ pub use fallback::*;
+ 
+ /// The Keccak-f permutation.

@@ -1,0 +1,15 @@
+name = "p3_blake3"
+version = "0.1.0"
+defaultTargets = ["P3Blake3"]
+
+[[lean_lib]]
+name = "P3Blake3"
+
+# The hax Lean proof library (provides `Hax` and `CoreModels`); it pulls the
+# Aeneas Lean library (cryspen/aeneas backends/lean) transitively at the rev
+# matching the pinned aeneas binary. v0.3.0 = the version paired with the
+# cargo-hax that generated this extraction (hax e11615541).
+[[require]]
+name = "hax"
+git = "https://github.com/cryspen/hax-lean"
+rev = "v0.3.0"

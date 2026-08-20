@@ -19,26 +19,46 @@ so syncing is *expected* to be conflict-free.
 directory in the repo (e.g. `field/proofs/`, `mds/proofs/`, …) is **experimental
 WIP** from the extraction survey — never re-extract, reconcile, or commit those.
 
+> **Two pipelines since 2026-08-19.** Upstream hax renamed its backends
+> (PR #2064): the OCaml Lean printer that generated all the original
+> workspaces is now `cargo hax into legacy-lean`, and `cargo hax into lean`
+> is a **new aeneas-based backend** (charon → `.llbc` → aeneas). The repo
+> pins hax `e11615541`. Each original workspace was moved, frozen, to
+> `<crate>/proofs-legacy/` (its `lake build` still works; re-extraction there
+> would need the old hax). The **active** pipeline is the aeneas-backend
+> workspace at `<crate>/proofs/lean/` — currently green for `keccak` and
+> `blake3`; the other six are blocked on upstream charon/aeneas bugs, each
+> documented in `<crate>/proofs/lean/BLOCKED.md` (cross-referenced with the
+> aeneas survey in `aeneas-obstructions/`).
+
 <!-- REGISTRY (machine-readable: one `crate | script | per-crate SYNC | deps` row per official crate) -->
 
-| Crate | Extraction dir | Build script | Per-crate SYNC | Kind | Depends on (registry) |
-|-------|----------------|--------------|----------------|------|------------------------|
-| `koala-bear` | `koala-bear/proofs/lean/extraction/` | `build-proofs.sh` | `koala-bear/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD gated) + hand-written proofs (CompPoly); **consumes the extracted `p3_monty_31`** via a Lake path `require` | `monty-31` |
-| `symmetric` | `symmetric/proofs/lean/extraction/` | `build-lean.sh` | `symmetric/proofs/lean/extraction/SYNC.md` | post-processed extraction (sliced to trait classes) | — |
-| `keccak` | `keccak/proofs/lean/extraction/` | `build-lean.sh` | `keccak/proofs/lean/extraction/SYNC.md` | post-processed extraction + stubs | `symmetric` |
-| `blake3` | `blake3/proofs/lean/extraction/` | `build-lean.sh` | `blake3/proofs/lean/extraction/SYNC.md` | post-processed extraction + stubs | `symmetric` |
-| `monty-31` | `monty-31/proofs/lean/extraction/` | `build-proofs.sh` | `monty-31/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD/dft gated under `--cfg hax`); field deps stubbed | — |
-| `mersenne-31` | `mersenne-31/proofs/lean/extraction/` | `build-proofs.sh` | `mersenne-31/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD/DFT gated under `--cfg hax`); field deps stubbed | — |
-| `goldilocks` | `goldilocks/proofs/lean/extraction/` | `build-proofs.sh` | `goldilocks/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD gated under `--cfg hax`, incl. wasm32); field deps stubbed | — |
-| `baby-bear` | `baby-bear/proofs/lean/extraction/` | `build-proofs.sh` | `baby-bear/proofs/lean/extraction/SYNC.md` | patched Lean output + Rust source patch (SIMD gated); **consumes the extracted `p3_monty_31`** via a Lake path `require` | `monty-31` |
+| Crate | Active (aeneas backend) `proofs/lean/` | Frozen legacy `proofs-legacy/` | Depends on (registry) |
+|-------|-----------------------------------------|--------------------------------|------------------------|
+| `keccak` | ✅ green, 0 sorries — `build-proofs.sh`, `SYNC.md`, `TCB.md` | patched output + stubs + Rust src patch (SIMD gated) | `symmetric` (gates only) |
+| `blake3` | ✅ green, 0 sorries — `build-proofs.sh`, `SYNC.md`, `TCB.md` | patched output + stubs | `symmetric` (gates only) |
+| `symmetric` | ❌ `BLOCKED.md` (charon stdlib-iterator type errors + aeneas nested-loop returns) | sliced to trait classes | — |
+| `monty-31` | ❌ `BLOCKED.md` (aeneas #1264 mixed Div×Field groups) | patched output + src patch (SIMD/dft gated) | — |
+| `koala-bear` | ❌ `BLOCKED.md` (same as monty-31) | patched output + src patch + CompPoly proofs; consumes extracted `p3_monty_31` | `monty-31` |
+| `baby-bear` | ❌ `BLOCKED.md` (same as monty-31) | patched output + src patch; consumes extracted `p3_monty_31` (never committed) | `monty-31` |
+| `mersenne-31` | ❌ `BLOCKED.md` (charon stack overflow, survey Issue #9) | patched output + src patch (SIMD/DFT gated) | — |
+| `goldilocks` | ❌ `BLOCKED.md` (charon type errors; src patch needs regenerating) | patched output + src patch (SIMD gated, incl. wasm32) | — |
 
-**Dependency order for re-extraction:** `symmetric` → `keccak`, `blake3`
-(`keccak`/`blake3` consume the real extracted `p3_symmetric` via a Lake path
-`require`); `monty-31` → `baby-bear`, `koala-bear` (both consume the real extracted
-`p3_monty_31` the same way — re-extract `monty-31` first; their `build-proofs.sh`
-also applies monty-31's source patch). `mersenne-31` and `goldilocks` are independent
-(their deps are stubbed, not extracted). When a new crate graduates to "official", add
-a row here and create its per-crate `SYNC.md`.
+**Shared pre-extraction source patches** (applied transiently by the active
+build scripts, gated on `--cfg hax` which must be set globally via `RUSTFLAGS`
+— `cargo hax` does not set it for dependency crates):
+`field/proofs/rust-patch/patches/p3_field.src.patch` (removes the
+charon-mistranslated `RawDataSerializable` stream methods + `unpack_iter`) and
+`symmetric/proofs/rust-patch/patches/p3_symmetric.src.patch` (the
+`SerializingHasher` impls that call them), alongside each crate's own patch.
+
+**Dependency order for re-extraction (active pipeline):** `keccak` and
+`blake3` are independent of each other; both apply the `field` + `symmetric`
+gates. For the frozen legacy pipeline the old order still applies
+(`symmetric` → `keccak`, `blake3`; `monty-31` → `baby-bear`, `koala-bear`),
+but it is frozen — see the note at the top of each `proofs-legacy/` build
+script. When a new crate graduates to "official", add a row here and create
+its per-crate `SYNC.md`.
 
 ---
 
@@ -104,7 +124,8 @@ runbook (it assumes the merge is already done and only re-extracts/reconciles th
 one crate):
 
 ```
-follow <crate>/proofs/lean/extraction/SYNC.md
+follow <crate>/proofs/lean/SYNC.md        # active (aeneas backend) crates
+# frozen legacy workspaces (<crate>/proofs-legacy/) are NOT re-extracted
 ```
 
 Each per-crate SYNC.md ends green when its `lake build` exits 0 with only `sorry`
@@ -128,19 +149,22 @@ Do **not** push without explicit approval.
 
 ## Maintenance: Lean toolchain / Hax pin bumps
 
-All official crates currently pin the same Lean toolchain
-(`leanprover/lean4:v4.30.0-rc2`) and the same Hax `rev`. A bump is independent of
+Active (aeneas-backend) workspaces pin `leanprover/lean4:v4.31.0` and
+`hax-lean` `v0.3.0` (which pins the Aeneas Lean library); the frozen
+`proofs-legacy/` workspaces keep their old pins (`v4.30.0-rc2` era). The
+cargo-hax install is pinned to `e11615541` (build from
+`~/devel/fv-tools/hax`). A bump is independent of
 the upstream Plonky3 sync — keep it on its own commit, and apply it across **all**
 registry crates together:
 
-1. Edit each crate's `proofs/lean/extraction/lean-toolchain` to the new tag.
+1. Edit each active crate's `proofs/lean/lean-toolchain` to the new tag.
 2. In each extraction dir, `lake update` (refreshes `lake-manifest.json`).
 3. Re-run each crate's build script (dependency order) and confirm green.
 
 ## What "good" looks like at the end
 
 - `git log --oneline HEAD..upstream/main` is empty.
-- For every affected crate: `cd <crate>/proofs/lean/extraction && lake build`
+- For every affected active crate: `cd <crate>/proofs/lean && lake build`
   exits 0 with only `sorry` warnings.
 - Only registry `proofs/` paths (+ this file) were committed; experimental
   `proofs/` dirs were left untouched.

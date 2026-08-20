@@ -1,0 +1,18 @@
+name = "p3_baby_bear"
+version = "0.1.0"
+defaultTargets = ["p3_baby_bear"]
+
+[[lean_lib]]
+name = "p3_baby_bear"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
+
+# Real extracted monty-31 (MontyField31 + data_traits + mds/poseidon), replacing
+# the old local p3_monty_31 stub. baby-bear is just MontyField31<BabyBearParameters>.
+[[require]]
+name = "p3_monty_31"
+path = "../../monty-31/proofs-legacy"

@@ -1,0 +1,288 @@
+diff --git a/field/src/extension/binomial_extension.rs b/field/src/extension/binomial_extension.rs
+index d2e46d6c..92083d73 100644
+--- a/field/src/extension/binomial_extension.rs
++++ b/field/src/extension/binomial_extension.rs
+@@ -207,21 +207,25 @@ impl<F: BinomiallyExtendable<D>, const D: usize> RawDataSerializable
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_byte_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u8> {
+         F::into_byte_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+         F::into_u32_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+         F::into_u64_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_byte_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u8; N]> {
+@@ -233,6 +237,7 @@ impl<F: BinomiallyExtendable<D>, const D: usize> RawDataSerializable
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u32_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u32; N]> {
+@@ -244,6 +249,7 @@ impl<F: BinomiallyExtendable<D>, const D: usize> RawDataSerializable
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u64_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u64; N]> {
+diff --git a/field/src/extension/cubic_extension.rs b/field/src/extension/cubic_extension.rs
+index 76dd6aa4..7ce094a4 100644
+--- a/field/src/extension/cubic_extension.rs
++++ b/field/src/extension/cubic_extension.rs
+@@ -188,21 +188,25 @@ impl<F: CubicTrinomialExtendable> RawDataSerializable for CubicTrinomialExtensio
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_byte_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u8> {
+         F::into_byte_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+         F::into_u32_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+         F::into_u64_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_byte_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u8; N]> {
+@@ -214,6 +218,7 @@ impl<F: CubicTrinomialExtendable> RawDataSerializable for CubicTrinomialExtensio
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u32_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u32; N]> {
+@@ -225,6 +230,7 @@ impl<F: CubicTrinomialExtendable> RawDataSerializable for CubicTrinomialExtensio
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u64_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u64; N]> {
+diff --git a/field/src/extension/quintic_extension.rs b/field/src/extension/quintic_extension.rs
+index 87162c04..8562f2fa 100644
+--- a/field/src/extension/quintic_extension.rs
++++ b/field/src/extension/quintic_extension.rs
+@@ -205,21 +205,25 @@ impl<F: QuinticTrinomialExtendable> RawDataSerializable for QuinticTrinomialExte
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_byte_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u8> {
+         F::into_byte_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+         F::into_u32_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+         F::into_u64_stream(input.into_iter().flat_map(|x| x.value))
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_byte_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u8; N]> {
+@@ -231,6 +235,7 @@ impl<F: QuinticTrinomialExtendable> RawDataSerializable for QuinticTrinomialExte
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u32_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u32; N]> {
+@@ -242,6 +247,7 @@ impl<F: QuinticTrinomialExtendable> RawDataSerializable for QuinticTrinomialExte
+     }
+ 
+     #[inline]
++    #[cfg(not(hax))]
+     fn into_parallel_u64_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+     ) -> impl IntoIterator<Item = [u64; N]> {
+diff --git a/field/src/field.rs b/field/src/field.rs
+index 58041574..b22c4941 100644
+--- a/field/src/field.rs
++++ b/field/src/field.rs
+@@ -888,6 +888,11 @@ pub trait RawDataSerializable: Sized {
+     fn into_bytes(self) -> impl IntoIterator<Item = u8>;
+ 
+     /// Convert an iterator of field elements into an iterator of bytes.
++    // RPITIT stream methods are gated off under `--cfg hax`: charon's associated-type
++    // lift mistranslates them (arity mismatch on the lifted `*_ty`), poisoning the
++    // LLBC of every dependent crate. `any(hax,…)`/`not(hax)` gating is behaviour-
++    // preserving for normal builds (no `hax` cfg → original code).
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_byte_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u8> {
+         input.into_iter().flat_map(|elem| elem.into_bytes())
+@@ -897,6 +902,7 @@ pub trait RawDataSerializable: Sized {
+     ///
+     /// If `NUM_BYTES` does not divide `4`, multiple `F`s may be packed together to make a single `u32`. Furthermore,
+     /// if `NUM_BYTES * input.len()` does not divide `4`, the final `u32` will involve padding bytes which are set to `0`.
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+         let bytes = Self::into_byte_stream(input);
+@@ -907,6 +913,7 @@ pub trait RawDataSerializable: Sized {
+     ///
+     /// If `NUM_BYTES` does not divide `8`, multiple `F`s may be packed together to make a single `u64`. Furthermore,
+     /// if `NUM_BYTES * input.len()` does not divide `8`, the final `u64` will involve padding bytes which are set to `0`.
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+         let bytes = Self::into_byte_stream(input);
+@@ -918,6 +925,7 @@ pub trait RawDataSerializable: Sized {
+     /// Converts an element `[F; N]` into the byte array `[[u8; N]; NUM_BYTES]`. This is
+     /// intended for use with vectorized hash functions which use vector operations
+     /// to compute several hashes in parallel.
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_parallel_byte_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+@@ -940,6 +948,7 @@ pub trait RawDataSerializable: Sized {
+     ///
+     /// If `NUM_BYTES` does not divide `4`, multiple `[F; N]`s may be packed together to make a single `[u32; N]`. Furthermore,
+     /// if `NUM_BYTES * input.len()` does not divide `4`, the final `[u32; N]` will involve padding bytes which are set to `0`.
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_parallel_u32_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+@@ -962,6 +971,7 @@ pub trait RawDataSerializable: Sized {
+     ///
+     /// If `NUM_BYTES` does not divide `8`, multiple `[F; N]`s may be packed together to make a single `[u64; N]`. Furthermore,
+     /// if `NUM_BYTES * input.len()` does not divide `8`, the final `[u64; N]` will involve padding bytes which are set to `0`.
++    #[cfg(not(hax))]
+     #[must_use]
+     fn into_parallel_u64_streams<const N: usize>(
+         input: impl IntoIterator<Item = [Self; N]>,
+diff --git a/field/src/integers.rs b/field/src/integers.rs
+index 81421af4..becb2587 100644
+--- a/field/src/integers.rs
++++ b/field/src/integers.rs
+@@ -485,12 +485,14 @@ macro_rules! impl_raw_serializable_primefield32 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+             // As every element is 32 bits, we can just convert the input to a unique u32.
+             input.into_iter().map(|x| x.to_unique_u32())
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+             let mut input = input.into_iter();
+             iter::from_fn(move || {
+@@ -507,6 +509,7 @@ macro_rules! impl_raw_serializable_primefield32 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_byte_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u8; N]> {
+@@ -517,6 +520,7 @@ macro_rules! impl_raw_serializable_primefield32 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_u32_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u32; N]> {
+@@ -525,6 +529,7 @@ macro_rules! impl_raw_serializable_primefield32 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_u64_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u64; N]> {
+@@ -565,6 +570,7 @@ macro_rules! impl_raw_serializable_primefield64 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_u32_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u32> {
+             input.into_iter().flat_map(|x| {
+                 let x_u64 = x.to_unique_u64();
+@@ -573,12 +579,14 @@ macro_rules! impl_raw_serializable_primefield64 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_u64_stream(input: impl IntoIterator<Item = Self>) -> impl IntoIterator<Item = u64> {
+             // As every element is 64 bits, we can just convert the input to a unique u64.
+             input.into_iter().map(|x| x.to_unique_u64())
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_byte_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u8; N]> {
+@@ -589,6 +597,7 @@ macro_rules! impl_raw_serializable_primefield64 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_u32_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u32; N]> {
+@@ -601,6 +610,7 @@ macro_rules! impl_raw_serializable_primefield64 {
+         }
+ 
+         #[inline]
++        #[cfg(not(hax))]
+         fn into_parallel_u64_streams<const N: usize>(
+             input: impl IntoIterator<Item = [Self; N]>,
+         ) -> impl IntoIterator<Item = [u64; N]> {
+diff --git a/field/src/packed/packed_traits.rs b/field/src/packed/packed_traits.rs
+index b16afb10..87c2a6a0 100644
+--- a/field/src/packed/packed_traits.rs
++++ b/field/src/packed/packed_traits.rs
+@@ -235,6 +235,7 @@ pub unsafe trait PackedValue: 'static + Copy + Send + Sync {
+     /// This is the iterator equivalent of `unpack_into`, yielding each row
+     /// without requiring a pre-allocated buffer.
+     #[inline]
++    #[cfg(not(hax))]
+     fn unpack_iter<const N: usize>(packed: [Self; N]) -> impl Iterator<Item = [Self::Value; N]> {
+         (0..Self::WIDTH).map(move |lane| array::from_fn(|col| packed[col].extract(lane)))
+     }
